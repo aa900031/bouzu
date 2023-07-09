@@ -15,6 +15,9 @@
 		"lint": {
 			"outputs": []
 		},
+		"preview": {
+			"outputs": []
+		},
 		"clean:cache": {
 			"cache": false
 		}

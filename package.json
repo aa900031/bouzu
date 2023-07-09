@@ -5,16 +5,27 @@
 	"author": "zhong666 <hi@zhong666.me>",
 	"license": "MIT",
 	"scripts": {
+		"dev:story-vue": "turbo run dev --filter='./stories/vue'",
+		"build:story": "turbo run build --filter='./stories/*'",
 		"build:pkgs": "turbo run build --filter='./packages/**/*'",
+		"preview:story": "turbo run preview --filter='./stories/*'",
 		"lint": "eslint . --cache --cache-location node_modules/.cache/eslint",
 		"clean:cache": "turbo run clean:cache"
 	},
 	"devDependencies": {
 		"@aa900031/eslint-config": "^0.2.3",
 		"eslint": "^8.40.0",
+		"rimraf": "^5.0.1",
+		"sirv-cli": "^2.0.2",
 		"turbo": "^1.10.2",
 		"typescript": "^5.1.6",
 		"unbuild": "^1.2.1",
 		"vitest": "^0.33.0"
+	},
+	"pnpm": {
+		"overrides": {
+			"@storybook/core-common>file-system-cache": "2.4.1",
+			"@storybook/types>file-system-cache": "2.4.1"
+		}
 	}
 }
