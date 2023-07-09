@@ -1,5 +1,5 @@
 import type { InjectionKey, MaybeRef, Ref } from 'vue-demi'
-import { inject, onScopeDispose, provide, unref, watch } from 'vue-demi'
+import { inject, markRaw, onScopeDispose, provide, unref, watch } from 'vue-demi'
 import type { Rect, Size } from '@bouzu/shared'
 import { createRect, toPoint } from '@bouzu/shared'
 import type { Scroller as ScrollerDom } from '@bouzu/scroller-dom'
@@ -24,10 +24,10 @@ export interface Scroller {
 	context: ScrollerContext
 }
 
-const ScrollerContextKey: InjectionKey<ScrollerContext> = Symbol('@bouzu/vue-scroller/scroller')
+const KEY: InjectionKey<ScrollerContext> = Symbol('@bouzu/vue-scroller/scroller')
 
 export function useScrollerContext(): ScrollerContext {
-	const value = inject(ScrollerContextKey)
+	const value = inject(KEY)
 	if (!value)
 		throw new Error('scroller context')
 	return value
@@ -39,60 +39,67 @@ export function useScroller(
 	el: MaybeRef<TargetElement>,
 	props?: UseScrollerProps,
 ): Scroller {
-	const _scroller = createScroller()
+	const scroller = markRaw(createScroller())
 
 	const [visibleRect] = eventRef({
 		register: (handler) => {
-			_scroller.state.on(ScrollerEvent.ChangeVisibleRect, handler)
-			return () => _scroller.state.off(ScrollerEvent.ChangeVisibleRect, handler)
+			scroller.state.on(ScrollerEvent.ChangeVisibleRect, handler)
+			return () => scroller.state.off(ScrollerEvent.ChangeVisibleRect, handler)
 		},
-		get: () => _scroller.state.getVisibleRect() ?? createRect(),
-		set: val => _scroller.scrollTo(toPoint(val)),
+		get: () => scroller.state.getVisibleRect() ?? createRect(),
+		set: val => scroller.scrollTo(toPoint(val)),
 	})
 
 	const [contentSize] = eventRef({
 		register: (handler) => {
-			_scroller.state.on(ScrollerEvent.ChangeContentSize, handler)
-			return () => _scroller.state.off(ScrollerEvent.ChangeContentSize, handler)
+			scroller.state.on(ScrollerEvent.ChangeContentSize, handler)
+			return () => scroller.state.off(ScrollerEvent.ChangeContentSize, handler)
 		},
-		get: () => _scroller.state.getContentSize(),
+		get: () => scroller.state.getContentSize(),
 	})
 
-	const context: ScrollerContext = {
-		state: _scroller.state,
-	}
+	watch(
+		() => unref(props?.visibleByContent),
+		(val) => {
+			if (val != null)
+				scroller.setVisibleByContent(val)
+		},
+		{ immediate: true },
+	)
 
-	watch(() => unref(props?.visibleByContent), (val) => {
-		if (val != null)
-			_scroller.setVisibleByContent(val)
-	}, { immediate: true })
-
-	watch(() => unref(props?.scrollEventPassive), (val) => {
-		if (val != null)
-			_scroller.setScrollEventPassive(val)
-	}, { immediate: true })
+	watch(
+		() => unref(props?.scrollEventPassive),
+		(val) => {
+			if (val != null)
+				scroller.setScrollEventPassive(val)
+		},
+		{ immediate: true },
+	)
 
 	watch(() => unrefElement<TargetElement>(el), (val, _, onCleanup) => {
 		if (!val)
 			return
 
-		_scroller.mount(val)
+		scroller.mount(val)
 
 		onCleanup(() => {
-			_scroller.unmount()
+			scroller.unmount()
 		})
 	}, { flush: 'post', immediate: true })
 
 	onScopeDispose(() => {
-		_scroller.destroy()
+		scroller.destroy()
 	})
 
-	provide(ScrollerContextKey, context)
+	const context: ScrollerContext = {
+		state: scroller.state,
+	}
+	provide(KEY, context)
 
 	return {
 		context,
 		contentSize,
 		visibleRect,
-		detect: _scroller.detect,
+		detect: scroller.detect,
 	}
 }
