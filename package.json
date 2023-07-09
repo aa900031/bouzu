@@ -1,0 +1,19 @@
+{
+	"name": "@bouzu/monorepo",
+	"private": true,
+	"packageManager": "pnpm@8.6.6",
+	"author": "zhong666 <hi@zhong666.me>",
+	"license": "MIT",
+	"scripts": {
+		"lint": "eslint . --cache --cache-location node_modules/.cache/eslint",
+		"clean:cache": "turbo run clean:cache"
+	},
+	"devDependencies": {
+		"@aa900031/eslint-config": "^0.2.3",
+		"eslint": "^8.40.0",
+		"turbo": "^1.10.2",
+		"typescript": "^5.1.6",
+		"unbuild": "^1.2.1",
+		"vitest": "^0.33.0"
+	}
+}

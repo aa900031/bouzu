@@ -1,0 +1,39 @@
+{
+	"compilerOptions": {
+		"baseUrl": "./",
+		"allowSyntheticDefaultImports": true,
+		"declaration": true,
+		"downlevelIteration": true,
+		"esModuleInterop": true,
+		"isolatedModules": true,
+		"incremental": true,
+		"forceConsistentCasingInFileNames": true,
+		"jsx": "preserve",
+		"noEmit": true,
+		"lib": ["dom", "dom.iterable", "esnext"],
+		"target": "esnext",
+		"module": "esnext",
+		"moduleResolution": "node",
+		"noImplicitReturns": false,
+		"resolveJsonModule": true,
+		"skipLibCheck": true,
+		"strict": true,
+		"stripInternal": true,
+		"ignoreDeprecations": "5.0",
+		"suppressImplicitAnyIndexErrors": true,
+		"types": [
+			"vitest/globals"
+		],
+		"paths": {
+			"@bouzu/scroller": ["packages/scroller/state/src"],
+			"@bouzu/scroller-dom": ["packages/scroller/dom/src"],
+			"@bouzu/vue-scroller": ["packages/scroller/vue/src"],
+			"@bouzu/shared": ["packages/shared/src"],
+			"@bouzu/vue-helper": ["packages/utils/vue-helper/src"],
+			"@test/*": ["test/*"]
+		}
+	},
+	"include": [
+		"env.d.ts"
+	]
+}
