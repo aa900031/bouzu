@@ -1,5 +1,5 @@
 import type { Ref } from 'vue-demi'
-import { unref } from 'vue-demi'
+import { onScopeDispose, unref } from 'vue-demi'
 import { eventRef } from '@bouzu/vue-helper'
 import { computedEager } from '@vueuse/core'
 import type { DirectionEventHandler, DirectionTypeValue, DirectionValue } from '@bouzu/scroller'
@@ -24,10 +24,14 @@ export function useScrollDirection(
 	const [value] = eventRef<DirectionValue | null, DirectionEventHandler<typeof DirectionEvent.Change>>({
 		register: (handler) => {
 			direction.on(DirectionEvent.Change, handler)
-			context.addPlugin(direction)
+			context.state.addPlugin(direction)
 			return () => direction.off(DirectionEvent.Change, handler)
 		},
 		get: event => event?.value ?? direction.get(),
+	})
+
+	onScopeDispose(() => {
+		direction.destroy(context.state)
 	})
 
 	return {

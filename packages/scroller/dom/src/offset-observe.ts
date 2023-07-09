@@ -23,9 +23,10 @@ export type OffsetObserveEventHandler<E extends OffsetObserveEventValue> = Handl
 export interface OffsetObserve {
 	on: Emitter<Events>['on']
 	off: Emitter<Events>['off']
-	get: () => Rect | null
 	mount: (el: HTMLElement, rootEl?: HTMLElement) => void
 	unmount: () => void
+	destroy: () => void
+	getRect: () => Rect | null
 	getTargetElement: () => HTMLElement | undefined
 }
 
@@ -54,7 +55,7 @@ export function createOffsetObserve(): OffsetObserve {
 		_trigger()
 	})
 
-	const get: Self['get'] = () => {
+	const get: Self['getRect'] = () => {
 		return _rect
 	}
 
@@ -66,18 +67,24 @@ export function createOffsetObserve(): OffsetObserve {
 	}
 
 	const unmount: Self['unmount'] = () => {
-		_rect = null
 		_el && _ro.unobserve(_el)
 		_rootEl = undefined
 		_el = undefined
 	}
 
+	const destroy: Self['destroy'] = () => {
+		_rect = null
+		_emitter.all.clear()
+		unmount()
+	}
+
 	return {
 		on: _emitter.on,
 		off: _emitter.off,
-		get,
 		mount,
 		unmount,
+		destroy,
+		getRect: get,
 		getTargetElement: () => _el,
 	}
 }

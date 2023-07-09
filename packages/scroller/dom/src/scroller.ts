@@ -2,7 +2,6 @@ import type { Scroller as BaseScroller, ScrollerPlugin } from '@bouzu/scroller'
 import { createScroller as createBaseScroller } from '@bouzu/scroller'
 import type { Point } from '@bouzu/shared'
 import { noop, toPoint, toSize } from '@bouzu/shared'
-import type { Simplify } from 'type-fest'
 import { toContentVisibleRect, toScrollVisibleRect } from './content-visible'
 import type { OffsetObserveEventHandler } from './offset-observe'
 import { OffsetObserveEvent, createOffsetObserve } from './offset-observe'
@@ -10,27 +9,29 @@ import { onScrollEvent } from './scroll-event'
 import { getScrollParent } from './scroll-parent'
 import { getVisibleRect } from './visible-rect'
 
-export type Scroller = Simplify<
-	& Omit<BaseScroller, 'setVisibleRect' | 'setContentSize'>
-	& {
-		mount: (el: HTMLElement) => void
-		unmount: () => void
-		detect: () => void
-		scrollTo: (point: Point) => void
-		getTargetElement: () => HTMLElement | undefined
-		getScrollElement: () => HTMLElement | undefined
-		setVisibleByContent: (value: boolean) => void
-		setScrollEventPassive: (value: boolean) => void
-	}
->
+export interface Scroller {
+	state: BaseScroller
+
+	mount: (el: HTMLElement) => void
+	unmount: () => void
+	destroy: () => void
+
+	detect: () => void
+	scrollTo: (point: Point) => void
+
+	getTargetElement: () => HTMLElement | undefined
+	getScrollElement: () => HTMLElement | undefined
+	setVisibleByContent: (value: boolean) => void
+	setScrollEventPassive: (value: boolean) => void
+}
 
 export function createScroller(
 	plugins?: ScrollerPlugin[],
 ): Scroller {
 	type Self = Scroller
 
-	const { setVisibleRect, setContentSize, ...base } = createBaseScroller(plugins)
-	const _offset = createOffsetObserve()
+	const scroller = createBaseScroller(plugins)
+	const offsetObs = createOffsetObserve()
 
 	let _el: HTMLElement | undefined
 	let _scrollEl: HTMLElement | undefined
@@ -45,12 +46,12 @@ export function createScroller(
 		if (_scrollEl == null)
 			return
 
-		const offsetRect = _offset.get()
+		const offsetRect = offsetObs.getRect()
 		if (offsetRect == null)
 			return
 
-		setVisibleRect(toContentVisibleRect(getVisibleRect(_scrollEl), offsetRect))
-		setContentSize(toSize(offsetRect))
+		scroller.setVisibleRect(toContentVisibleRect(getVisibleRect(_scrollEl), offsetRect))
+		scroller.setContentSize(toSize(offsetRect))
 	}
 
 	const _handleScroll = () => {
@@ -60,14 +61,14 @@ export function createScroller(
 		if (_visibleByContent)
 			_trigger()
 		else
-			setVisibleRect(getVisibleRect(_scrollEl))
+			scroller.setVisibleRect(getVisibleRect(_scrollEl))
 	}
 
 	const _handleOffsetChange: OffsetObserveEventHandler<typeof OffsetObserveEvent.Change> = ({ value }) => {
 		if (_visibleByContent)
 			_trigger()
 		else
-			setContentSize(toSize(value))
+			scroller.setContentSize(toSize(value))
 	}
 
 	const _bindScrollEvent = () => {
@@ -88,14 +89,14 @@ export function createScroller(
 			return
 
 		_unbindOffset()
-		_unbindOffset = () => _offset.unmount()
+		_unbindOffset = () => offsetObs.unmount()
 
-		_offset.on(OffsetObserveEvent.Change, _handleOffsetChange)
+		offsetObs.on(OffsetObserveEvent.Change, _handleOffsetChange)
 
 		if (_visibleByContent && _el != null)
-			_offset.mount(_el, _scrollEl)
+			offsetObs.mount(_el, _scrollEl)
 		else
-			_offset.mount(_scrollEl)
+			offsetObs.mount(_scrollEl)
 	}
 
 	const detect: Self['detect'] = () => {
@@ -126,7 +127,7 @@ export function createScroller(
 
 		if (_visibleByContent) {
 			const visibleRect = getVisibleRect(_scrollEl)
-			const contentVisibleRect = base.getVisibleRect()
+			const contentVisibleRect = scroller.getVisibleRect()
 			if (contentVisibleRect == null)
 				return
 
@@ -154,10 +155,17 @@ export function createScroller(
 		_bindScrollEvent()
 	}
 
+	const destroy = () => {
+		offsetObs.destroy()
+		scroller.destroy()
+		unmount()
+	}
+
 	return {
-		...base,
+		state: scroller,
 		mount,
 		unmount,
+		destroy,
 		detect,
 		scrollTo,
 		setVisibleByContent,

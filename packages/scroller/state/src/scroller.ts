@@ -28,6 +28,8 @@ export interface Scroller {
 	on: Emitter<Events>['on']
 	off: Emitter<Events>['off']
 
+	destroy: () => void
+
 	getVisibleRect: () => Rect | undefined
 	setVisibleRect: (value: Rect) => void
 
@@ -98,6 +100,12 @@ export function createScroller(plugins: ScrollerPlugin[] = []): Scroller {
 		return true
 	}
 
+	const destroy: Self['destroy'] = () => {
+		// eslint-disable-next-line @typescript-eslint/no-use-before-define
+		_plugins.forEach(plugin => plugin.destroy(self))
+		_emitter.all.clear()
+	}
+
 	const self: Self = {
 		on: _emitter.on,
 		off: _emitter.off,
@@ -108,6 +116,7 @@ export function createScroller(plugins: ScrollerPlugin[] = []): Scroller {
 		getPlugin,
 		addPlugin,
 		removePlugin,
+		destroy,
 	}
 
 	for (const plugin of plugins)

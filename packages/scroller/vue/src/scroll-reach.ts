@@ -1,5 +1,5 @@
 import type { Ref } from 'vue-demi'
-import { unref } from 'vue-demi'
+import { onScopeDispose, unref } from 'vue-demi'
 import { eventRef } from '@bouzu/vue-helper'
 import type { ReachEventHandler } from '@bouzu/scroller'
 import { Reach, ReachEvent, createReachPlugin } from '@bouzu/scroller'
@@ -22,11 +22,15 @@ export function useScrollReach(
 
 	const [value] = eventRef<Reach | null, ReachEventHandler<typeof ReachEvent.Change>>({
 		register: (handler) => {
-			context.addPlugin(reach)
+			context.state.addPlugin(reach)
 			reach.on(ReachEvent.Change, handler)
 			return () => reach.off(ReachEvent.Change, handler)
 		},
 		get: event => event?.value ?? reach.get(),
+	})
+
+	onScopeDispose(() => {
+		reach.destroy(context.state)
 	})
 
 	return {

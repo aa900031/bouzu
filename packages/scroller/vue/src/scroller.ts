@@ -1,5 +1,5 @@
 import type { InjectionKey, MaybeRef, Ref } from 'vue-demi'
-import { inject, provide, unref, watch } from 'vue-demi'
+import { inject, onScopeDispose, provide, unref, watch } from 'vue-demi'
 import type { Rect, Size } from '@bouzu/shared'
 import { createRect, toPoint } from '@bouzu/shared'
 import type { Scroller as ScrollerDom } from '@bouzu/scroller-dom'
@@ -13,7 +13,9 @@ export interface UseScrollerProps {
 	scrollEventPassive?: MaybeRef<boolean | undefined>
 }
 
-export type ScrollerContext = Pick<ScrollerDom, 'addPlugin' | 'removePlugin'>
+export interface ScrollerContext {
+	state: ScrollerDom['state']
+}
 
 export interface Scroller {
 	detect: () => void
@@ -41,24 +43,23 @@ export function useScroller(
 
 	const [visibleRect] = eventRef({
 		register: (handler) => {
-			_scroller.on(ScrollerEvent.ChangeVisibleRect, handler)
-			return () => _scroller.off(ScrollerEvent.ChangeVisibleRect, handler)
+			_scroller.state.on(ScrollerEvent.ChangeVisibleRect, handler)
+			return () => _scroller.state.off(ScrollerEvent.ChangeVisibleRect, handler)
 		},
-		get: () => _scroller.getVisibleRect() ?? createRect(),
+		get: () => _scroller.state.getVisibleRect() ?? createRect(),
 		set: val => _scroller.scrollTo(toPoint(val)),
 	})
 
 	const [contentSize] = eventRef({
 		register: (handler) => {
-			_scroller.on(ScrollerEvent.ChangeContentSize, handler)
-			return () => _scroller.off(ScrollerEvent.ChangeContentSize, handler)
+			_scroller.state.on(ScrollerEvent.ChangeContentSize, handler)
+			return () => _scroller.state.off(ScrollerEvent.ChangeContentSize, handler)
 		},
-		get: () => _scroller.getContentSize(),
+		get: () => _scroller.state.getContentSize(),
 	})
 
 	const context: ScrollerContext = {
-		addPlugin: _scroller.addPlugin,
-		removePlugin: _scroller.removePlugin,
+		state: _scroller.state,
 	}
 
 	watch(() => unref(props?.visibleByContent), (val) => {
@@ -81,6 +82,10 @@ export function useScroller(
 			_scroller.unmount()
 		})
 	}, { flush: 'post', immediate: true })
+
+	onScopeDispose(() => {
+		_scroller.destroy()
+	})
 
 	provide(ScrollerContextKey, context)
 

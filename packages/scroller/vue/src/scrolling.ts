@@ -17,7 +17,7 @@ export function useScrolling(
 	const [value] = eventRef<boolean, ScrollingEventHandler<typeof ScrollingEvent.Change>>({
 		register: (handler) => {
 			scrolling.on(ScrollingEvent.Change, handler)
-			context.addPlugin(scrolling)
+			context.state.addPlugin(scrolling)
 			return () => scrolling.off(ScrollingEvent.Change, handler)
 		},
 		get: event => event?.value ?? scrolling.get(),
