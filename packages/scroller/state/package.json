@@ -1,0 +1,32 @@
+{
+	"name": "@bouzu/scroller",
+	"version": "0.0.1",
+	"private": false,
+	"author": "zhong666 <hi@zhong666.me>",
+	"license": "MIT",
+	"sideEffects": false,
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"require": "./dist/index.cjs",
+			"import": "./dist/index.mjs"
+		}
+	},
+	"main": "./dist/index.cjs",
+	"module": "./dist/index.mjs",
+	"types": "./dist/index.d.ts",
+	"files": [
+		"dist"
+	],
+	"publishConfig": {
+		"access": "public"
+	},
+	"scripts": {
+		"build": "unbuild"
+	},
+	"dependencies": {
+		"@bouzu/shared": "workspace:*",
+		"mitt": "^3.0.1",
+		"type-fest": "^3.12.0"
+	}
+}

@@ -5,6 +5,7 @@
 	"author": "zhong666 <hi@zhong666.me>",
 	"license": "MIT",
 	"scripts": {
+		"build:pkgs": "turbo run build --filter='./packages/**/*'",
 		"lint": "eslint . --cache --cache-location node_modules/.cache/eslint",
 		"clean:cache": "turbo run clean:cache"
 	},
