@@ -1,5 +1,7 @@
 dist/
 
+.turbo/
+
 # Node dependencies
 node_modules/
 

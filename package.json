@@ -15,7 +15,9 @@
 	},
 	"devDependencies": {
 		"@aa900031/eslint-config": "^0.2.3",
+		"@types/mockjs": "^1.0.7",
 		"eslint": "^8.40.0",
+		"mockjs": "^1.1.0",
 		"rimraf": "^5.0.1",
 		"sirv-cli": "^2.0.2",
 		"turbo": "^1.10.2",
