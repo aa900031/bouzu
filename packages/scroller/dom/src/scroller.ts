@@ -3,7 +3,6 @@ import { createScroller as createBaseScroller } from '@bouzu/scroller'
 import type { Point } from '@bouzu/shared'
 import { noop, toPoint, toSize } from '@bouzu/shared'
 import { toContentVisibleRect, toScrollVisibleRect } from './content-visible'
-import type { OffsetObserveEventHandler } from './offset-observe'
 import { OffsetObserveEvent, createOffsetObserve } from './offset-observe'
 import { onScrollEvent } from './scroll-event'
 import { getScrollParent } from './scroll-parent'
@@ -50,25 +49,22 @@ export function createScroller(
 		if (offsetRect == null)
 			return
 
-		scroller.setVisibleRect(toContentVisibleRect(getVisibleRect(_scrollEl), offsetRect))
-		scroller.setContentSize(toSize(offsetRect))
+		const nextVisibleRect = _visibleByContent
+			? toContentVisibleRect(getVisibleRect(_scrollEl), offsetRect)
+			: getVisibleRect(_scrollEl)
+
+		const nextContentSize = toSize(offsetRect)
+
+		scroller.setVisibleRect(nextVisibleRect)
+		scroller.setContentSize(nextContentSize)
 	}
 
 	const _handleScroll = () => {
-		if (_scrollEl == null)
-			return
-
-		if (_visibleByContent)
-			_trigger()
-		else
-			scroller.setVisibleRect(getVisibleRect(_scrollEl))
+		_trigger()
 	}
 
-	const _handleOffsetChange: OffsetObserveEventHandler<typeof OffsetObserveEvent.Change> = ({ value }) => {
-		if (_visibleByContent)
-			_trigger()
-		else
-			scroller.setContentSize(toSize(value))
+	const _handleOffsetChange = () => {
+		_trigger()
 	}
 
 	const _bindScrollEvent = () => {

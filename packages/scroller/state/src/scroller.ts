@@ -1,7 +1,7 @@
 import type { Emitter, Handler } from 'mitt'
 import mitt from 'mitt'
 import type { Rect, Size } from '@bouzu/shared'
-import { checkRectEqual, createSize, usePrevious } from '@bouzu/shared'
+import { checkRectEqual, checkSizeEqual, createSize, usePrevious } from '@bouzu/shared'
 import type { ValueOf } from 'type-fest'
 
 export const ScrollerEvent = {
@@ -63,6 +63,7 @@ export function createScroller(plugins: ScrollerPlugin[] = []): Scroller {
 	const setVisibleRect: Self['setVisibleRect'] = (value) => {
 		if (_visibleRect.curr && checkRectEqual(_visibleRect.curr, value))
 			return
+
 		_setVisibleRect(value)
 		_emitter.emit(ScrollerEvent.ChangeVisibleRect, { value, oldValue: _visibleRect.prev })
 	}
@@ -72,6 +73,9 @@ export function createScroller(plugins: ScrollerPlugin[] = []): Scroller {
 	}
 
 	const setContentSize: Self['setContentSize'] = (value) => {
+		if (checkSizeEqual(_contentSize, value))
+			return
+
 		_contentSize = value
 		_emitter.emit(ScrollerEvent.ChangeContentSize, { value })
 	}
