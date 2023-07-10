@@ -1,0 +1,49 @@
+{
+	"name": "@bouzu/vue-virtualizer",
+	"version": "0.0.1",
+	"private": false,
+	"author": "zhong666 <hi@zhong666.me>",
+	"license": "MIT",
+	"sideEffects": false,
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"require": "./dist/index.cjs",
+			"import": "./dist/index.mjs"
+		}
+	},
+	"main": "./dist/index.cjs",
+	"module": "./dist/index.mjs",
+	"types": "./dist/index.d.ts",
+	"files": [
+		"dist"
+	],
+	"publishConfig": {
+		"access": "public"
+	},
+	"scripts": {
+		"build": "unbuild"
+	},
+	"peerDependencies": {
+		"@vue/composition-api": "^1.1.0",
+		"vue": "^2.6.12 || ^3.2.0"
+	},
+	"peerDependenciesMeta": {
+		"vue": {
+			"optional": true
+		},
+		"@vue/composition-api": {
+			"optional": true
+		}
+	},
+	"dependencies": {
+		"@bouzu/virtualizer": "workspace:*",
+		"@bouzu/virtualizer-dom": "workspace:*",
+		"@bouzu/shared": "workspace:*",
+		"@bouzu/vue-helper": "workspace:*",
+		"@vueuse/core": "^10.2.1",
+		"dequal": "^2.0.3",
+		"klona": "^2.0.5",
+		"vue-demi": "latest"
+	}
+}
