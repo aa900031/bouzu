@@ -1,6 +1,6 @@
 {
 	"extends": "../../tsconfig.json",
-	"include": ["src"],
+	"include": ["src", "./.storybook/**/*"],
 	"compilerOptions": {
 		"tsBuildInfoFile": "node_modules/.cache/.tsbuildinfo"
 	}

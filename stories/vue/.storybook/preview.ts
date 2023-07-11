@@ -1,6 +1,5 @@
-/**
- * @type import('@storybook/vue3').Preview
- */
+import type { Preview } from '@storybook/vue3'
+
 export default {
 	parameters: {
 		actions: {
@@ -13,4 +12,4 @@ export default {
 			},
 		},
 	},
-}
+} satisfies Preview

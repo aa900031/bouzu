@@ -19,6 +19,7 @@
 		"skipLibCheck": true,
 		"strict": true,
 		"stripInternal": true,
+		"allowJs": true,
 		"ignoreDeprecations": "5.0",
 		"suppressImplicitAnyIndexErrors": true,
 		"types": [
@@ -37,6 +38,7 @@
 		}
 	},
 	"include": [
-		"env.d.ts"
+		"env.d.ts",
+		"./.vite/**/*"
 	]
 }
