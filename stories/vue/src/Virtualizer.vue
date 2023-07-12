@@ -1,8 +1,6 @@
-<script lang="ts">
-import Mock from 'mockjs'
-</script>
-
 <script lang="ts" setup>
+import Mock from 'mockjs'
+import type { StyleValue } from 'vue'
 import { computed, ref } from 'vue'
 import { useVirtualList } from '@bouzu/vue-virtualizer'
 import VirtualizerItem from './VirtualizerItem.vue'
@@ -29,12 +27,8 @@ const {
 	contentSize,
 	isScrolling,
 } = useVirtualList<Item>({ el, data })
-const rootStyles = computed(() => ({
-	margin: '20px',
-	backgroundColor: 'lightgray',
-	position: 'relative',
-}))
-const contentStyles = computed(() => ({
+
+const contentStyles = computed<StyleValue>(() => ({
 	width: contentSize.value.width === 0 ? 'auto' : `${contentSize.value.width}px`,
 	height: contentSize.value.height === 0 ? 'auto' : `${contentSize.value.height}px`,
 	pointerEvents: isScrolling.value ? 'none' : 'auto',
@@ -42,7 +36,7 @@ const contentStyles = computed(() => ({
 </script>
 
 <template>
-	<div ref="el" :style="rootStyles">
+	<div ref="el" class="m-5 relative bg-zinc-300">
 		<div :style="contentStyles">
 			<VirtualizerItem
 				v-for="view in visibleViews"

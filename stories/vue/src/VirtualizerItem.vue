@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import Mock from 'mockjs'
-import type { PropType } from 'vue'
+import type { PropType, StyleValue } from 'vue'
 import { computed, ref, toRef } from 'vue'
 import type { View } from '@bouzu/virtualizer'
 import { useVirtualizerItem } from '@bouzu/vue-virtualizer'
@@ -14,20 +14,16 @@ const props = defineProps({
 const view = toRef(props, 'view')
 const contentEl = ref<HTMLElement | null>(null)
 
-const rootStyles = computed(() => ({
-	'position': 'absolute',
-	'overflow': 'hidden',
-	'contain': 'size layout style paint',
-	'top': `${view.value.layout.rect.y}px`,
-	'left': '0',
-	'width': '100%',
-	'height': `${view.value.layout.rect.height}px`,
-	'minHeight': '48px',
-	'z-index': view.value.layout.estimated ? -1 : undefined,
-}))
-
-const contentStyles = computed(() => ({
-	wordBreak: 'break-all',
+const rootStyles = computed<StyleValue>(() => ({
+	position: 'absolute',
+	overflow: 'hidden',
+	contain: 'size layout style paint',
+	top: `${view.value.layout.rect.y}px`,
+	left: '0',
+	width: '100%',
+	height: `${view.value.layout.rect.height}px`,
+	minHeight: '48px',
+	zIndex: view.value.layout.estimated ? -1 : undefined,
 }))
 
 useVirtualizerItem({
@@ -42,9 +38,11 @@ function handleClick() {
 
 <template>
 	<div :style="rootStyles" @click="handleClick">
-		<div ref="contentEl">
-			<h1>#{{ props.view.data.index }} Name: {{ props.view.data.name }}</h1>
-			<p :style="contentStyles">
+		<div ref="contentEl" class="flex flex-col p-3 space-y-4 hover:bg-slate">
+			<h1 class="text-xl font-bold">
+				#{{ props.view.data.index }} Name: {{ props.view.data.name }}
+			</h1>
+			<p class="break-all">
 				{{ props.view.data.content }}
 			</p>
 		</div>

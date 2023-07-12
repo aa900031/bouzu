@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { reactive, ref, toRefs, watch } from 'vue'
+import { ref, toRefs, watch } from 'vue'
 import { useScrollAxis, useScrollDirection, useScrollReach, useScroller, useScrolling } from '@bouzu/vue-scroller'
 
 const props = defineProps<{
@@ -14,13 +14,6 @@ const axis = useScrollAxis(scroller.context)
 const reach = useScrollReach(scroller.context)
 const direction = useScrollDirection(undefined, scroller.context)
 const scrolling = useScrolling(scroller.context)
-const info = reactive({
-	isScrolling: scrolling.value,
-	reach: reach.value,
-	axis: axis.value,
-	direction: direction.value,
-	visibleRect: scroller.visibleRect,
-})
 
 watch([viewport], () => {
 	scroller.detect()
@@ -28,23 +21,56 @@ watch([viewport], () => {
 </script>
 
 <template>
-	<div :style="{ position: 'fixed', top: 0, left: 0 }">
-		Viewport:
+	<div class="fixed left-0 top-0 bg-sky-300 p-3">
+		Viewport: <br>
 		<input id="viewport-window" v-model="viewport" type="radio" value="window">
 		<label for="viewport-window">Window</label>
+		<br>
 		<input id="viewport-div" v-model="viewport" type="radio" value="div">
 		<label for="viewport-div">Div</label>
 	</div>
+	<div class="fixed right-0 bottom-0 max-w-1/2 bg-sky-300 p-3">
+		<table class="table-fixed">
+			<tr>
+				<td>isScrolling:</td>
+				<td>{{ scrolling.value.value }}</td>
+			</tr>
+			<tr>
+				<td>reach:</td>
+				<td>{{ reach.value.value }}</td>
+			</tr>
+			<tr>
+				<td>axis:</td>
+				<td>{{ axis.value.value }}</td>
+			</tr>
+			<tr>
+				<td>direction:</td>
+				<td>{{ direction.value.value }}</td>
+			</tr>
+			<tr>
+				<td>visibleRect.x:</td>
+				<td>{{ scroller.visibleRect.value.x }}</td>
+			</tr>
+			<tr>
+				<td>visibleRect.y:</td>
+				<td>{{ scroller.visibleRect.value.y }}</td>
+			</tr>
+			<tr>
+				<td>visibleRect.height:</td>
+				<td>{{ scroller.visibleRect.value.height }}</td>
+			</tr>
+			<tr>
+				<td>visibleRect.width:</td>
+				<td>{{ scroller.visibleRect.value.width }}</td>
+			</tr>
+		</table>
+	</div>
 	<div
-		:style="[
-			viewport === 'window' ? { display: 'flex', margin: '30px', backgroundColor: 'red' } : {},
-			viewport === 'div' ? { display: 'flex', margin: '30px', backgroundColor: 'red', height: '500px', width: '500px', overflow: 'scroll' } : {},
-		]"
+		class="flex m-7.5 bg-red"
+		:class="{
+			'h-lg w-lg max-w-full overflow-scroll': viewport === 'div',
+		}"
 	>
-		<div ref="list" :style="{ flex: '1', margin: '100px 20px 200px 80px', backgroundColor: 'yellow', height: '200vh' }">
-			<div :style="{ position: 'fixed', right: 0, bottom: 0 }">
-				{{ info }}
-			</div>
-		</div>
+		<div ref="list" class="flex-1 mt-100px mr-20px mb-200px ml-80px bg-yellow h-200vh" />
 	</div>
 </template>
