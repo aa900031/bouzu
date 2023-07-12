@@ -1,6 +1,7 @@
-import { mergeAlias } from 'vite'
+import { mergeConfig } from 'vite'
+import type { UserConfig } from 'vite'
 import type { StorybookConfig } from '@storybook/vue3-vite'
-import alias from '../../../.vite/alias'
+import ViteConfig from './vite.config'
 
 export default {
 	stories: [
@@ -19,9 +20,5 @@ export default {
 	docs: {
 		autodocs: 'tag',
 	},
-	viteFinal: (config) => {
-		((config ??= {}).resolve ??= {}).alias = mergeAlias(config.resolve.alias, alias)
-
-		return config
-	}
+	viteFinal: (config) => mergeConfig(config, ViteConfig as UserConfig),
 } satisfies StorybookConfig
