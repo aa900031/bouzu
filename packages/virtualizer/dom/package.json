@@ -3,6 +3,14 @@
 	"version": "0.0.1",
 	"private": false,
 	"author": "zhong666 <hi@zhong666.me>",
+	"homepage": "https://bouzu.zhong666.me",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/aa900031/bouzu"
+	},
+	"bugs": {
+		"url": "https://github.com/aa900031/bouzu/issues"
+	},
 	"license": "MIT",
 	"sideEffects": false,
 	"exports": {
@@ -25,10 +33,10 @@
 		"build": "unbuild"
 	},
 	"dependencies": {
-		"@bouzu/virtualizer": "workspace:*",
 		"@bouzu/scroller": "workspace:*",
 		"@bouzu/scroller-dom": "workspace:*",
 		"@bouzu/shared": "workspace:*",
+		"@bouzu/virtualizer": "workspace:*",
 		"dom-helpers": "^5.2.1",
 		"mitt": "^3.0.1",
 		"type-fest": "^3.12.0"

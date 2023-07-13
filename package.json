@@ -3,6 +3,14 @@
 	"private": true,
 	"packageManager": "pnpm@8.6.6",
 	"author": "zhong666 <hi@zhong666.me>",
+	"homepage": "https://bouzu.zhong666.me",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/aa900031/bouzu"
+	},
+	"bugs": {
+		"url": "https://github.com/aa900031/bouzu/issues"
+	},
 	"license": "MIT",
 	"scripts": {
 		"dev:story-vue": "turbo run dev --filter='./stories/vue'",
