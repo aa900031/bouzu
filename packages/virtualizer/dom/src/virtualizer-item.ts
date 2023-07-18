@@ -80,9 +80,6 @@ export function createVirtualizerItem<T extends object>(
 	const updateView: Self['updateView'] = (value) => {
 		_view = value
 
-		if (getKey(_view) === getKey(value))
-			return
-
 		_updateSize()
 	}
 
