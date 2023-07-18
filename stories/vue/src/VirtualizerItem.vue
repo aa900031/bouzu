@@ -1,5 +1,4 @@
 <script lang="ts" setup>
-import Mock from 'mockjs'
 import type { PropType, StyleValue } from 'vue'
 import { computed, ref, toRef } from 'vue'
 import type { View } from '@bouzu/virtualizer'
@@ -10,6 +9,9 @@ const props = defineProps({
 		type: Object as PropType<View<any>>,
 		required: true,
 	},
+})
+const emit = defineEmits({
+	click: (index: number) => typeof index === 'number',
 })
 const view = toRef(props, 'view')
 const contentEl = ref<HTMLElement | null>(null)
@@ -32,7 +34,7 @@ useVirtualizerItem({
 })
 
 function handleClick() {
-	view.value.data.content = Mock.Random.word(500, 1500)
+	emit('click', props.view.index)
 }
 </script>
 

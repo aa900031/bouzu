@@ -33,6 +33,10 @@ const contentStyles = computed<StyleValue>(() => ({
 	height: contentSize.value.height === 0 ? 'auto' : `${contentSize.value.height}px`,
 	pointerEvents: isScrolling.value ? 'none' : 'auto',
 }))
+
+function handleItemClick(index: number) {
+	data.value[index].content = Mock.Random.word(500, 1500)
+}
 </script>
 
 <template>
@@ -42,6 +46,7 @@ const contentStyles = computed<StyleValue>(() => ({
 				v-for="view in visibleViews"
 				:key="view.key"
 				:view="view"
+				@click="handleItemClick"
 			/>
 		</div>
 	</div>
