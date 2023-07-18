@@ -122,7 +122,7 @@ export function createVirtualizer<T extends object>(
 	let _layouts: Layouts<T> | null = null
 
 	const _visibleLayouts = new Map<string, Layout>()
-	const _visibleData = new Map<string, T>()
+	const _visibleIndexes = new Map<string, number>()
 	const _visibleViews = new Map<string, View<T>>()
 	const _reusableViews: ReuseView[] = []
 
@@ -218,17 +218,21 @@ export function createVirtualizer<T extends object>(
 	}
 
 	const _createView = (
+		index: number,
 		data: T,
 		layout: Layout,
 	): View<T> => {
 		const reuseView = _reusableViews.pop()
 		if (reuseView)
-			return toView(reuseView, data, layout)
+			return toView(reuseView, index, data, layout)
 		else
-			return createView(data, layout)
+			return createView(index, data, layout)
 	}
 
 	const _updateVisibleViews = () => {
+		if (!_data)
+			return
+
 		const { toAdd, toRemove, toUpdate } = differenceMap(_visibleViews, _visibleLayouts)
 		if (toAdd.size === 0 && toRemove.size === 0 && toUpdate.size === 0)
 			return
@@ -243,11 +247,12 @@ export function createVirtualizer<T extends object>(
 
 		for (const key of toAdd.keys()) {
 			const layout = _visibleLayouts.get(key)
-			const item = _visibleData.get(key)
-			if (layout && item) {
-				const view = _createView(item, layout)
-				_visibleViews.set(key, view)
-			}
+			const index = _visibleIndexes.get(key)
+			if (index == null || !layout)
+				continue
+
+			const view = _createView(index, _data[index], layout)
+			_visibleViews.set(key, view)
 		}
 
 		_emitter.emit(VirtualizerEvent.ChangeVisibleViews, {
@@ -265,11 +270,11 @@ export function createVirtualizer<T extends object>(
 		const rect = _overscan.getRect()
 
 		_visibleLayouts.clear()
-		_visibleData.clear()
+		_visibleIndexes.clear()
 
-		for (const [item, layout] of _layouts.getVisibleItems(rect)) {
+		for (const { index, layout } of _layouts.getVisibleItems(rect)) {
+			_visibleIndexes.set(layout.key, index)
 			_visibleLayouts.set(layout.key, layout)
-			_visibleData.set(layout.key, item)
 		}
 
 		_updateVisibleViews()

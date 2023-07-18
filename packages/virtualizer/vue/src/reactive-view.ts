@@ -30,8 +30,7 @@ function assignView<T extends object>(
 	reactiveView: ReactiveView<T>,
 	nextView: View<T>,
 ) {
-	const { layout, data, ...rest } = nextView
-	reactiveView.data = data
+	const { layout, ...rest } = nextView
 	reactiveView.layout.key = layout.key
 	reactiveView.layout.estimated = layout.estimated
 	reactiveView.layout.rect.height = layout.rect.height

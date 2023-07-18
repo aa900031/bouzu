@@ -204,7 +204,8 @@ export function createListLayouts<T extends object>(
 	}
 
 	const getVisibleItems: Self['getVisibleItems'] = (visibleRect) => {
-		const result = new Map<T, Layout>()
+		const result: { index: number; layout: Layout }[] = []
+
 		if (!_data)
 			return result
 
@@ -215,7 +216,7 @@ export function createListLayouts<T extends object>(
 			const item = _data[i]
 			const layout = _layouts.get(item)
 			if (layout)
-				result.set(item, layout)
+				result.push({ index: i, layout })
 			i += 1
 		}
 
