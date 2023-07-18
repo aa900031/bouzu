@@ -1,7 +1,5 @@
-import { klona } from 'klona/json'
-import { dequal } from 'dequal/lite'
-import type { InjectionKey, Ref, ShallowReactive } from 'vue-demi'
-import { inject, markRaw, onScopeDispose, onUpdated, provide, reactive, shallowReactive, unref, watch } from 'vue-demi'
+import type { InjectionKey, Ref } from 'vue-demi'
+import { inject, markRaw, onScopeDispose, onUpdated, provide, unref, watch } from 'vue-demi'
 import type { Virtualizer as BaseVirtualizer, Layouts, View, VirtualizerEventHandler } from '@bouzu/virtualizer'
 import { VirtualizerEvent } from '@bouzu/virtualizer'
 import type { CreateVirtualizerProps } from '@bouzu/virtualizer-dom'
@@ -9,7 +7,7 @@ import { createVirtualizer } from '@bouzu/virtualizer-dom'
 import type { Rect, Size } from '@bouzu/shared'
 import { eventRef } from '@bouzu/vue-helper'
 import { type MaybeRef, unrefElement } from '@vueuse/core'
-import { getValueOrCreate } from './map-helper'
+import { toReactiveView } from './reactive-view'
 
 export interface VirtualizerContext<T extends object> {
 	state: BaseVirtualizer<T>
@@ -80,7 +78,7 @@ export function useVirtualizer<T extends object>(
 
 			const result: View<T>[] = []
 			for (const view of views)
-				result.push(toShallowView(view))
+				result.push(toReactiveView(view))
 
 			return result
 		},
@@ -160,22 +158,4 @@ export function useVirtualizer<T extends object>(
 		isScrolling,
 		collect: virtualizer.state.collect,
 	}
-}
-
-const views = new WeakMap<View<any>, ShallowReactive<View<any>>>()
-
-function toShallowView<T>(view: View<T>): ShallowReactive<View<T>> {
-	const reactiveView = getValueOrCreate(views, view, () => {
-		const clonedView = klona(view)
-		const result = shallowReactive(clonedView)
-		result.layout = reactive(clonedView.layout)
-		return result
-	})
-
-	if (!dequal(view.layout, reactiveView.layout))
-		reactiveView.layout = klona(view.layout)
-
-	reactiveView.data = view.data
-
-	return reactiveView
 }
