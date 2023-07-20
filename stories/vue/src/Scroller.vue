@@ -15,6 +15,8 @@ const reach = useScrollReach(scroller.context)
 const direction = useScrollDirection(undefined, scroller.context)
 const scrolling = useScrolling(scroller.context)
 
+const height = ref(500)
+
 watch([viewport], () => {
 	scroller.detect()
 }, { flush: 'post' })
@@ -28,6 +30,12 @@ watch([viewport], () => {
 		<br>
 		<input id="viewport-div" v-model="viewport" type="radio" value="div">
 		<label for="viewport-div">Div</label>
+
+		<template v-if="viewport === 'div'">
+			<br>
+			<label for="viewport-height">Div Height (px)</label>
+			<input id="viewport-height" v-model="height" type="number">
+		</template>
 	</div>
 	<div class="fixed right-0 bottom-0 max-w-1/2 bg-sky-300 p-3">
 		<table class="table-fixed">
@@ -68,9 +76,12 @@ watch([viewport], () => {
 	<div
 		class="flex m-7.5 bg-red"
 		:class="{
-			'h-lg w-lg max-w-full overflow-scroll': viewport === 'div',
+			'w-lg max-w-full overflow-scroll': viewport === 'div',
+		}"
+		:style="{
+			height: viewport === 'div' ? `${height}px` : undefined,
 		}"
 	>
-		<div ref="list" class="flex-1 mt-100px mr-20px mb-200px ml-80px bg-yellow h-200vh" />
+		<div ref="list" class="flex-1 mt-100px mr-20px mb-200px ml-80px bg-yellow h-3000px" />
 	</div>
 </template>

@@ -5,6 +5,7 @@ import { noop, toPoint, toSize } from '@bouzu/shared'
 import { toContentVisibleRect, toScrollVisibleRect } from './content-visible'
 import { OffsetObserveEvent, createOffsetObserve } from './offset-observe'
 import { onScrollEvent } from './scroll-event'
+import { onResizeEvent } from './resize-event'
 import { getScrollParent } from './scroll-parent'
 import { getVisibleRect } from './visible-rect'
 
@@ -40,6 +41,7 @@ export function createScroller(
 
 	let _unbindScrollEvent = noop
 	let _unbindOffset = noop
+	let _unbindResizeEvent = noop
 
 	const _trigger = () => {
 		if (_scrollEl == null)
@@ -64,6 +66,10 @@ export function createScroller(
 	}
 
 	const _handleOffsetChange = () => {
+		_trigger()
+	}
+
+	const _handleResize = () => {
 		_trigger()
 	}
 
@@ -95,6 +101,11 @@ export function createScroller(
 			offsetObs.mount(_scrollEl)
 	}
 
+	const _bindResizeEvent = () => {
+		_unbindResizeEvent()
+		_unbindResizeEvent = onResizeEvent(_handleResize)
+	}
+
 	const detect: Self['detect'] = () => {
 		if (_el == null)
 			return
@@ -102,6 +113,7 @@ export function createScroller(
 		_scrollEl = getScrollParent(_el, true)
 		_bindOffset()
 		_bindScrollEvent()
+		_bindResizeEvent()
 	}
 
 	const mount: Self['mount'] = (el) => {
@@ -112,6 +124,7 @@ export function createScroller(
 	const unmount: Self['unmount'] = () => {
 		_unbindOffset()
 		_unbindScrollEvent()
+		_unbindResizeEvent()
 
 		_el = undefined
 		_scrollEl = undefined
