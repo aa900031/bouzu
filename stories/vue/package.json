@@ -22,7 +22,7 @@
 		"@storybook/addon-interactions": "^7.0.26",
 		"@storybook/addon-links": "^7.0.26",
 		"@storybook/blocks": "^7.0.26",
-		"@storybook/testing-library": "^0.0.14-next.2",
+		"@storybook/testing-library": "^0.2.0",
 		"@storybook/vue3": "^7.0.26",
 		"@storybook/vue3-vite": "^7.0.26",
 		"react": "^18.2.0",
