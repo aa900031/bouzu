@@ -1,35 +1,89 @@
-import { type Ref, computed, ref, shallowRef, triggerRef, watchEffect } from 'vue-demi'
-import { noop } from '@bouzu/shared'
+import { computed, ref, shallowRef, triggerRef, watchEffect } from 'vue-demi'
+import { isObject, noop } from '@bouzu/shared'
+import type { Ref } from 'vue-demi'
 
-export type FnHandler<TArgs extends any[]> = (...args: TArgs) => void
+type FnHandler = (...args: any[]) => void
 
-export type FnUnregister = () => void
+type FnRegister<THandler extends FnHandler> = (
+	handler: THandler
+) => () => void
 
-export type FnGetter<T, TArgs extends any[]> = (
-	...args: Partial<TArgs>
-) => T
+export interface EventRefAccessor<T, THandler extends FnHandler> {
+	get: ((...args: Parameters<THandler>) => T) | (() => T)
+	set: (val: T) => void
+}
 
-export type FnSetter<T> = (val: T) => void
+export interface EventRefProps<T, THandler extends FnHandler> extends EventRefOptions {
+	register: FnRegister<THandler>
+	get: EventRefAccessor<T, THandler>['get']
+}
 
-export type FnStopEvent = () => void
+export interface WritableEventRefProps<T, THandler extends FnHandler> extends EventRefOptions, EventRefAccessor<T, THandler> {
+	register: FnRegister<THandler>
+}
 
-export type EventRef<T> = [Ref<T>, FnStopEvent]
+export interface EventRefOptions {
+	lazy?: boolean
+}
 
-export function eventRef<
-	T,
-	THandler extends (...args: any[]) => void = () => void,
->(
-	opts: {
-		register: (handler: THandler) => FnUnregister
-		get: FnGetter<T, Parameters<THandler>>
-		set?: FnSetter<T>
-		lazy?: boolean
-	},
-): EventRef<T> {
+export type WritableEventRef<T> = [Ref<T>, () => void]
+
+export type EventRef<T> = [Ref<T> & { readonly value: T }, () => void]
+
+export function eventRef<T, THandler extends FnHandler = () => void>(
+	props: WritableEventRefProps<T, THandler>
+): WritableEventRef<T>
+
+export function eventRef<T, THandler extends FnHandler = () => void>(
+	props: EventRefProps<T, THandler>
+): EventRef<T>
+
+export function eventRef<T, THandler extends FnHandler = () => void>(
+	register: FnRegister<THandler>,
+	getter: EventRefAccessor<T, THandler>,
+	options?: EventRefOptions,
+): WritableEventRef<T>
+
+export function eventRef<T, THandler extends FnHandler = () => void>(
+	register: FnRegister<THandler>,
+	getter: EventRefAccessor<T, THandler>['get'],
+	options?: EventRefOptions,
+): EventRef<T>
+
+export function eventRef<T, THandler extends FnHandler = () => void>(
+	...args: any
+): any {
+	let register: FnRegister<THandler>
+	let get: EventRefAccessor<T, THandler>['get']
+	let set: EventRefAccessor<T, THandler>['set']
+	let lazy: boolean
+
+	if (isObject(args[0])) {
+		const props = args[0] as EventRefProps<T, THandler>
+		register = props.register
+		get = props.get
+		set = (props as WritableEventRefProps<T, THandler>).set ?? noop
+		lazy = props.lazy ?? false
+	}
+	else {
+		register = args[0]
+		const modify = args[1]
+		if (isObject(modify)) {
+			get = (modify as EventRefAccessor<T, THandler>).get
+			set = (modify as EventRefAccessor<T, THandler>).set
+		}
+		else {
+			get = modify
+			set = noop
+		}
+		const options = (args[2] ?? {}) as EventRefOptions
+		lazy = options.lazy ?? false
+	}
+
 	let cleanup = noop
-	let handlerArgs: Parameters<THandler> = [] as any
+	let handlerArgs: Parameters<THandler> = [] as unknown as Parameters<THandler>
 	let hasCleaned = false
-	const started = ref(!opts.lazy)
+	const started = ref(!lazy)
 	const changed = shallowRef()
 	const targetRef = shallowRef() as Ref<T>
 
@@ -42,11 +96,11 @@ export function eventRef<
 		if (!started.value)
 			return
 
-		const unregister = opts.register(handler)
+		const unregister = register(handler)
 
 		cleanup = () => {
 			unregister()
-			handlerArgs = [] as any
+			handlerArgs = [] as unknown as Parameters<THandler>
 			cleanup = noop
 		}
 
@@ -65,7 +119,7 @@ export function eventRef<
 
 		// eslint-disable-next-line no-unused-expressions
 		changed.value
-		targetRef.value = opts.get(...handlerArgs)
+		targetRef.value = get(...handlerArgs)
 	}, { flush: 'sync' })
 
 	const stop = () => {
@@ -76,13 +130,13 @@ export function eventRef<
 
 	return [
 		computed({
-			get: opts.lazy
+			get: lazy
 				? () => {
 						started.value = true
 						return targetRef.value
 					}
 				: () => targetRef.value,
-			set: opts.set ?? noop,
+			set: set ?? noop,
 		}),
 		stop,
 	]
