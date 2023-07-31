@@ -18,6 +18,9 @@
 		"preview": {
 			"outputs": []
 		},
+		"test": {
+			"outputs": []
+		},
 		"clean:cache": {
 			"cache": false
 		}

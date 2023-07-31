@@ -18,6 +18,7 @@
 		"build:pkgs": "turbo run build --filter='./packages/**/*'",
 		"preview:story": "turbo run preview --filter='./stories/*'",
 		"publish:pkgs": "pnpm -r --filter='./packages/**/*' publish",
+		"test": "turbo run test",
 		"lint": "eslint . --cache --cache-location node_modules/.cache/eslint",
 		"clean:cache": "turbo run clean:cache"
 	},

@@ -30,7 +30,8 @@
 		"access": "public"
 	},
 	"scripts": {
-		"build": "unbuild"
+		"build": "unbuild",
+		"test": "vitest run"
 	},
 	"peerDependencies": {
 		"vue-demi": "*"
