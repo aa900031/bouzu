@@ -1,3 +1,4 @@
+<!-- eslint-disable no-console -->
 <script lang="ts" setup>
 import Mock from 'mockjs'
 import type { StyleValue } from 'vue'

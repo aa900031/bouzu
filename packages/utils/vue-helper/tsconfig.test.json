@@ -7,7 +7,7 @@
 	"compilerOptions": {
 		"lib": [],
 		"types": [
-			"node",
+			"node"
 		]
 	}
 }

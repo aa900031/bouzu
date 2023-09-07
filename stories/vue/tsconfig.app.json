@@ -11,6 +11,6 @@
 	],
 	"references": [
 		{ "path": "../../packages/scroller/vue/tsconfig.app.json" },
-		{ "path": "../../packages/virtualizer/vue/tsconfig.app.json" },
+		{ "path": "../../packages/virtualizer/vue/tsconfig.app.json" }
 	]
 }

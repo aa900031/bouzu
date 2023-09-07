@@ -3,6 +3,7 @@
 	"version": "0.0.1",
 	"private": false,
 	"author": "zhong666 <hi@zhong666.me>",
+	"license": "MIT",
 	"homepage": "https://bouzu.zhong666.me",
 	"repository": {
 		"type": "git",
@@ -11,7 +12,6 @@
 	"bugs": {
 		"url": "https://github.com/aa900031/bouzu/issues"
 	},
-	"license": "MIT",
 	"sideEffects": false,
 	"exports": {
 		".": {
