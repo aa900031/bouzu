@@ -1,0 +1,16 @@
+{
+	"extends": "@bouzu/tsconfig/vue.json",
+	"include": [
+		"env.d.ts",
+		"src/**/*",
+		"src/**/*.vue"
+	],
+	"exclude": [
+		"src/**/*.test.ts",
+		"src/**/*.spec.ts"
+	],
+	"references": [
+		{ "path": "../../packages/scroller/vue/tsconfig.app.json" },
+		{ "path": "../../packages/virtualizer/vue/tsconfig.app.json" },
+	]
+}

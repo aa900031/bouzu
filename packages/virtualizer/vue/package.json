@@ -53,5 +53,8 @@
 		"dequal": "^2.0.3",
 		"klona": "^2.0.5",
 		"vue-demi": "latest"
+	},
+	"devDependencies": {
+		"@bouzu/tsconfig": "workspace:*"
 	}
 }

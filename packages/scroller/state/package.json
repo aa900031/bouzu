@@ -36,5 +36,8 @@
 		"@bouzu/shared": "workspace:*",
 		"mitt": "^3.0.1",
 		"type-fest": "^3.12.0"
+	},
+	"devDependencies": {
+		"@bouzu/tsconfig": "workspace:*"
 	}
 }

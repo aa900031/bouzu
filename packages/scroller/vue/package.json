@@ -51,5 +51,8 @@
 		"@bouzu/vue-helper": "workspace:*",
 		"@vueuse/core": "^10.2.1",
 		"vue-demi": "latest"
+	},
+	"devDependencies": {
+		"@bouzu/tsconfig": "workspace:*"
 	}
 }

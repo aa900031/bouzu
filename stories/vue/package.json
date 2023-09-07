@@ -18,6 +18,9 @@
 		"clean:cache": "rimraf ./node_moudles/.cache"
 	},
 	"devDependencies": {
+		"@bouzu/tsconfig": "workspace:*",
+		"@bouzu/vue-scroller": "workspace:*",
+		"@bouzu/vue-virtualizer": "workspace:*",
 		"@storybook/addon-essentials": "^7.1.0",
 		"@storybook/addon-interactions": "^7.1.0",
 		"@storybook/addon-links": "^7.1.0",
