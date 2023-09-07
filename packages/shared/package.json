@@ -31,5 +31,8 @@
 	},
 	"scripts": {
 		"build": "unbuild"
+	},
+	"devDependencies": {
+		"@bouzu/tsconfig": "workspace:*"
 	}
 }

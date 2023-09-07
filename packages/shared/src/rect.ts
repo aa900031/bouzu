@@ -123,9 +123,9 @@ export function getRectCornerInOther(
 	b: Rect,
 ): RectCorner | null {
 	for (const key in RectCorner) {
-		const point = getRectPointByRectCorner(a, RectCorner[key])
+		const point = getRectPointByRectCorner(a, RectCorner[key as keyof typeof RectCorner])
 		if (checkRectContainsPoint(b, point))
-			return RectCorner[key]
+			return RectCorner[key as keyof typeof RectCorner]
 	}
 	return null
 }

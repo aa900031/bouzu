@@ -8,5 +8,13 @@ export default defineBuildConfig({
 	clean: true,
 	rollup: {
 		emitCJS: true,
+		dts: {
+			respectExternal: true,
+			compilerOptions: {
+				composite: false,
+				preserveSymlinks: false,
+			},
+			tsconfig: './tsconfig.app.json',
+		},
 	},
 })

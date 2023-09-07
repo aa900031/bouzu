@@ -38,5 +38,8 @@
 	},
 	"dependencies": {
 		"@bouzu/shared": "workspace:*"
+	},
+	"devDependencies": {
+		"@bouzu/tsconfig": "workspace:*"
 	}
 }

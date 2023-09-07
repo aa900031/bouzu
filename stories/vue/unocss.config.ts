@@ -1,3 +1,4 @@
+import type { UserConfig } from 'unocss'
 import {
 	defineConfig,
 	presetIcons,
@@ -17,4 +18,4 @@ export default defineConfig({
 		transformerDirectives(),
 		transformerVariantGroup(),
 	],
-})
+}) satisfies UserConfig

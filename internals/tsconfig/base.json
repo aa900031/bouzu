@@ -1,0 +1,35 @@
+{
+	"$schema": "https://json.schemastore.org/tsconfig",
+	"compilerOptions": {
+		"composite": true,
+		"lib": [
+			"DOM",
+			"DOM.Iterable",
+			"ESNext"
+		],
+		"target": "ESNext",
+		"module": "ESNext",
+		"moduleResolution": "NodeNext",
+		"resolveJsonModule": true,
+		"strict": true,
+		"noImplicitThis": true,
+		"allowSyntheticDefaultImports": true,
+		"useDefineForClassFields": true,
+		"strictNullChecks": true,
+		"strictFunctionTypes": true,
+		"jsx": "preserve",
+		"esModuleInterop": true,
+		"forceConsistentCasingInFileNames": true,
+		"skipLibCheck": true,
+		"paths": {
+			"@bouzu/scroller": ["../../packages/scroller/state/src"],
+			"@bouzu/scroller-dom": ["../../packages/scroller/dom/src"],
+			"@bouzu/vue-scroller": ["../../packages/scroller/vue/src"],
+			"@bouzu/virtualizer": ["../../packages/virtualizer/state/src"],
+			"@bouzu/virtualizer-dom": ["../../packages/virtualizer/dom/src"],
+			"@bouzu/vue-virtualizer": ["../../packages/virtualizer/vue/src"],
+			"@bouzu/shared": ["../../packages/shared/src"],
+			"@bouzu/vue-helper": ["../../packages/utils/vue-helper/src"]
+		}
+	}
+}
