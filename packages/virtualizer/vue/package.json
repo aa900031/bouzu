@@ -33,7 +33,7 @@
 		"build": "unbuild"
 	},
 	"peerDependencies": {
-		"@vue/composition-api": "^1.7.2",
+		"@vue/composition-api": "^1.0.0",
 		"vue": "^2.6.12 || ^3.2.0"
 	},
 	"peerDependenciesMeta": {
