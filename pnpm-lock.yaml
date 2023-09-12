@@ -22,8 +22,8 @@ importers:
         specifier: ^8.49.0
         version: 8.49.0
       happy-dom:
-        specifier: ^10.11.2
-        version: 10.11.2
+        specifier: ^11.0.3
+        version: 11.0.3
       mockjs:
         specifier: ^1.1.0
         version: 1.1.0
@@ -44,7 +44,7 @@ importers:
         version: 2.0.0(typescript@5.2.2)
       vitest:
         specifier: ^0.34.4
-        version: 0.34.4(happy-dom@10.11.2)
+        version: 0.34.4(happy-dom@11.0.3)
 
   internals/tsconfig:
     dependencies:
@@ -6845,8 +6845,8 @@ packages:
       uglify-js: 3.17.4
     dev: true
 
-  /happy-dom@10.11.2:
-    resolution: {integrity: sha512-rzgmLjLkhyaOdFEyU8CWXzbgyCyM7wJHLqhaoeEVSTyur1fjcUaiNTHx+D4CPaLvx16tGy+SBPd9TVnP/kzL3w==}
+  /happy-dom@11.0.3:
+    resolution: {integrity: sha512-/41hvN3F+rBc+YEVAmJRWsY45HJk71NoOx5DusUuYF6oFkT0WRvpvSNKXV51zeF5xxoA+cQjZt+DrlUTcPmFww==}
     dependencies:
       css.escape: 1.5.1
       entities: 4.5.0
@@ -10030,7 +10030,7 @@ packages:
       fsevents: 2.3.3
     dev: true
 
-  /vitest@0.34.4(happy-dom@10.11.2):
+  /vitest@0.34.4(happy-dom@11.0.3):
     resolution: {integrity: sha512-SE/laOsB6995QlbSE6BtkpXDeVNLJc1u2LHRG/OpnN4RsRzM3GQm4nm3PQCK5OBtrsUqnhzLdnT7se3aeNGdlw==}
     engines: {node: '>=v14.18.0'}
     hasBin: true
@@ -10074,7 +10074,7 @@ packages:
       cac: 6.7.14
       chai: 4.3.8
       debug: 4.3.4
-      happy-dom: 10.11.2
+      happy-dom: 11.0.3
       local-pkg: 0.4.3
       magic-string: 0.30.3
       pathe: 1.1.1

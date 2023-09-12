@@ -26,7 +26,7 @@
 		"@aa900031/eslint-config": "^0.2.4",
 		"@types/mockjs": "^1.0.7",
 		"eslint": "^8.49.0",
-		"happy-dom": "^10.11.2",
+		"happy-dom": "^11.0.3",
 		"mockjs": "^1.1.0",
 		"rimraf": "^5.0.1",
 		"sirv-cli": "^2.0.2",
