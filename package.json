@@ -23,10 +23,10 @@
 		"clean:cache": "turbo run --no-daemon clean:cache"
 	},
 	"devDependencies": {
-		"@aa900031/eslint-config": "^0.2.4",
+		"@aa900031/eslint-config": "^0.2.5",
 		"@types/mockjs": "^1.0.7",
 		"eslint": "^8.49.0",
-		"happy-dom": "^11.0.3",
+		"happy-dom": "^11.0.5",
 		"mockjs": "^1.1.0",
 		"rimraf": "^5.0.1",
 		"sirv-cli": "^2.0.2",
