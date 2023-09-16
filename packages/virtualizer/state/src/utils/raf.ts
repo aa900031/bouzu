@@ -1,11 +1,11 @@
 export interface RegisterRafMethods {
 	/**
-   * requestAnimationFrame
-   */
+	 * requestAnimationFrame
+	 */
 	raf: AnimationFrameProvider['requestAnimationFrame']
 	/**
-   * cancelAnimationFrame
-   */
+	 * cancelAnimationFrame
+	 */
 	caf: AnimationFrameProvider['cancelAnimationFrame']
 }
 
