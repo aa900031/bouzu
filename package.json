@@ -26,7 +26,6 @@
 	"devDependencies": {
 		"@aa900031/eslint-config": "^0.2.6",
 		"@types/mockjs": "^1.0.7",
-		"conventional-changelog-cli": "^4.1.0",
 		"conventional-changelog-unjs": "^0.1.0",
 		"eslint": "^8.49.0",
 		"happy-dom": "^11.2.0",
