@@ -31,7 +31,8 @@
 	},
 	"scripts": {
 		"build": "unbuild",
-		"test": "vitest run"
+		"test": "vitest run",
+		"release": "release-it --ci"
 	},
 	"peerDependencies": {
 		"vue-demi": "*"
@@ -40,6 +41,7 @@
 		"@bouzu/shared": "workspace:*"
 	},
 	"devDependencies": {
+		"@bouzu/release-it-config": "workspace:*",
 		"@bouzu/tsconfig": "workspace:*"
 	}
 }

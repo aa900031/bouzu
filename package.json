@@ -20,14 +20,18 @@
 		"publish:pkgs": "pnpm -r --filter='./packages/**/*' publish",
 		"test": "turbo run --no-daemon test",
 		"lint": "eslint . --cache --cache-location node_modules/.cache/eslint",
-		"clean:cache": "turbo run --no-daemon clean:cache"
+		"clean:cache": "turbo run --no-daemon clean:cache",
+		"release": "turbo run --no-daemon release --concurrency=1"
 	},
 	"devDependencies": {
 		"@aa900031/eslint-config": "^0.2.6",
 		"@types/mockjs": "^1.0.7",
+		"conventional-changelog-cli": "^4.1.0",
+		"conventional-changelog-unjs": "^0.1.0",
 		"eslint": "^8.49.0",
 		"happy-dom": "^11.2.0",
 		"mockjs": "^1.1.0",
+		"release-it": "^16.1.5",
 		"rimraf": "^5.0.1",
 		"sirv-cli": "^2.0.2",
 		"turbo": "^1.10.14",

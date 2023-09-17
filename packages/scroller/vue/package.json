@@ -30,7 +30,8 @@
 		"access": "public"
 	},
 	"scripts": {
-		"build": "unbuild"
+		"build": "unbuild",
+		"release": "release-it --ci"
 	},
 	"peerDependencies": {
 		"@vue/composition-api": "^1.0.0",
@@ -53,6 +54,7 @@
 		"vue-demi": "latest"
 	},
 	"devDependencies": {
+		"@bouzu/release-it-config": "workspace:*",
 		"@bouzu/tsconfig": "workspace:*"
 	}
 }
