@@ -23,6 +23,9 @@
 		},
 		"clean:cache": {
 			"cache": false
+		},
+		"release": {
+			"cache": false
 		}
 	}
 }

@@ -30,7 +30,8 @@
 		"access": "public"
 	},
 	"scripts": {
-		"build": "unbuild"
+		"build": "unbuild",
+		"release": "release-it --ci"
 	},
 	"dependencies": {
 		"@bouzu/scroller": "workspace:*",
@@ -42,6 +43,7 @@
 		"type-fest": "^3.13.1"
 	},
 	"devDependencies": {
+		"@bouzu/release-it-config": "workspace:*",
 		"@bouzu/tsconfig": "workspace:*"
 	}
 }
