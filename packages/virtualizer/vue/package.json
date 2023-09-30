@@ -46,10 +46,10 @@
 		}
 	},
 	"dependencies": {
-		"@bouzu/shared": "workspace:*",
-		"@bouzu/virtualizer": "workspace:*",
-		"@bouzu/virtualizer-dom": "workspace:*",
-		"@bouzu/vue-helper": "workspace:*",
+		"@bouzu/shared": "workspace:^",
+		"@bouzu/virtualizer": "workspace:^",
+		"@bouzu/virtualizer-dom": "workspace:^",
+		"@bouzu/vue-helper": "workspace:^",
 		"@vueuse/core": "^10.4.1",
 		"dequal": "^2.0.3",
 		"klona": "^2.0.6",

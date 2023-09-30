@@ -34,10 +34,10 @@
 		"release": "release-it --ci"
 	},
 	"dependencies": {
-		"@bouzu/scroller": "workspace:*",
-		"@bouzu/scroller-dom": "workspace:*",
-		"@bouzu/shared": "workspace:*",
-		"@bouzu/virtualizer": "workspace:*",
+		"@bouzu/scroller": "workspace:^",
+		"@bouzu/scroller-dom": "workspace:^",
+		"@bouzu/shared": "workspace:^",
+		"@bouzu/virtualizer": "workspace:^",
 		"dom-helpers": "^5.2.1",
 		"mitt": "^3.0.1",
 		"type-fest": "^3.13.1"

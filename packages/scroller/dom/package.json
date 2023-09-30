@@ -34,8 +34,8 @@
 		"release": "release-it --ci"
 	},
 	"dependencies": {
-		"@bouzu/scroller": "workspace:*",
-		"@bouzu/shared": "workspace:*",
+		"@bouzu/scroller": "workspace:^",
+		"@bouzu/shared": "workspace:^",
 		"dom-helpers": "^5.2.1",
 		"mitt": "^3.0.1",
 		"type-fest": "^3.13.1"

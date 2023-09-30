@@ -34,8 +34,8 @@
 		"release": "release-it --ci"
 	},
 	"dependencies": {
-		"@bouzu/scroller": "workspace:*",
-		"@bouzu/shared": "workspace:*",
+		"@bouzu/scroller": "workspace:^",
+		"@bouzu/shared": "workspace:^",
 		"dequal": "^2.0.3",
 		"klona": "^2.0.6",
 		"mitt": "^3.0.1",

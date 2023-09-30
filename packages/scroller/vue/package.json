@@ -46,10 +46,10 @@
 		}
 	},
 	"dependencies": {
-		"@bouzu/scroller": "workspace:*",
-		"@bouzu/scroller-dom": "workspace:*",
-		"@bouzu/shared": "workspace:*",
-		"@bouzu/vue-helper": "workspace:*",
+		"@bouzu/scroller": "workspace:^",
+		"@bouzu/scroller-dom": "workspace:^",
+		"@bouzu/shared": "workspace:^",
+		"@bouzu/vue-helper": "workspace:^",
 		"@vueuse/core": "^10.4.1",
 		"vue-demi": "latest"
 	},

@@ -38,7 +38,7 @@
 		"vue-demi": "*"
 	},
 	"dependencies": {
-		"@bouzu/shared": "workspace:*"
+		"@bouzu/shared": "workspace:^"
 	},
 	"devDependencies": {
 		"@bouzu/release-it-config": "workspace:*",

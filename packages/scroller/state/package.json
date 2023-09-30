@@ -34,7 +34,7 @@
 		"release": "release-it --ci"
 	},
 	"dependencies": {
-		"@bouzu/shared": "workspace:*",
+		"@bouzu/shared": "workspace:^",
 		"mitt": "^3.0.1",
 		"type-fest": "^3.13.1"
 	},
