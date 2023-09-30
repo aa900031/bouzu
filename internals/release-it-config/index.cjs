@@ -1,4 +1,7 @@
+const process = require('node:process')
+
 const CURRENT_PATH = './'
+// eslint-disable-next-line no-template-curly-in-string
 const VERSION_TEMPLATE = '${version}'
 const PKG_NAME = process.env.npm_package_name
 
@@ -16,9 +19,9 @@ module.exports = {
 	},
 	git: {
 		push: false,
-		tagName: `${VERSION_TEMPLATE}@${VERSION_TEMPLATE}`,
+		tagName: `${PKG_NAME}@${VERSION_TEMPLATE}`,
 		commitsPath: CURRENT_PATH,
-		commitMessage: `chore(release): ${PKG_NAME}v${VERSION_TEMPLATE}`,
+		commitMessage: `chore(release): ${PKG_NAME} v${VERSION_TEMPLATE}`,
 	},
 	github: {
 		release: false,
