@@ -1,7 +1,7 @@
 {
 	"name": "@bouzu/monorepo",
 	"private": true,
-	"packageManager": "pnpm@8.8.0",
+	"packageManager": "pnpm@8.10.0",
 	"author": "zhong666 <hi@zhong666.me>",
 	"license": "MIT",
 	"homepage": "https://bouzu.zhong666.me",
@@ -24,16 +24,16 @@
 		"release": "turbo run --no-daemon release --concurrency=1"
 	},
 	"devDependencies": {
-		"@aa900031/eslint-config": "^0.2.6",
-		"@types/mockjs": "^1.0.8",
+		"@aa900031/eslint-config": "^0.2.7",
+		"@types/mockjs": "^1.0.9",
 		"conventional-changelog-unjs": "^0.1.0",
-		"eslint": "^8.50.0",
+		"eslint": "^8.52.0",
 		"happy-dom": "^11.2.0",
 		"mockjs": "^1.1.0",
 		"release-it": "^16.2.1",
 		"rimraf": "^5.0.5",
 		"sirv-cli": "^2.0.2",
-		"turbo": "^1.10.14",
+		"turbo": "^1.10.16",
 		"typescript": "^5.2.2",
 		"unbuild": "^2.0.0",
 		"vitest": "^0.34.6"
