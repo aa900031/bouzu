@@ -38,7 +38,7 @@
 		"@bouzu/shared": "workspace:^",
 		"dom-helpers": "^5.2.1",
 		"mitt": "^3.0.1",
-		"type-fest": "^3.13.1"
+		"type-fest": "^4.6.0"
 	},
 	"devDependencies": {
 		"@bouzu/release-it-config": "workspace:*",

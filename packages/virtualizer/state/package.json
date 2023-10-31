@@ -39,7 +39,7 @@
 		"dequal": "^2.0.3",
 		"klona": "^2.0.6",
 		"mitt": "^3.0.1",
-		"type-fest": "^3.13.1"
+		"type-fest": "^4.6.0"
 	},
 	"devDependencies": {
 		"@bouzu/release-it-config": "workspace:*",

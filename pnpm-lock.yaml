@@ -75,8 +75,8 @@ importers:
         specifier: ^3.0.1
         version: 3.0.1
       type-fest:
-        specifier: ^3.13.1
-        version: 3.13.1
+        specifier: ^4.6.0
+        version: 4.6.0
     devDependencies:
       '@bouzu/release-it-config':
         specifier: workspace:*
@@ -94,8 +94,8 @@ importers:
         specifier: ^3.0.1
         version: 3.0.1
       type-fest:
-        specifier: ^3.13.1
-        version: 3.13.1
+        specifier: ^4.6.0
+        version: 4.6.0
     devDependencies:
       '@bouzu/release-it-config':
         specifier: workspace:*
@@ -184,8 +184,8 @@ importers:
         specifier: ^3.0.1
         version: 3.0.1
       type-fest:
-        specifier: ^3.13.1
-        version: 3.13.1
+        specifier: ^4.6.0
+        version: 4.6.0
     devDependencies:
       '@bouzu/release-it-config':
         specifier: workspace:*
@@ -212,8 +212,8 @@ importers:
         specifier: ^3.0.1
         version: 3.0.1
       type-fest:
-        specifier: ^3.13.1
-        version: 3.13.1
+        specifier: ^4.6.0
+        version: 4.6.0
     devDependencies:
       '@bouzu/release-it-config':
         specifier: workspace:*
@@ -290,10 +290,10 @@ importers:
         version: 0.2.2
       '@storybook/vue3':
         specifier: ^7.5.2
-        version: 7.5.2(@vue/compiler-core@3.3.4)(vue@3.3.7)
+        version: 7.5.2(@vue/compiler-core@3.3.7)(vue@3.3.7)
       '@storybook/vue3-vite':
         specifier: ^7.5.2
-        version: 7.5.2(@vue/compiler-core@3.3.4)(react-dom@18.2.0)(react@18.2.0)(typescript@5.2.2)(vite@4.4.9)(vue@3.3.7)
+        version: 7.5.2(@vue/compiler-core@3.3.7)(react-dom@18.2.0)(react@18.2.0)(typescript@5.2.2)(vite@4.4.9)(vue@3.3.7)
       react:
         specifier: ^18.2.0
         version: 18.2.0
@@ -305,7 +305,7 @@ importers:
         version: 7.5.2
       unocss:
         specifier: ^0.57.1
-        version: 0.57.1(postcss@8.4.29)(rollup@3.29.0)(vite@4.4.9)
+        version: 0.57.1(postcss@8.4.31)(rollup@3.29.0)(vite@4.4.9)
       vue:
         specifier: ^3.3.7
         version: 3.3.7(typescript@5.2.2)
@@ -4079,7 +4079,7 @@ packages:
       file-system-cache: 2.4.1
     dev: true
 
-  /@storybook/vue3-vite@7.5.2(@vue/compiler-core@3.3.4)(react-dom@18.2.0)(react@18.2.0)(typescript@5.2.2)(vite@4.4.9)(vue@3.3.7):
+  /@storybook/vue3-vite@7.5.2(@vue/compiler-core@3.3.7)(react-dom@18.2.0)(react@18.2.0)(typescript@5.2.2)(vite@4.4.9)(vue@3.3.7):
     resolution: {integrity: sha512-SChxq87nSFrf3Nywfa/iBNHIoBO0hcvoQdob0ePGSS1tXL2uVEP+A3NFeXb50MXBUSl+ojZpmkEaO4YRt2cZ1w==}
     engines: {node: ^14.18 || >=16}
     peerDependencies:
@@ -4089,7 +4089,7 @@ packages:
     dependencies:
       '@storybook/builder-vite': 7.5.2(typescript@5.2.2)(vite@4.4.9)
       '@storybook/core-server': 7.5.2
-      '@storybook/vue3': 7.5.2(@vue/compiler-core@3.3.4)(vue@3.3.7)
+      '@storybook/vue3': 7.5.2(@vue/compiler-core@3.3.7)(vue@3.3.7)
       '@vitejs/plugin-vue': 4.2.3(vite@4.4.9)(vue@3.3.7)
       magic-string: 0.30.3
       react: 18.2.0
@@ -4108,7 +4108,7 @@ packages:
       - vue
     dev: true
 
-  /@storybook/vue3@7.5.2(@vue/compiler-core@3.3.4)(vue@3.3.7):
+  /@storybook/vue3@7.5.2(@vue/compiler-core@3.3.7)(vue@3.3.7):
     resolution: {integrity: sha512-k25uwQ33NuQOWEs+0kQUakHzeSu4suCthGv0qCMBoI55mXE7IvMjaPgPDgz/tKVh2qqNa36w1prfqwfWF9uKGw==}
     engines: {node: '>=16.0.0'}
     peerDependencies:
@@ -4120,7 +4120,7 @@ packages:
       '@storybook/global': 5.0.0
       '@storybook/preview-api': 7.5.2
       '@storybook/types': 7.5.2
-      '@vue/compiler-core': 3.3.4
+      '@vue/compiler-core': 3.3.7
       lodash: 4.17.21
       ts-dedent: 2.2.0
       type-fest: 2.19.0
@@ -4803,7 +4803,7 @@ packages:
       sirv: 2.0.3
     dev: true
 
-  /@unocss/postcss@0.57.1(postcss@8.4.29):
+  /@unocss/postcss@0.57.1(postcss@8.4.31):
     resolution: {integrity: sha512-DexrV+v/qkVh6t660rXigNr2Y6lON8jxD1z2KVk2bjHKhFflF6q6seps6d/MquyLJI1mXF2uANTeFAeL2q6evw==}
     engines: {node: '>=14'}
     peerDependencies:
@@ -4815,7 +4815,7 @@ packages:
       css-tree: 2.3.1
       fast-glob: 3.3.1
       magic-string: 0.30.5
-      postcss: 8.4.29
+      postcss: 8.4.31
     dev: true
 
   /@unocss/preset-attributify@0.57.1:
@@ -11343,9 +11343,9 @@ packages:
     engines: {node: '>=12.20'}
     dev: true
 
-  /type-fest@3.13.1:
-    resolution: {integrity: sha512-tLq3bSNx+xSpwvAJnzrK0Ep5CLNWjvFTOp71URMaAEWBfRb9nnJiBoUe0tF8bI4ZFO3omgBR6NvnbzVUT3Ly4g==}
-    engines: {node: '>=14.16'}
+  /type-fest@4.6.0:
+    resolution: {integrity: sha512-rLjWJzQFOq4xw7MgJrCZ6T1jIOvvYElXT12r+y0CC6u67hegDHaxcPqb2fZHOGlqxugGQPNB1EnTezjBetkwkw==}
+    engines: {node: '>=16'}
     dev: false
 
   /type-is@1.6.18:
@@ -11558,7 +11558,7 @@ packages:
     engines: {node: '>= 10.0.0'}
     dev: true
 
-  /unocss@0.57.1(postcss@8.4.29)(rollup@3.29.0)(vite@4.4.9):
+  /unocss@0.57.1(postcss@8.4.31)(rollup@3.29.0)(vite@4.4.9):
     resolution: {integrity: sha512-xLsyJ8+T1/Ux93yrqOvuQy268wF5rSzydlsbqZ5EVfi01PxYyydez3nycPqbyPZientkJ0Yohzd5aBqmZgku3A==}
     engines: {node: '>=14'}
     peerDependencies:
@@ -11574,7 +11574,7 @@ packages:
       '@unocss/cli': 0.57.1(rollup@3.29.0)
       '@unocss/core': 0.57.1
       '@unocss/extractor-arbitrary-variants': 0.57.1
-      '@unocss/postcss': 0.57.1(postcss@8.4.29)
+      '@unocss/postcss': 0.57.1(postcss@8.4.31)
       '@unocss/preset-attributify': 0.57.1
       '@unocss/preset-icons': 0.57.1
       '@unocss/preset-mini': 0.57.1
