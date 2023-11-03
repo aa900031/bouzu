@@ -24,7 +24,7 @@
 		"release": "turbo run --no-daemon release --concurrency=1"
 	},
 	"devDependencies": {
-		"@aa900031/eslint-config": "^0.2.7",
+		"@aa900031/eslint-config": "^1.0.2",
 		"@types/mockjs": "^1.0.9",
 		"conventional-changelog-unjs": "^0.1.0",
 		"eslint": "^8.52.0",
