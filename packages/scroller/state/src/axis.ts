@@ -1,6 +1,6 @@
 import type { Point, Rect, Size } from '@bouzu/shared'
 import { checkRectIntersectsX, checkRectIntersectsY, getRectMaxX, getRectMaxY } from '@bouzu/shared'
-import { ValueOf } from 'type-fest'
+import type { ValueOf } from 'type-fest'
 
 export const Axis = {
 	X: 'x',
@@ -9,8 +9,7 @@ export const Axis = {
 
 export type AxisValue = ValueOf<typeof Axis>
 
-export function checkAxis(currVisibleRect: Rect,
-	prevVisibleRect: Rect): AxisValue | undefined {
+export function checkAxis(currVisibleRect: Rect,	prevVisibleRect: Rect): AxisValue | undefined {
 	if (Math.abs(currVisibleRect.x - prevVisibleRect.x) > 0)
 		return Axis.X
 	if (Math.abs(currVisibleRect.y - prevVisibleRect.y) > 0)

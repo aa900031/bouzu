@@ -6,7 +6,7 @@ import ViteConfig from './vite.config'
 export default {
 	stories: [
 		'../src/**/*.mdx',
-		'../src/**/*.stories.@(js|jsx|ts|tsx)'
+		'../src/**/*.stories.@(js|jsx|ts|tsx)',
 	],
 	addons: [
 		'@storybook/addon-links',
@@ -20,5 +20,5 @@ export default {
 	docs: {
 		autodocs: 'tag',
 	},
-	viteFinal: (config) => mergeConfig(config, ViteConfig as UserConfig),
+	viteFinal: config => mergeConfig(config, ViteConfig as UserConfig),
 } satisfies StorybookConfig

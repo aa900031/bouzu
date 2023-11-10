@@ -10,7 +10,7 @@ export const ScrollingEvent = {
 
 export type ScrollingEventValue = ValueOf<typeof ScrollingEvent>
 
-// eslint-disable-next-line @typescript-eslint/consistent-type-definitions
+// eslint-disable-next-line ts/consistent-type-definitions
 type Events = {
 	[ScrollingEvent.Change]: {
 		value: boolean
@@ -32,8 +32,7 @@ function defaultRegisterTimeout(handler: () => any, timeout?: number) {
 	return () => clearTimeout(id)
 }
 
-export function createScrollingPlugin(getTime: (() => number) = defaultGetTime,
-	registerTimeout: ((handler: () => any, timeout?: number) => () => void) = defaultRegisterTimeout): ScrollingPlugin {
+export function createScrollingPlugin(getTime: (() => number) = defaultGetTime,	registerTimeout: ((handler: () => any, timeout?: number) => () => void) = defaultRegisterTimeout): ScrollingPlugin {
 	type Self = ScrollingPlugin
 
 	const _emitter = mitt<Events>()

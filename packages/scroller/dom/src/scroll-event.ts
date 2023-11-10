@@ -1,5 +1,5 @@
 import { ownerDocument, ownerWindow } from 'dom-helpers'
-import { type TaggedEventHandler } from 'dom-helpers/addEventListener'
+import type { TaggedEventHandler } from 'dom-helpers/addEventListener'
 
 export function onScrollEvent(
 	el: HTMLElement,

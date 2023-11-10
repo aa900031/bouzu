@@ -11,7 +11,7 @@ export const OffsetObserveEvent = {
 
 export type OffsetObserveEventValue = ValueOf<typeof OffsetObserveEvent>
 
-// eslint-disable-next-line @typescript-eslint/consistent-type-definitions
+// eslint-disable-next-line ts/consistent-type-definitions
 type Events = {
 	[OffsetObserveEvent.Change]: {
 		value: Rect

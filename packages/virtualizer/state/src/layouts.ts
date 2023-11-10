@@ -27,7 +27,8 @@ export function mergeReloadContext(
 	b: ReloadContext,
 ): ReloadContext {
 	return {
-		...a, ...b,
+		...a,
+		...b,
 	}
 }
 

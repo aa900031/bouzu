@@ -7,6 +7,6 @@ export default defineConfig({
 		Unocss(),
 	],
 	resolve: {
-		alias: alias
+		alias,
 	},
 })

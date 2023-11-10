@@ -16,8 +16,7 @@ const DEFAULT_REGISTER_RAF_METHODS: RegisterRafMethods = {
 
 export type CancelRaf = () => void
 
-export function registerRaf(handler: (time: number) => void,
-	methods: RegisterRafMethods = DEFAULT_REGISTER_RAF_METHODS): CancelRaf {
+export function registerRaf(handler: (time: number) => void,	methods: RegisterRafMethods = DEFAULT_REGISTER_RAF_METHODS): CancelRaf {
 	let handleId: number | null = methods.raf(handler)
 
 	return () => {

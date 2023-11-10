@@ -22,7 +22,7 @@ export function createVirtualizerItem<T extends object>(
 	let _unbindResizeObserver = noop
 
 	const _handleResizeObserver: ResizeObserverCallback = () => {
-		// eslint-disable-next-line @typescript-eslint/no-use-before-define
+		// eslint-disable-next-line ts/no-use-before-define
 		_updateSize()
 	}
 
@@ -93,10 +93,4 @@ export function createVirtualizerItem<T extends object>(
 
 function getSize(el: HTMLElement): Size {
 	return createSize(el.offsetWidth, el.offsetHeight)
-}
-
-function getKey(view: View<any> | undefined): string | undefined {
-	if (!view)
-		return
-	return `${view.key}-${view.layout.key}`
 }

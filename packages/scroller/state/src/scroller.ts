@@ -11,7 +11,7 @@ export const ScrollerEvent = {
 
 export type ScrollerEventValue = ValueOf<typeof ScrollerEvent>
 
-// eslint-disable-next-line @typescript-eslint/consistent-type-definitions
+// eslint-disable-next-line ts/consistent-type-definitions
 type Events = {
 	[ScrollerEvent.ChangeVisibleRect]: {
 		value: Rect
@@ -88,7 +88,7 @@ export function createScroller(plugins: ScrollerPlugin[] = []): Scroller {
 		if (_plugins.has(plugin.name))
 			return false
 
-		// eslint-disable-next-line @typescript-eslint/no-use-before-define
+		// eslint-disable-next-line ts/no-use-before-define
 		plugin.init(self)
 		_plugins.set(plugin.name, plugin)
 		return true
@@ -98,14 +98,14 @@ export function createScroller(plugins: ScrollerPlugin[] = []): Scroller {
 		if (!_plugins.has(plugin.name))
 			return false
 
-		// eslint-disable-next-line @typescript-eslint/no-use-before-define
+		// eslint-disable-next-line ts/no-use-before-define
 		plugin.destroy(self)
 		_plugins.delete(plugin.name)
 		return true
 	}
 
 	const destroy: Self['destroy'] = () => {
-		// eslint-disable-next-line @typescript-eslint/no-use-before-define
+		// eslint-disable-next-line ts/no-use-before-define
 		_plugins.forEach(plugin => plugin.destroy(self))
 		_emitter.all.clear()
 	}

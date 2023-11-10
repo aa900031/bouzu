@@ -30,7 +30,7 @@ export function createAnimation(
 
 		const run = (t: number) => {
 			if (fixTs == null) {
-				// eslint-disable-next-line no-mixed-operators
+				// eslint-disable-next-line style/no-mixed-operators
 				fixTs = t > 1e12 !== getTime() > 1e12
 			}
 

@@ -1,4 +1,4 @@
-import type { Rect, RectCornerValue, Point } from '@bouzu/shared'
+import type { Point, Rect, RectCornerValue } from '@bouzu/shared'
 import type { Layout } from './layouts'
 
 export interface ScrollAnchor {
