@@ -26,7 +26,7 @@ export const VirtualizerEvent = {
 
 export type VirtualizerEventValue = ValueOf<typeof VirtualizerEvent>
 
-// eslint-disable-next-line @typescript-eslint/consistent-type-definitions
+// eslint-disable-next-line ts/consistent-type-definitions
 type Events<T extends object> = {
 	[VirtualizerEvent.ChangeContentSize]: {
 		value: Size
@@ -166,7 +166,7 @@ export function createVirtualizer<T extends object>(
 
 		let cornerAnchor: ScrollAnchor | null = null
 
-		for (const [key, layout] of _visibleLayouts) {
+		for (const [, layout] of _visibleLayouts) {
 			if (layout && getRectArea(layout.rect) > 0) {
 				const corner = getRectCornerInOther(layout.rect, visibleRect)
 				if (corner) {
@@ -204,7 +204,7 @@ export function createVirtualizer<T extends object>(
 		offset: Point,
 	) => {
 		const rect = createRect(offset.x, offset.y, _visibleRect.width, _visibleRect.height)
-		// eslint-disable-next-line @typescript-eslint/no-use-before-define
+		// eslint-disable-next-line ts/no-use-before-define
 		setVisibleRect(rect, true)
 		_emitter.emit(VirtualizerEvent.ChangeVisibleRect, { value: rect })
 	}
@@ -256,13 +256,13 @@ export function createVirtualizer<T extends object>(
 		}
 
 		_emitter.emit(VirtualizerEvent.ChangeVisibleViews, {
-			// eslint-disable-next-line @typescript-eslint/no-use-before-define
+			// eslint-disable-next-line ts/no-use-before-define
 			value: getVisibleViews(),
 		})
 	}
 
 	const _updateViews = (
-		force = false,
+		_force = false,
 	): boolean => {
 		if (!_layouts)
 			return false
@@ -464,7 +464,7 @@ export function createVirtualizer<T extends object>(
 				y += getRectMaxY(layout.rect) - maxY
 		}
 
-		// eslint-disable-next-line @typescript-eslint/no-use-before-define
+		// eslint-disable-next-line ts/no-use-before-define
 		return scrollTo(createPoint(x, y), options)
 	}
 

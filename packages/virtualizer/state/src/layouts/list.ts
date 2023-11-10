@@ -37,11 +37,11 @@ export function createListLayouts<T extends object>(
 	const _indexes = new WeakMap<T, number>()
 	const _layouts = new WeakMap<T, Layout>()
 	const _assemble = createAssemble(
-		// eslint-disable-next-line @typescript-eslint/no-use-before-define
+		// eslint-disable-next-line ts/no-use-before-define
 		index => _getItemSize(index),
-		// eslint-disable-next-line @typescript-eslint/no-use-before-define
+		// eslint-disable-next-line ts/no-use-before-define
 		index => _getItemPosition(index),
-		// eslint-disable-next-line @typescript-eslint/no-use-before-define
+		// eslint-disable-next-line ts/no-use-before-define
 		(index, value) => _updateItemPosition(index, value),
 	)
 

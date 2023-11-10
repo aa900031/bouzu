@@ -1,11 +1,11 @@
 {
 	"extends": "@bouzu/tsconfig/node.json",
+	"references": [
+		{ "path": "../../internals/vite-config/tsconfig.json" }
+	],
 	"include": [
 		"unocss.config.ts",
 		".storybook/main.ts",
 		".storybook/vite.config.ts"
-	],
-	"references": [
-		{ "path": "../../internals/vite-config/tsconfig.json" }
 	]
 }

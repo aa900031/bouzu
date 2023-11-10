@@ -17,7 +17,7 @@ export const ReachEvent = {
 
 export type ReachEventValue = ValueOf<typeof ReachEvent>
 
-// eslint-disable-next-line @typescript-eslint/consistent-type-definitions
+// eslint-disable-next-line ts/consistent-type-definitions
 type Events = {
 	[ReachEvent.Top]: undefined
 	[ReachEvent.Bottom]: undefined

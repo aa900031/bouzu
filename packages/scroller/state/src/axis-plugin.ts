@@ -12,7 +12,7 @@ export const AxisEvent = {
 
 export type AxisEventValue = ValueOf<typeof AxisEvent>
 
-// eslint-disable-next-line @typescript-eslint/consistent-type-definitions
+// eslint-disable-next-line ts/consistent-type-definitions
 type Events = {
 	[AxisEvent.Change]: {
 		value: AxisValue | null

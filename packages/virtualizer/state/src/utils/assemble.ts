@@ -1,8 +1,6 @@
 import { createRollingAverage } from './rolling-average'
 
-export function createAssemble(getItemSize: (index: number) => number | undefined,
-	getItemPosition: (index: number) => number | undefined,
-	updateItemPosition: (index: number, value: number) => void) {
+export function createAssemble(getItemSize: (index: number) => number | undefined,	getItemPosition: (index: number) => number | undefined,	updateItemPosition: (index: number, value: number) => void) {
 	const _avg = createRollingAverage()
 	const _updated = new Map<number, number>()
 	let _length = 0

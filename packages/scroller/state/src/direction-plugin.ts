@@ -17,7 +17,7 @@ export const DirectionEvent = {
 
 type DirectionEventValue = ValueOf<typeof DirectionEvent>
 
-// eslint-disable-next-line @typescript-eslint/consistent-type-definitions
+// eslint-disable-next-line ts/consistent-type-definitions
 type Events = {
 	[DirectionEvent.Up]: undefined
 	[DirectionEvent.Down]: undefined

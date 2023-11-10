@@ -1,5 +1,5 @@
 const perf = window?.performance ?? null
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// eslint-disable-next-line ts/ban-ts-comment
 // @ts-expect-error
 const perfNowFn = perf?.now ?? perf?.webkitNow ?? perf?.msNow ?? perf?.mozNow
 

@@ -1,7 +1,7 @@
 import type { Rect, Size } from '@bouzu/shared'
+import type { ValueOf } from 'type-fest'
 import type { AxisValue } from './axis'
 import { Axis, getPointByAxis, getSizeByAxis } from './axis'
-import { ValueOf } from 'type-fest'
 
 export const Reach = {
 	Top: 'top',
