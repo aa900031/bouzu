@@ -22,17 +22,17 @@
 		"@bouzu/vite-config": "workspace:^",
 		"@bouzu/vue-scroller": "workspace:*",
 		"@bouzu/vue-virtualizer": "workspace:*",
-		"@storybook/addon-essentials": "^7.5.2",
-		"@storybook/addon-interactions": "^7.5.2",
-		"@storybook/addon-links": "^7.5.2",
-		"@storybook/blocks": "^7.5.2",
+		"@storybook/addon-essentials": "^7.5.3",
+		"@storybook/addon-interactions": "^7.5.3",
+		"@storybook/addon-links": "^7.5.3",
+		"@storybook/blocks": "^7.5.3",
 		"@storybook/testing-library": "^0.2.2",
-		"@storybook/vue3": "^7.5.2",
-		"@storybook/vue3-vite": "^7.5.2",
+		"@storybook/vue3": "^7.5.3",
+		"@storybook/vue3-vite": "^7.5.3",
 		"react": "^18.2.0",
 		"react-dom": "^18.2.0",
-		"storybook": "^7.5.2",
-		"unocss": "^0.57.1",
-		"vue": "^3.3.7"
+		"storybook": "^7.5.3",
+		"unocss": "^0.57.3",
+		"vue": "^3.3.8"
 	}
 }
