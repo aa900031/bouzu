@@ -1,7 +1,7 @@
 import type { Emitter, Handler } from 'mitt'
 import mitt from 'mitt'
 import type { Simplify, ValueOf } from 'type-fest'
-import type { Axis } from './axis'
+import type { AxisValue } from './axis'
 import { checkAxis } from './axis'
 import type { ScrollerEventHandler, ScrollerPlugin } from './scroller'
 import { ScrollerEvent } from './scroller'
@@ -15,7 +15,7 @@ export type AxisEventValue = ValueOf<typeof AxisEvent>
 // eslint-disable-next-line @typescript-eslint/consistent-type-definitions
 type Events = {
 	[AxisEvent.Change]: {
-		value: Axis | null
+		value: AxisValue | null
 	}
 }
 
@@ -26,7 +26,7 @@ export type AxisPlugin = Simplify<
 	& {
 		on: Emitter<Events>['on']
 		off: Emitter<Events>['off']
-		get: () => Axis | null
+		get: () => AxisValue | null
 	}
 >
 
@@ -34,7 +34,7 @@ export function createAxisPlugin(): AxisPlugin {
 	type Self = AxisPlugin
 
 	const _emitter = mitt<Events>()
-	let _axis: Axis | null = null
+	let _axis: AxisValue | null = null
 
 	const handleVisibleChange: ScrollerEventHandler<typeof ScrollerEvent.ChangeVisibleRect> = ({
 		value,

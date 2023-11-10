@@ -1,5 +1,6 @@
 import type { Rect } from '@bouzu/shared'
 import type { ValueOf } from 'type-fest'
+import type { AxisValue } from './axis'
 import { Axis, getPointByAxis } from './axis'
 
 export const Direction = {
@@ -7,14 +8,14 @@ export const Direction = {
 	Down: 'down',
 	Left: 'left',
 	Right: 'right',
-}
+} as const
 
 export type DirectionValue = ValueOf<typeof Direction>
 
 export const DirectionType = {
 	Nature: 'nature',
 	Normal: 'normal',
-}
+} as const
 
 export type DirectionTypeValue = ValueOf<typeof DirectionType>
 
@@ -42,7 +43,7 @@ function format(type: DirectionTypeValue, value: DirectionValue): DirectionValue
 
 export function checkDirection(
 	type: DirectionTypeValue,
-	axis: Axis | null,
+	axis: AxisValue | null,
 	currVisibleRect: Rect,
 	prevVisibleRect: Rect,
 ): DirectionValue | undefined {

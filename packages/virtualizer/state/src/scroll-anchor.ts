@@ -1,10 +1,9 @@
-import type { Rect, RectCorner } from '@bouzu/shared'
-import type { Point } from '../../../shared/src/point'
+import type { Rect, RectCornerValue, Point } from '@bouzu/shared'
 import type { Layout } from './layouts'
 
 export interface ScrollAnchor {
 	layout: Layout
-	corner: RectCorner
+	corner: RectCornerValue
 	offset: Point
 }
 

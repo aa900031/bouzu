@@ -1,3 +1,4 @@
+import { ValueOf } from 'type-fest'
 import type { Point } from './point'
 import { createPoint } from './point'
 import type { Size } from './size'
@@ -5,12 +6,14 @@ import { createSize } from './size'
 
 export type Rect = Size & Point
 
-export enum RectCorner {
-	TopLeft = 'TopLeft',
-	TopRight = 'TopRight',
-	BottomLeft = 'BottomLeft',
-	BottomRight = 'BottomRight',
-}
+export const RectCorner = {
+	TopLeft: 'TopLeft',
+	TopRight: 'TopRight',
+	BottomLeft: 'BottomLeft',
+	BottomRight: 'BottomRight',
+} as const
+
+export type RectCornerValue = ValueOf<typeof RectCorner>
 
 export function createRect(
 	x = 0,
@@ -58,7 +61,7 @@ export function getRectBottomRight(rect: Rect) {
 
 export function getRectPointByRectCorner(
 	rect: Rect,
-	corner: RectCorner,
+	corner: RectCornerValue,
 ) {
 	switch (corner) {
 		case RectCorner.TopLeft:
@@ -121,7 +124,7 @@ export function checkRectContainsPoint(
 export function getRectCornerInOther(
 	a: Rect,
 	b: Rect,
-): RectCorner | null {
+): RectCornerValue | null {
 	for (const key in RectCorner) {
 		const point = getRectPointByRectCorner(a, RectCorner[key as keyof typeof RectCorner])
 		if (checkRectContainsPoint(b, point))

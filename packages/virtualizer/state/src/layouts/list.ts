@@ -1,3 +1,4 @@
+import type { AxisValue } from '@bouzu/scroller'
 import { Axis, checkRectIntersectsByAxis, getPointByAxis, getRectMaxByAxis, getSizeByAxis, updatePointByAxis, updateSizeByAxis } from '@bouzu/scroller'
 import type { Rect, Size } from '@bouzu/shared'
 import { checkSizeEqual, createRect, createSize } from '@bouzu/shared'
@@ -8,13 +9,13 @@ import { createAssemble } from '../utils/assemble'
 export type ListLayouts<T extends object> =
 	& Layouts<T>
 	& {
-		setAxis: (value: Axis) => void
+		setAxis: (value: AxisValue) => void
 		setItemSize: (value: number) => void
 		setEstimatedItemSize: (value: number) => void
 	}
 
 export interface CreateListLayoutsOptions {
-	axis?: Axis
+	axis?: AxisValue
 	itemSize?: number
 	estimatedItemSize?: number
 }

@@ -2,6 +2,7 @@ import type { Emitter, Handler } from 'mitt'
 import mitt from 'mitt'
 import type { ValueOf } from 'type-fest'
 import type { AxisPlugin } from './axis-plugin'
+import type { ReachValue } from './reach'
 import { Reach, checkReach } from './reach'
 import type { Scroller, ScrollerEventHandler, ScrollerPlugin } from './scroller'
 import { ScrollerEvent } from './scroller'
@@ -23,7 +24,7 @@ type Events = {
 	[ReachEvent.Left]: undefined
 	[ReachEvent.Right]: undefined
 	[ReachEvent.Change]: {
-		value: Reach | null
+		value: ReachValue | null
 	}
 }
 
@@ -32,7 +33,7 @@ export type ReachEventHandler<E extends ReachEventValue> = Handler<Events[E]>
 export type ReachPlugin = ScrollerPlugin & {
 	on: Emitter<Events>['on']
 	off: Emitter<Events>['off']
-	get: () => Reach | null
+	get: () => ReachValue | null
 }
 
 export function createReachPlugin(): ReachPlugin {
@@ -40,7 +41,7 @@ export function createReachPlugin(): ReachPlugin {
 
 	const _emitter = mitt<Events>()
 	let _scroller: Scroller | null = null
-	let _reach: Reach | null = null
+	let _reach: ReachValue | null = null
 	let _axis: AxisPlugin | null = null
 
 	const handleVisibleChange: ScrollerEventHandler<typeof ScrollerEvent.ChangeVisibleRect> = ({

@@ -1,17 +1,23 @@
 import type { Rect, Size } from '@bouzu/shared'
+import type { AxisValue } from './axis'
 import { Axis, getPointByAxis, getSizeByAxis } from './axis'
+import { ValueOf } from 'type-fest'
 
-export enum Reach {
-	Top = 'top',
-	Bottom = 'bottom',
-	Left = 'left',
-	Right = 'right',
-}
+export const Reach = {
+	Top: 'top',
+	Bottom: 'bottom',
+	Left: 'left',
+	Right: 'right',
+} as const
 
-export function checkReach(axis: Axis | null,
+export type ReachValue = ValueOf<typeof Reach>
+
+export function checkReach(
+	axis: AxisValue | null,
 	currVisibleRect: Rect,
 	prevVisibleRect: Rect,
-	contentSize: Size): Reach | undefined {
+	contentSize: Size,
+): ReachValue | undefined {
 	if (!axis)
 		return
 

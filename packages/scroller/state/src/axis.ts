@@ -1,20 +1,23 @@
 import type { Point, Rect, Size } from '@bouzu/shared'
 import { checkRectIntersectsX, checkRectIntersectsY, getRectMaxX, getRectMaxY } from '@bouzu/shared'
+import { ValueOf } from 'type-fest'
 
-export enum Axis {
-	X = 'x',
-	Y = 'y',
-}
+export const Axis = {
+	X: 'x',
+	Y: 'y',
+} as const
+
+export type AxisValue = ValueOf<typeof Axis>
 
 export function checkAxis(currVisibleRect: Rect,
-	prevVisibleRect: Rect): Axis | undefined {
+	prevVisibleRect: Rect): AxisValue | undefined {
 	if (Math.abs(currVisibleRect.x - prevVisibleRect.x) > 0)
 		return Axis.X
 	if (Math.abs(currVisibleRect.y - prevVisibleRect.y) > 0)
 		return Axis.Y
 }
 
-export function reverseAxis(axis: Axis): Axis {
+export function reverseAxis(axis: AxisValue): AxisValue {
 	switch (axis) {
 		case Axis.X:
 			return Axis.Y
@@ -23,7 +26,7 @@ export function reverseAxis(axis: Axis): Axis {
 	}
 }
 
-export function getSizeByAxis(size: Size, axis: Axis, reverse = false): number {
+export function getSizeByAxis(size: Size, axis: AxisValue, reverse = false): number {
 	switch (reverse ? reverseAxis(axis) : axis) {
 		case Axis.X:
 			return size.width
@@ -32,11 +35,11 @@ export function getSizeByAxis(size: Size, axis: Axis, reverse = false): number {
 	}
 }
 
-export function getPointByAxis(point: Point, axis: Axis, reverse = false): number {
+export function getPointByAxis(point: Point, axis: AxisValue, reverse = false): number {
 	return point[reverse ? reverseAxis(axis) : axis]
 }
 
-export function updateSizeByAxis(size: Size, axis: Axis, value: number, reverse = false): void {
+export function updateSizeByAxis(size: Size, axis: AxisValue, value: number, reverse = false): void {
 	switch (reverse ? reverseAxis(axis) : axis) {
 		case Axis.X:
 			size.width = value
@@ -47,11 +50,11 @@ export function updateSizeByAxis(size: Size, axis: Axis, value: number, reverse 
 	}
 }
 
-export function updatePointByAxis(point: Point, axis: Axis, value: number, reverse = false): void {
+export function updatePointByAxis(point: Point, axis: AxisValue, value: number, reverse = false): void {
 	point[reverse ? reverseAxis(axis) : axis] = value
 }
 
-export function getRectMaxByAxis(rect: Rect, axis: Axis, reverse = false): number {
+export function getRectMaxByAxis(rect: Rect, axis: AxisValue, reverse = false): number {
 	switch (reverse ? reverseAxis(axis) : axis) {
 		case Axis.X:
 			return getRectMaxX(rect)
@@ -60,7 +63,7 @@ export function getRectMaxByAxis(rect: Rect, axis: Axis, reverse = false): numbe
 	}
 }
 
-export function checkRectIntersectsByAxis(a: Rect, b: Rect, axis: Axis, reverse = false): boolean {
+export function checkRectIntersectsByAxis(a: Rect, b: Rect, axis: AxisValue, reverse = false): boolean {
 	switch (reverse ? reverseAxis(axis) : axis) {
 		case Axis.X:
 			return checkRectIntersectsX(a, b)

@@ -139,6 +139,10 @@ importers:
         version: 3.3.7(typescript@5.2.2)
 
   packages/shared:
+    dependencies:
+      type-fest:
+        specifier: ^3.13.1
+        version: 3.13.1
     devDependencies:
       '@bouzu/release-it-config':
         specifier: workspace:*
