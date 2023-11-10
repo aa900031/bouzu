@@ -35,13 +35,24 @@
 		"release": "release-it --ci"
 	},
 	"peerDependencies": {
-		"vue-demi": "*"
+		"@vue/composition-api": "^1.0.0",
+		"vue": "^2.6.12 || ^3.2.0"
+	},
+	"peerDependenciesMeta": {
+		"vue": {
+			"optional": true
+		},
+		"@vue/composition-api": {
+			"optional": true
+		}
 	},
 	"dependencies": {
-		"@bouzu/shared": "workspace:^"
+		"@bouzu/shared": "workspace:^",
+		"vue-demi": "latest"
 	},
 	"devDependencies": {
 		"@bouzu/release-it-config": "workspace:*",
-		"@bouzu/tsconfig": "workspace:*"
+		"@bouzu/tsconfig": "workspace:*",
+		"vue": "^3.3.7"
 	}
 }

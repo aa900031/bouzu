@@ -55,6 +55,7 @@
 	},
 	"devDependencies": {
 		"@bouzu/release-it-config": "workspace:*",
-		"@bouzu/tsconfig": "workspace:*"
+		"@bouzu/tsconfig": "workspace:*",
+		"vue": "^3.3.7"
 	}
 }
