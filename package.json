@@ -1,7 +1,7 @@
 {
 	"name": "@bouzu/monorepo",
 	"private": true,
-	"packageManager": "pnpm@8.10.0",
+	"packageManager": "pnpm@8.10.2",
 	"author": "zhong666 <hi@zhong666.me>",
 	"license": "MIT",
 	"homepage": "https://bouzu.zhong666.me",
@@ -25,9 +25,9 @@
 	},
 	"devDependencies": {
 		"@aa900031/eslint-config": "^0.2.7",
-		"@types/mockjs": "^1.0.9",
+		"@types/mockjs": "^1.0.10",
 		"conventional-changelog-unjs": "^0.1.0",
-		"eslint": "^8.52.0",
+		"eslint": "^8.53.0",
 		"happy-dom": "^11.2.0",
 		"mockjs": "^1.1.0",
 		"release-it": "^16.2.1",
