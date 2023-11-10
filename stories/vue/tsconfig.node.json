@@ -4,5 +4,8 @@
 		"unocss.config.ts",
 		".storybook/main.ts",
 		".storybook/vite.config.ts"
+	],
+	"references": [
+		{ "path": "../../internals/vite-config/tsconfig.json" }
 	]
 }

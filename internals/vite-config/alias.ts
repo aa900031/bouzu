@@ -1,6 +1,7 @@
 import path from 'node:path'
+import { URL, fileURLToPath } from 'node:url'
 
-const DIR_PKGS = path.resolve(__dirname, '../packages')
+const DIR_PKGS = fileURLToPath(new URL('../../packages', import.meta.url))
 
 export default {
 	'@bouzu/scroller': path.join(DIR_PKGS, './scroller/state/src'),

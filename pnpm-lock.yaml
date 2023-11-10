@@ -60,6 +60,12 @@ importers:
         specifier: ^18.2.2
         version: 18.2.2
 
+  internals/vite-config:
+    devDependencies:
+      '@bouzu/tsconfig':
+        specifier: workspace:^
+        version: link:../tsconfig
+
   packages/scroller/dom:
     dependencies:
       '@bouzu/scroller':
@@ -277,6 +283,9 @@ importers:
       '@bouzu/tsconfig':
         specifier: workspace:*
         version: link:../../internals/tsconfig
+      '@bouzu/vite-config':
+        specifier: workspace:^
+        version: link:../../internals/vite-config
       '@bouzu/vue-scroller':
         specifier: workspace:*
         version: link:../../packages/scroller/vue
