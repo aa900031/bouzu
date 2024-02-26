@@ -53,6 +53,6 @@
 	"devDependencies": {
 		"@bouzu/release-it-config": "workspace:*",
 		"@bouzu/tsconfig": "workspace:*",
-		"vue": "^3.3.8"
+		"vue": "^3.4.20"
 	}
 }
