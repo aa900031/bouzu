@@ -50,12 +50,12 @@
 		"@bouzu/scroller-dom": "workspace:^",
 		"@bouzu/shared": "workspace:^",
 		"@bouzu/vue-helper": "workspace:^",
-		"@vueuse/core": "^10.6.0",
+		"@vueuse/core": "^10.8.0",
 		"vue-demi": "latest"
 	},
 	"devDependencies": {
 		"@bouzu/release-it-config": "workspace:*",
 		"@bouzu/tsconfig": "workspace:*",
-		"vue": "^3.3.8"
+		"vue": "^3.4.20"
 	}
 }
