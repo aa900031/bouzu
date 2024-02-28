@@ -14,10 +14,9 @@
 		"url": "https://github.com/aa900031/bouzu/issues"
 	},
 	"scripts": {
-		"dev:story-vue": "turbo run dev --no-daemon --filter='./stories/vue'",
-		"build:story": "turbo run build --no-daemon --filter='./stories/*'",
+		"dev:sb-vue": "turbo run dev --no-daemon --filter='./stories/vue'",
+		"build:sb": "turbo run build --no-daemon --filter='./stories/*'",
 		"build:pkgs": "turbo run build --no-daemon --filter='./packages/**/*'",
-		"preview:story": "turbo run preview --no-daemon --filter='./stories/*'",
 		"publish:pkgs": "pnpm -r --filter='./packages/**/*' publish",
 		"test": "turbo run --no-daemon test",
 		"lint": "eslint . --cache --cache-location node_modules/.cache/eslint",
