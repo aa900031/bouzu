@@ -1,7 +1,7 @@
 import type { Scroller as BaseScroller, ScrollerPlugin } from '@bouzu/scroller'
 import { createScroller as createBaseScroller } from '@bouzu/scroller'
-import type { Point } from '@bouzu/shared'
-import { noop, toPoint, toSize } from '@bouzu/shared'
+import type { Point, Rect, Size } from '@bouzu/shared'
+import { noop, toPoint } from '@bouzu/shared'
 import { toContentVisibleRect, toScrollVisibleRect } from './content-visible'
 import { OffsetObserveEvent, createOffsetObserve } from './offset-observe'
 import { onScrollEvent } from './scroll-event'
@@ -44,18 +44,30 @@ export function createScroller(
 	let _unbindResizeEvent = noop
 
 	const _trigger = () => {
-		if (_scrollEl == null)
+		if (_el == null || _scrollEl == null)
 			return
 
-		const offsetRect = offsetObs.getRect()
-		if (offsetRect == null)
-			return
+		let nextVisibleRect: Rect
+		let nextContentSize: Size
 
-		const nextVisibleRect = _visibleByContent
-			? toContentVisibleRect(getVisibleRect(_scrollEl), offsetRect)
-			: getVisibleRect(_scrollEl)
+		if (_visibleByContent) {
+			const offsetRect = offsetObs.getRect()
+			if (offsetRect == null)
+				return
 
-		const nextContentSize = toSize(offsetRect)
+			nextVisibleRect = toContentVisibleRect(getVisibleRect(_scrollEl), offsetRect)
+			nextContentSize = {
+				width: _el.scrollWidth,
+				height: _el.scrollHeight,
+			}
+		}
+		else {
+			nextVisibleRect = getVisibleRect(_scrollEl)
+			nextContentSize = {
+				width: _scrollEl.scrollWidth,
+				height: _scrollEl.scrollHeight,
+			}
+		}
 
 		scroller.setVisibleRect(nextVisibleRect)
 		scroller.setContentSize(nextContentSize)
