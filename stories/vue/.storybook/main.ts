@@ -1,7 +1,4 @@
-import { mergeConfig } from 'vite'
-import type { UserConfig } from 'vite'
 import type { StorybookConfig } from '@storybook/vue3-vite'
-import ViteConfig from './vite.config'
 
 export default {
 	stories: [
@@ -20,5 +17,4 @@ export default {
 	docs: {
 		autodocs: 'tag',
 	},
-	viteFinal: config => mergeConfig(config, ViteConfig as UserConfig),
 } satisfies StorybookConfig

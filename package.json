@@ -17,6 +17,7 @@
 		"dev:sb-vue": "turbo run dev --no-daemon --filter='./stories/vue'",
 		"build:sb": "turbo run build --no-daemon --filter='./stories/*'",
 		"build:pkgs": "turbo run build --no-daemon --filter='./packages/**/*'",
+		"preview:sb-vue": "turbo run preview --filter=@bouzu/storybook-vue",
 		"publish:pkgs": "pnpm -r --filter='./packages/**/*' publish",
 		"test": "turbo run --no-daemon test",
 		"lint": "eslint . --cache --cache-location node_modules/.cache/eslint",
