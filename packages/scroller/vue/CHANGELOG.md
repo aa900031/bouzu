@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
 
+## v0.1.0
+
+[compare changes](https://github.com/aa900031/bouzu/compare/@bouzu/vue-scroller@0.0.5...@bouzu/vue-scroller@0.1.0)
+
+### 🚀 Enhancements
+
+-  **scroller/vue:** Add scroll overflow ([c49e47a](https://github.com/aa900031/bouzu/commit/c49e47a204cb100fa4f69221f5a0c5f034f4ee9b))
+
+
+
+#### ❤️ Contributors
+
+- Zhong666 <aa900031@gmail.com>
+
 ## v0.0.5
 
 [compare changes](https://github.com/aa900031/bouzu/compare/@bouzu/vue-scroller@0.0.4...@bouzu/vue-scroller@0.0.5)
