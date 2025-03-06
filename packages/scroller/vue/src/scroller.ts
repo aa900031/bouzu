@@ -5,7 +5,7 @@ import { createRect, toPoint } from '@bouzu/shared'
 import type { Scroller as ScrollerDom } from '@bouzu/scroller-dom'
 import { createScroller } from '@bouzu/scroller-dom'
 import { ScrollerEvent } from '@bouzu/scroller'
-import { unrefElement } from '@vueuse/core'
+import { toRef, unrefElement } from '@vueuse/core'
 import { eventRef } from '@bouzu/vue-helper'
 
 export interface UseScrollerProps {
@@ -21,6 +21,7 @@ export interface Scroller {
 	detect: () => void
 	visibleRect: Ref<Rect>
 	contentSize: Ref<Size>
+	scrollEl: Readonly<Ref<HTMLElement | null | undefined>>
 	context: ScrollerContext
 }
 
@@ -40,6 +41,7 @@ export function useScroller(
 	props?: UseScrollerProps,
 ): Scroller {
 	const scroller = markRaw(createScroller())
+	const scrollEl = toRef(() => scroller.getScrollElement())
 
 	const [visibleRect] = eventRef({
 		register: (handler) => {
@@ -100,6 +102,7 @@ export function useScroller(
 		context,
 		contentSize,
 		visibleRect,
+		scrollEl,
 		detect: scroller.detect,
 	}
 }
