@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
 
+## v0.0.5
+
+[compare changes](https://github.com/aa900031/bouzu/compare/@bouzu/scroller@0.0.4...@bouzu/scroller@0.0.5)
+
+### 🩹 Fixes
+
+-  **scroller/state:** Add dependencies plugin ([193ea4d](https://github.com/aa900031/bouzu/commit/193ea4dd6dc957788ed43c96d0cd7ac271edcd53))
+
+
+
+#### ❤️ Contributors
+
+- Zhong666 <aa900031@gmail.com>
+
 ## v0.0.4
 
 [compare changes](https://github.com/aa900031/bouzu/compare/@bouzu/scroller@0.0.3...@bouzu/scroller@0.0.4)
