@@ -44,7 +44,6 @@ Made with 💛
 
 Published under [MIT License](./LICENSE).
 
-
 <!-- Badges -->
 
 [npm-version-src]: https://img.shields.io/npm/v/@bouzu/scroller?style=flat&colorA=18181B&colorB=F0DB4F
