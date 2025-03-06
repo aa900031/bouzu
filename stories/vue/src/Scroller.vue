@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { ref, toRefs, watch } from 'vue'
-import { useScrollAxis, useScrollDirection, useScrollReach, useScroller, useScrolling } from '@bouzu/vue-scroller'
+import { useScrollAxis, useScrollDirection, useScrollOverflow, useScrollReach, useScroller, useScrolling } from '@bouzu/vue-scroller'
 
 const props = defineProps<{
 	visibleByContent?: boolean
@@ -14,6 +14,7 @@ const axis = useScrollAxis(scroller.context)
 const reach = useScrollReach(scroller.context)
 const direction = useScrollDirection(undefined, scroller.context)
 const scrolling = useScrolling(scroller.context)
+const overflow = useScrollOverflow(scroller.context)
 
 const height = ref(500)
 
@@ -54,6 +55,14 @@ watch([viewport], () => {
 			<tr>
 				<td>direction:</td>
 				<td>{{ direction.value.value }}</td>
+			</tr>
+			<tr>
+				<td>overflow x:</td>
+				<td>{{ overflow.x.value }}</td>
+			</tr>
+			<tr>
+				<td>overflow y:</td>
+				<td>{{ overflow.y.value }}</td>
 			</tr>
 			<tr>
 				<td>visibleRect.x:</td>
