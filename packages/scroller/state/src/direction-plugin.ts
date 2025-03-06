@@ -2,6 +2,7 @@ import type { Emitter, Handler } from 'mitt'
 import mitt from 'mitt'
 import type { ValueOf } from 'type-fest'
 import type { AxisPlugin } from './axis-plugin'
+import { createAxisPlugin } from './axis-plugin'
 import type { DirectionTypeValue, DirectionValue } from './direction'
 import { Direction, DirectionType, checkDirection } from './direction'
 import type { ScrollerEventHandler, ScrollerPlugin } from './scroller'
@@ -78,9 +79,11 @@ export function createDirectionPlugin(
 	}
 
 	const init: Self['init'] = (scroller) => {
-		const axisPlugin = scroller.getPlugin<AxisPlugin>('axis')
-		if (!axisPlugin)
-			throw new Error('Plugin "axis" not exist')
+		let axisPlugin = scroller.getPlugin<AxisPlugin>('axis')
+		if (!axisPlugin) {
+			axisPlugin = createAxisPlugin()
+			scroller.addPlugin(axisPlugin)
+		}
 
 		_axis = axisPlugin
 		scroller.on(ScrollerEvent.ChangeVisibleRect, handleVisibleChange)

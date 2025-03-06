@@ -2,6 +2,7 @@ import type { Emitter, Handler } from 'mitt'
 import mitt from 'mitt'
 import type { ValueOf } from 'type-fest'
 import type { AxisPlugin } from './axis-plugin'
+import { createAxisPlugin } from './axis-plugin'
 import type { ReachValue } from './reach'
 import { Reach, checkReach } from './reach'
 import type { Scroller, ScrollerEventHandler, ScrollerPlugin } from './scroller'
@@ -77,9 +78,11 @@ export function createReachPlugin(): ReachPlugin {
 	}
 
 	const init: Self['init'] = (scroller) => {
-		const axisPlugin = scroller.getPlugin<AxisPlugin>('axis')
-		if (!axisPlugin)
-			throw new Error('Plugin "axis" not exist')
+		let axisPlugin = scroller.getPlugin<AxisPlugin>('axis')
+		if (!axisPlugin) {
+			axisPlugin = createAxisPlugin()
+			scroller.addPlugin(axisPlugin)
+		}
 
 		_axis = axisPlugin
 		_scroller = scroller
