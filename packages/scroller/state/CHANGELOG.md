@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
 
+## v0.1.1
+
+[compare changes](https://github.com/aa900031/bouzu/compare/@bouzu/scroller@0.1.0...@bouzu/scroller@0.1.1)
+
+### 🩹 Fixes
+
+-  Decide reach logic ([48345e6](https://github.com/aa900031/bouzu/commit/48345e62fb7fc0901f8387aad8ee5fdba8351290))
+
+
+
+#### ❤️ Contributors
+
+- Zhong666 <aa900031@gmail.com>
+
 ## v0.1.0
 
 [compare changes](https://github.com/aa900031/bouzu/compare/@bouzu/scroller@0.0.5...@bouzu/scroller@0.1.0)
