@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
 
+## v0.2.1
+
+[compare changes](https://github.com/aa900031/bouzu/compare/@bouzu/vue-scroller@0.2.0...@bouzu/vue-scroller@0.2.1)
+
 ## v0.2.0
 
 [compare changes](https://github.com/aa900031/bouzu/compare/@bouzu/vue-scroller@0.1.0...@bouzu/vue-scroller@0.2.0)
