@@ -5,7 +5,7 @@ import type { AxisPlugin } from './axis-plugin'
 import { createAxisPlugin } from './axis-plugin'
 import type { ReachValue } from './reach'
 import { Reach, checkReach } from './reach'
-import type { Scroller, ScrollerEventHandler, ScrollerPlugin } from './scroller'
+import type { Scroller, ScrollerPlugin } from './scroller'
 import { ScrollerEvent } from './scroller'
 
 export const ReachEvent = {
@@ -45,14 +45,16 @@ export function createReachPlugin(): ReachPlugin {
 	let _reach: ReachValue | null = null
 	let _axis: AxisPlugin | null = null
 
-	const handleVisibleChange: ScrollerEventHandler<typeof ScrollerEvent.ChangeVisibleRect> = ({
-		value,
-		oldValue,
-	}) => {
-		if (_axis == null || _scroller == null || oldValue == null)
+	const handler = () => {
+		if (_axis == null || _scroller == null)
 			return
 
-		const reach = checkReach(_axis.get(), value, oldValue, _scroller.getContentSize()) ?? null
+		const visibleRect = _scroller.getVisibleRect()
+		const contentSize = _scroller.getContentSize()
+		if (visibleRect == null || contentSize == null)
+			return
+
+		const reach = checkReach(_axis.get(), visibleRect, contentSize) ?? null
 
 		_reach = reach
 		_emitter.emit(ReachEvent.Change, { value: reach })
@@ -86,14 +88,19 @@ export function createReachPlugin(): ReachPlugin {
 
 		_axis = axisPlugin
 		_scroller = scroller
-		scroller.on(ScrollerEvent.ChangeVisibleRect, handleVisibleChange)
+		_reach = null
+		scroller.on(ScrollerEvent.ChangeVisibleRect, handler)
+		scroller.on(ScrollerEvent.ChangeContentSize, handler)
+		handler()
 	}
 
 	const destroy: Self['destroy'] = (scroller) => {
 		_emitter.all.clear()
 		_axis = null
 		_scroller = null
-		scroller.off(ScrollerEvent.ChangeVisibleRect, handleVisibleChange)
+		_reach = null
+		scroller.off(ScrollerEvent.ChangeVisibleRect, handler)
+		scroller.off(ScrollerEvent.ChangeContentSize, handler)
 	}
 
 	return {

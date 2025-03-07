@@ -14,23 +14,17 @@ export type ReachValue = ValueOf<typeof Reach>
 
 export function checkReach(
 	axis: AxisValue | null,
-	currVisibleRect: Rect,
-	prevVisibleRect: Rect,
+	visibleRect: Rect,
 	contentSize: Size,
 ): ReachValue | undefined {
 	if (!axis)
 		return
 
-	const currDistance = getPointByAxis(currVisibleRect, axis)
-	const prevDistance = getPointByAxis(prevVisibleRect, axis)
-	const diffDistance = currDistance - prevDistance
-	if (!diffDistance)
-		return
-
-	const visibleValue = getSizeByAxis(currVisibleRect, axis)
+	const distance = getPointByAxis(visibleRect, axis)
+	const visibleValue = getSizeByAxis(visibleRect, axis)
 	const contentValue = getSizeByAxis(contentSize, axis)
 
-	if (currDistance < 1) {
+	if (distance < 1) {
 		switch (axis) {
 			case Axis.X:
 				return Reach.Left
@@ -38,7 +32,7 @@ export function checkReach(
 				return Reach.Top
 		}
 	}
-	else if (currDistance > contentValue - visibleValue - 1) {
+	else if (distance > contentValue - visibleValue - 1) {
 		switch (axis) {
 			case Axis.X:
 				return Reach.Right
