@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
 
+## v0.0.7
+
+[compare changes](https://github.com/aa900031/bouzu/compare/@bouzu/scroller-dom@0.0.6...@bouzu/scroller-dom@0.0.7)
+
 ## v0.0.6
 
 [compare changes](https://github.com/aa900031/bouzu/compare/@bouzu/scroller-dom@0.0.5...@bouzu/scroller-dom@0.0.6)
