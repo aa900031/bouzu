@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
 
+## v0.0.6
+
+[compare changes](https://github.com/aa900031/bouzu/compare/@bouzu/scroller-dom@0.0.5...@bouzu/scroller-dom@0.0.6)
+
+### 🩹 Fixes
+
+-  Trigger on element resize ([3dc138e](https://github.com/aa900031/bouzu/commit/3dc138e4aed20aeb6a4ebaab11a9dff79179bd16))
+
+
+
+#### ❤️ Contributors
+
+- Zhong666 <aa900031@gmail.com>
+
 ## v0.0.5
 
 [compare changes](https://github.com/aa900031/bouzu/compare/@bouzu/scroller-dom@0.0.4...@bouzu/scroller-dom@0.0.5)
