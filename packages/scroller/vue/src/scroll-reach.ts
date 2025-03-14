@@ -46,9 +46,9 @@ export function useScrollReach(
 	return {
 		x,
 		y,
-		isTop: computedEager(() => unref(x) === Reach.Top),
-		isBottom: computedEager(() => unref(x) === Reach.Bottom),
-		isLeft: computedEager(() => unref(y) === Reach.Left),
-		isRight: computedEager(() => unref(y) === Reach.Right),
+		isTop: computedEager(() => unref(y) === Reach.Top),
+		isBottom: computedEager(() => unref(y) === Reach.Bottom),
+		isLeft: computedEager(() => unref(x) === Reach.Left),
+		isRight: computedEager(() => unref(x) === Reach.Right),
 	}
 }
