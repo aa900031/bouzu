@@ -8,7 +8,8 @@ import type { ScrollerContext } from './scroller'
 import { useScrollerContext } from './scroller'
 
 export interface ScrollReach {
-	value: Readonly<Ref<ReachValue | null>>
+	x: Readonly<Ref<ReachValue | null>>
+	y: Readonly<Ref<ReachValue | null>>
 	isTop: Readonly<Ref<boolean>>
 	isBottom: Readonly<Ref<boolean>>
 	isLeft: Readonly<Ref<boolean>>
@@ -20,13 +21,22 @@ export function useScrollReach(
 ): ScrollReach {
 	const reach = createReachPlugin()
 
-	const [value] = eventRef<ReachValue | null, ReachEventHandler<typeof ReachEvent.Change>>({
+	const [x] = eventRef<ReachValue | null, ReachEventHandler<typeof ReachEvent.ChangeX>>({
 		register: (handler) => {
 			context.state.addPlugin(reach)
-			reach.on(ReachEvent.Change, handler)
-			return () => reach.off(ReachEvent.Change, handler)
+			reach.on(ReachEvent.ChangeX, handler)
+			return () => reach.off(ReachEvent.ChangeX, handler)
 		},
-		get: event => event?.value ?? reach.get(),
+		get: event => event?.value ?? reach.getX(),
+	})
+
+	const [y] = eventRef<ReachValue | null, ReachEventHandler<typeof ReachEvent.ChangeY>>({
+		register: (handler) => {
+			context.state.addPlugin(reach)
+			reach.on(ReachEvent.ChangeY, handler)
+			return () => reach.off(ReachEvent.ChangeY, handler)
+		},
+		get: event => event?.value ?? reach.getY(),
 	})
 
 	onScopeDispose(() => {
@@ -34,10 +44,11 @@ export function useScrollReach(
 	})
 
 	return {
-		value,
-		isTop: computedEager(() => unref(value) === Reach.Top),
-		isBottom: computedEager(() => unref(value) === Reach.Bottom),
-		isLeft: computedEager(() => unref(value) === Reach.Left),
-		isRight: computedEager(() => unref(value) === Reach.Right),
+		x,
+		y,
+		isTop: computedEager(() => unref(x) === Reach.Top),
+		isBottom: computedEager(() => unref(x) === Reach.Bottom),
+		isLeft: computedEager(() => unref(y) === Reach.Left),
+		isRight: computedEager(() => unref(y) === Reach.Right),
 	}
 }

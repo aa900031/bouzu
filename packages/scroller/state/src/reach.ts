@@ -13,13 +13,10 @@ export const Reach = {
 export type ReachValue = ValueOf<typeof Reach>
 
 export function checkReach(
-	axis: AxisValue | null,
+	axis: AxisValue,
 	visibleRect: Rect,
 	contentSize: Size,
 ): ReachValue | undefined {
-	if (!axis)
-		return
-
 	const distance = getPointByAxis(visibleRect, axis)
 	const visibleValue = getSizeByAxis(visibleRect, axis)
 	const contentValue = getSizeByAxis(contentSize, axis)

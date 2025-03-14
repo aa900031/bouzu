@@ -97,7 +97,6 @@ export function createScroller(
 			_handleScroll,
 			{ passive: _scrollEventPassive },
 		)
-		_handleScroll()
 	}
 
 	const _bindOffset = () => {
@@ -132,6 +131,8 @@ export function createScroller(
 		_bindOffset()
 		_bindScrollEvent()
 		_bindResizeEvent()
+
+		_trigger()
 	}
 
 	const mount: Self['mount'] = (el) => {

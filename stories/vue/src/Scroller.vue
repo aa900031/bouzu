@@ -45,8 +45,12 @@ watch([viewport], () => {
 				<td>{{ scrolling.value.value }}</td>
 			</tr>
 			<tr>
-				<td>reach:</td>
-				<td>{{ reach.value.value }}</td>
+				<td>reach x:</td>
+				<td>{{ reach.x.value }}</td>
+			</tr>
+			<tr>
+				<td>reach y:</td>
+				<td>{{ reach.y.value }}</td>
 			</tr>
 			<tr>
 				<td>axis:</td>

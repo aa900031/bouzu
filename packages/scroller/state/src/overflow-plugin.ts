@@ -68,7 +68,6 @@ export function createOverflowPlugin(): OverflowPlugin {
 		_scroller = scroller
 		scroller.on(ScrollerEvent.ChangeVisibleRect, handleChange)
 		scroller.on(ScrollerEvent.ChangeContentSize, handleChange)
-		handleChange()
 	}
 
 	function destroy(

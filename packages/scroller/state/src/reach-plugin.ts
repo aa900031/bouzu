@@ -1,19 +1,19 @@
 import type { Emitter, Handler } from 'mitt'
 import mitt from 'mitt'
 import type { ValueOf } from 'type-fest'
-import type { AxisPlugin } from './axis-plugin'
-import { createAxisPlugin } from './axis-plugin'
 import type { ReachValue } from './reach'
 import { Reach, checkReach } from './reach'
 import type { Scroller, ScrollerPlugin } from './scroller'
 import { ScrollerEvent } from './scroller'
+import { Axis } from './axis'
 
 export const ReachEvent = {
 	Top: 'top',
 	Bottom: 'bottom',
 	Left: 'left',
 	Right: 'right',
-	Change: 'change',
+	ChangeX: 'change-x',
+	ChangeY: 'change-y',
 } as const
 
 export type ReachEventValue = ValueOf<typeof ReachEvent>
@@ -24,7 +24,10 @@ type Events = {
 	[ReachEvent.Bottom]: undefined
 	[ReachEvent.Left]: undefined
 	[ReachEvent.Right]: undefined
-	[ReachEvent.Change]: {
+	[ReachEvent.ChangeX]: {
+		value: ReachValue | null
+	}
+	[ReachEvent.ChangeY]: {
 		value: ReachValue | null
 	}
 }
@@ -34,7 +37,8 @@ export type ReachEventHandler<E extends ReachEventValue> = Handler<Events[E]>
 export type ReachPlugin = ScrollerPlugin & {
 	on: Emitter<Events>['on']
 	off: Emitter<Events>['off']
-	get: () => ReachValue | null
+	getX: () => ReachValue | null
+	getY: () => ReachValue | null
 }
 
 export function createReachPlugin(): ReachPlugin {
@@ -42,11 +46,11 @@ export function createReachPlugin(): ReachPlugin {
 
 	const _emitter = mitt<Events>()
 	let _scroller: Scroller | null = null
-	let _reach: ReachValue | null = null
-	let _axis: AxisPlugin | null = null
+	let _reachX: ReachValue | null = null
+	let _reachY: ReachValue | null = null
 
 	const handler = () => {
-		if (_axis == null || _scroller == null)
+		if (_scroller == null)
 			return
 
 		const visibleRect = _scroller.getVisibleRect()
@@ -54,51 +58,57 @@ export function createReachPlugin(): ReachPlugin {
 		if (visibleRect == null || contentSize == null)
 			return
 
-		const reach = checkReach(_axis.get(), visibleRect, contentSize) ?? null
+		const reachX = checkReach(Axis.X, visibleRect, contentSize) ?? null
+		const reachY = checkReach(Axis.Y, visibleRect, contentSize) ?? null
 
-		_reach = reach
-		_emitter.emit(ReachEvent.Change, { value: reach })
+		if (reachX !== _reachX) {
+			_reachX = reachX
+			_emitter.emit(ReachEvent.ChangeX, { value: reachX })
 
-		switch (_reach) {
-			case Reach.Top:
-				_emitter.emit(ReachEvent.Top)
-				break
-			case Reach.Bottom:
-				_emitter.emit(ReachEvent.Bottom)
-				break
-			case Reach.Left:
-				_emitter.emit(ReachEvent.Left)
-				break
-			case Reach.Right:
-				_emitter.emit(ReachEvent.Right)
-				break
+			switch (_reachX) {
+				case Reach.Top:
+					_emitter.emit(ReachEvent.Top)
+					break
+				case Reach.Bottom:
+					_emitter.emit(ReachEvent.Bottom)
+					break
+			}
+		}
+
+		if (reachY !== _reachY) {
+			_reachY = reachY
+			_emitter.emit(ReachEvent.ChangeY, { value: reachY })
+
+			switch (_reachY) {
+				case Reach.Left:
+					_emitter.emit(ReachEvent.Left)
+					break
+				case Reach.Right:
+					_emitter.emit(ReachEvent.Right)
+					break
+			}
 		}
 	}
 
-	const get: Self['get'] = () => {
-		return _reach
+	const getX: Self['getX'] = () => {
+		return _reachX
+	}
+
+	const getY: Self['getY'] = () => {
+		return _reachY
 	}
 
 	const init: Self['init'] = (scroller) => {
-		let axisPlugin = scroller.getPlugin<AxisPlugin>('axis')
-		if (!axisPlugin) {
-			axisPlugin = createAxisPlugin()
-			scroller.addPlugin(axisPlugin)
-		}
-
-		_axis = axisPlugin
 		_scroller = scroller
-		_reach = null
+		_reachX = null
 		scroller.on(ScrollerEvent.ChangeVisibleRect, handler)
 		scroller.on(ScrollerEvent.ChangeContentSize, handler)
-		handler()
 	}
 
 	const destroy: Self['destroy'] = (scroller) => {
 		_emitter.all.clear()
-		_axis = null
 		_scroller = null
-		_reach = null
+		_reachX = null
 		scroller.off(ScrollerEvent.ChangeVisibleRect, handler)
 		scroller.off(ScrollerEvent.ChangeContentSize, handler)
 	}
@@ -107,7 +117,8 @@ export function createReachPlugin(): ReachPlugin {
 		name: 'reach',
 		on: _emitter.on,
 		off: _emitter.off,
-		get,
+		getX,
+		getY,
 		init,
 		destroy,
 	}
