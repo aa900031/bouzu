@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
 
+## v0.3.1
+
+[compare changes](https://github.com/aa900031/bouzu/compare/@bouzu/vue-scroller@0.3.0...@bouzu/vue-scroller@0.3.1)
+
+### 🩹 Fixes
+
+-  **scroller/vue:** Reverse axis ([8eec8ff](https://github.com/aa900031/bouzu/commit/8eec8ff36d19ce22221607a6b2f18f183afe2eb4))
+
+
+
+#### ❤️ Contributors
+
+- Zhong666 <aa900031@gmail.com>
+
 ## v0.3.0
 
 [compare changes](https://github.com/aa900031/bouzu/compare/@bouzu/vue-scroller@0.2.2...@bouzu/vue-scroller@0.3.0)
