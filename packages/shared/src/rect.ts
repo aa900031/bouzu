@@ -82,7 +82,7 @@ export function checkRectIntersectsX(
 	b: Rect,
 ): boolean {
 	return a.x <= getRectMaxX(b)
-  && b.x <= getRectMaxX(a)
+		&& b.x <= getRectMaxX(a)
 }
 
 export function checkRectIntersectsY(
@@ -90,7 +90,7 @@ export function checkRectIntersectsY(
 	b: Rect,
 ): boolean {
 	return a.y <= getRectMaxY(b)
-  && b.y <= getRectMaxY(a)
+		&& b.y <= getRectMaxY(a)
 }
 
 export function checkRectIntersects(
@@ -98,7 +98,7 @@ export function checkRectIntersects(
 	b: Rect,
 ): boolean {
 	return checkRectIntersectsX(a, b)
-  && checkRectIntersectsY(a, b)
+		&& checkRectIntersectsY(a, b)
 }
 
 export function checkRectContains(
@@ -106,9 +106,9 @@ export function checkRectContains(
 	b: Rect,
 ): boolean {
 	return a.x <= b.x
-  && a.y <= b.y
-  && getRectMaxX(a) >= getRectMaxX(b)
-  && getRectMaxY(a) >= getRectMaxY(b)
+		&& a.y <= b.y
+		&& getRectMaxX(a) >= getRectMaxX(b)
+		&& getRectMaxY(a) >= getRectMaxY(b)
 }
 
 export function checkRectContainsPoint(
@@ -116,9 +116,9 @@ export function checkRectContainsPoint(
 	p: Point,
 ): boolean {
 	return a.x <= p.x
-  && a.y <= p.y
-  && getRectMaxX(a) >= p.x
-  && getRectMaxY(a) >= p.y
+		&& a.y <= p.y
+		&& getRectMaxX(a) >= p.x
+		&& getRectMaxY(a) >= p.y
 }
 
 export function getRectCornerInOther(
@@ -138,9 +138,9 @@ export function checkRectEqual(
 	b: Rect,
 ): boolean {
 	return a.x === b.x
-  && a.y === b.y
-  && a.width === b.width
-  && a.height === b.height
+		&& a.y === b.y
+		&& a.width === b.width
+		&& a.height === b.height
 }
 
 export function checkRectEqualPoint(
@@ -148,7 +148,7 @@ export function checkRectEqualPoint(
 	p: Point | Rect,
 ): boolean {
 	return r.x === p.x
-  && r.y === p.y
+		&& r.y === p.y
 }
 
 export function checkRectEqualSize(
@@ -156,7 +156,7 @@ export function checkRectEqualSize(
 	s: Size | Rect,
 ): boolean {
 	return r.width === s.width
-  && r.height === s.height
+		&& r.height === s.height
 }
 
 export function checkLayoutInvalidate(
@@ -164,7 +164,7 @@ export function checkLayoutInvalidate(
 	oldRect: Rect,
 ) {
 	return newRect.width !== oldRect.width
-  || newRect.height !== oldRect.height
+		|| newRect.height !== oldRect.height
 }
 
 export function toSize(rect: Rect): Size {

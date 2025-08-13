@@ -1,7 +1,5 @@
-import type { AxisValue } from '@bouzu/scroller'
-import { Axis, checkRectIntersectsByAxis, getPointByAxis, getRectMaxByAxis, getSizeByAxis, updatePointByAxis, updateSizeByAxis } from '@bouzu/scroller'
-import type { Rect, Size } from '@bouzu/shared'
-import { checkSizeEqual, createRect, createSize } from '@bouzu/shared'
+import type { AxisValue, Rect, Size } from '@bouzu/shared'
+import { Axis, checkRectIntersectsByAxis, checkSizeEqual, createRect, createSize, getPointByAxis, getRectMaxByAxis, getSizeByAxis, updatePointByAxis, updateSizeByAxis } from '@bouzu/shared'
 import type { Layout, Layouts } from '../layouts'
 import { createLayout } from '../layouts'
 import { createAssemble } from '../utils/assemble'
@@ -205,7 +203,7 @@ export function createListLayouts<T extends object>(
 	}
 
 	const getVisibleItems: Self['getVisibleItems'] = (visibleRect) => {
-		const result: { index: number; layout: Layout }[] = []
+		const result: { index: number, layout: Layout }[] = []
 
 		if (!_data)
 			return result

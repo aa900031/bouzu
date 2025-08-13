@@ -1,11 +1,11 @@
 import type { Emitter, Handler } from 'mitt'
 import mitt from 'mitt'
 import type { ValueOf } from 'type-fest'
+import { Axis } from '@bouzu/shared'
 import type { ReachValue } from './reach'
 import { Reach, checkReach } from './reach'
 import type { Scroller, ScrollerPlugin } from './scroller'
 import { ScrollerEvent } from './scroller'
-import { Axis } from './axis'
 
 export const ReachEvent = {
 	Top: 'top',

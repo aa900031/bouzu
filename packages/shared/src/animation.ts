@@ -1,8 +1,9 @@
-import type { Point } from '@bouzu/shared'
-import { createPoint, noop } from '@bouzu/shared'
-import { registerRaf } from './utils/raf'
-import type { GetTimeFn } from './utils/time'
-import { getTime as defaultGetTime } from './utils/time'
+import type { Point } from './point'
+import { createPoint } from './point'
+import { noop } from './noop'
+import { registerRaf } from './raf'
+import type { GetTimeFn } from './time'
+import { getTime as defaultGetTime } from './time'
 
 let fixTs: boolean
 
@@ -75,3 +76,5 @@ export function createNoopAnimation(): Animation {
 export const easeLinear: EaseFn = t => t
 
 export const easeOut: EaseFn = t => Math.sin(t * Math.PI / 2)
+
+export const easeOutCubic: EaseFn = t => 1 - (1 - t) ** 3
