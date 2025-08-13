@@ -1,12 +1,19 @@
-import type { Animation, AxisValue, Point, Rect, Size } from '@bouzu/shared'
-import { Axis, checkPointEqualWithTolerance, checkRectContainsPoint, clamp, clonePoint, createAnimation, createNoopAnimation, createPoint, createSize, easeOutCubic, getPointCenter, getPointDistance, getSizeByAxis, updatePoint } from '@bouzu/shared'
+import type { AxisValue, Point, Rect, Size, TransitionRunner } from '@bouzu/shared'
+import { Axis, checkPointEqualWithTolerance, checkRectContainsPoint, clamp, clonePoint, createPoint, createSize, easeOutCubic, getPointCenter, getPointDistance, getSizeByAxis, runNoopTransition, runTransition, updatePoint } from '@bouzu/shared'
+import type { Emitter } from 'mitt'
 import mitt from 'mitt'
 
-export interface Options {
+export interface ZoomableOptions {
 	min?: number
 	max?: number
 	initial?: number
 	animationDuration?: number
+}
+
+export interface ZoomableProps {
+	getContainerBoundingClientRect: () => Rect
+	getElementStyleSize: () => Size
+	options?: ZoomableOptions
 }
 
 export interface WheelEventPayload {
@@ -15,14 +22,38 @@ export interface WheelEventPayload {
 	withCtrl: boolean
 }
 
+export interface GestureEventPayload {
+	touches: {
+		client: Point
+	}[]
+}
+
+export interface Zoomable {
+	updateTo: (zoom: number, center?: Point) => void
+	updateIn: (step: number) => void
+	updateOut: (step: number) => void
+	getZoom: () => number
+	getPan: () => Point
+	reset: () => void
+	on: Emitter<any>['on']
+	off: Emitter<any>['off']
+	handlers: {
+		TouchStart: (event: GestureEventPayload) => void
+		TouchMove: (event: GestureEventPayload) => void
+		TouchEnd: (event: GestureEventPayload) => void
+		MouseDown: (event: GestureEventPayload) => void
+		MouseMove: (event: GestureEventPayload) => void
+		MouseUp: (event: GestureEventPayload) => void
+		GlobalMouseMove: (event: GestureEventPayload) => void
+		GlobalMouseUp: (event: GestureEventPayload) => void
+		Wheel: (event: WheelEventPayload) => void
+	}
+}
+
 export function createZoomable(
-	props: {
-		getContainerBoundingClientRect: () => Rect
-		getElementStyleSize: () => Size
-		options?: Options
-	},
-) {
-	const _options: Required<Options> = {
+	props: ZoomableProps,
+): Zoomable {
+	const _options: Required<ZoomableOptions> = {
 		min: props.options?.min ?? 0.5,
 		max: props.options?.max ?? 3,
 		initial: props.options?.initial ?? 1,
@@ -46,10 +77,12 @@ export function createZoomable(
 	let _startZoom: number = _currentZoom
 	let _startPan: Point = createPoint()
 	let _timeoutWheel: number | null = null
-	let _animationPan: Animation = createNoopAnimation()
-	let _animationZoomPan: Animation = createNoopAnimation()
+	let _transitionPan: TransitionRunner = runNoopTransition()
+	let _transitionZoomPan: TransitionRunner = runNoopTransition()
 
 	return {
+		on: _emitter.on,
+		off: _emitter.off,
 		updateTo,
 		updateIn,
 		updateOut,
@@ -113,8 +146,8 @@ export function createZoomable(
 	}
 
 	function _handleDragStart() {
-		_animationPan.cancel()
-		_animationZoomPan.cancel()
+		_transitionPan.cancel()
+		_transitionZoomPan.cancel()
 
 		_startPan = clonePoint(_pan)
 	}
@@ -180,8 +213,8 @@ export function createZoomable(
 	}
 
 	function _handleZoomStart() {
-		_animationPan.cancel()
-		_animationZoomPan.cancel()
+		_transitionPan.cancel()
+		_transitionZoomPan.cancel()
 
 		_startZoom = _currentZoom
 		_startPan = clonePoint(_pan)
@@ -328,34 +361,48 @@ export function createZoomable(
 	}
 
 	function _animatePan(targetPan: Point) {
-		_animationPan.cancel()
+		_transitionPan.cancel()
 
 		const startPan = clonePoint(_pan)
 
-		_animationPan = createAnimation(
-			startPan,
-			targetPan,
-			_options.animationDuration,
-			easeOutCubic,
-			(next) => {
-				updatePoint(_pan, next)
+		_transitionPan = runTransition({
+			start: 0,
+			end: 1,
+			duration: _options.animationDuration,
+			easing: easeOutCubic,
+			onUpdate: (progress) => {
+				_pan = createPoint(
+					startPan.x + (targetPan.x - startPan.x) * progress,
+					startPan.y + (targetPan.y - startPan.y) * progress,
+				)
 				_applyChanges()
 			},
-		)
+		})
 	}
 
 	function _animateZoomAndPan(
 		targetZoom: number,
 		targetPan: Point,
 	) {
-		_animationZoomPan.cancel()
+		_transitionZoomPan.cancel()
 
 		const startZoom = _currentZoom
 		const startPan = clonePoint(_pan)
 
-		_animationZoomPan = createAnimation(
-			// TODO
-		)
+		_transitionZoomPan = runTransition({
+			start: 0,
+			end: 1,
+			duration: _options.animationDuration,
+			onUpdate: (progress) => {
+				_pan = createPoint(
+					startPan.x + (targetPan.x - startPan.x) * progress,
+					startPan.y + (targetPan.y - startPan.y) * progress,
+				)
+				_currentZoom = startZoom + (targetZoom - startZoom) * progress
+				_panBounds.update(_currentZoom)
+				_applyChanges()
+			},
+		})
 	}
 
 	function _correctZoomAndPan() {
@@ -473,13 +520,6 @@ function createPanBounds(
 
 		return Math.max(_min[axis], Math.min(offset[axis], _max[axis]))
 	}
-}
-
-interface GestureEventPayload {
-	touches: {
-		clientX: number
-		clientY: number
-	}[]
 }
 
 function createGesture(
@@ -770,8 +810,8 @@ function createGesture(
 	): Point {
 		const containerRect = props.getContainerBoundingClientRect()
 		return createPoint(
-			touch.clientX - containerRect.x,
-			touch.clientY - containerRect.y,
+			touch.client.x - containerRect.x,
+			touch.client.y - containerRect.y,
 		)
 	}
 
@@ -806,7 +846,7 @@ function createGesture(
 	function _checkPointInContainer(
 		touch: GestureEventPayload['touches'][number],
 	): boolean {
-		const point = createPoint(touch.clientX, touch.clientY)
+		const point = createPoint(touch.client.x, touch.client.y)
 		const containerRect = props.getContainerBoundingClientRect()
 		return checkRectContainsPoint(containerRect, point)
 	}

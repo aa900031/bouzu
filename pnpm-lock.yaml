@@ -272,6 +272,31 @@ importers:
         specifier: ^3.4.20
         version: 3.4.20(typescript@5.3.3)
 
+  packages/zoomable/dom:
+    dependencies:
+      '@bouzu/shared':
+        specifier: workspace:^
+        version: link:../../shared
+      '@bouzu/zoomable':
+        specifier: workspace:^
+        version: link:../state
+      dom-helpers:
+        specifier: ^5.2.1
+        version: 5.2.1
+      mitt:
+        specifier: ^3.0.1
+        version: 3.0.1
+      type-fest:
+        specifier: ^3.13.1
+        version: 3.13.1
+    devDependencies:
+      '@bouzu/release-it-config':
+        specifier: workspace:*
+        version: link:../../../internals/release-it-config
+      '@bouzu/tsconfig':
+        specifier: workspace:*
+        version: link:../../../internals/tsconfig
+
   packages/zoomable/state:
     dependencies:
       '@bouzu/shared':

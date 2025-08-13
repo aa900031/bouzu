@@ -1,56 +1,92 @@
-export function executeTransition<T extends number | number[]>(
-	source: Ref<T>,
-	from: MaybeRefOrGetter<T>,
-	to: MaybeRefOrGetter<T>,
-	options: TransitionOptions = {},
-): PromiseLike<void> {
+import { noop } from './noop'
+import { type RegisterRafMethods, registerRaf } from './raf'
+import type { GetTimeFn } from './time'
+import { getTime as defaultGetTime } from './time'
+
+export interface RunTransitionOptions {
+	start: number
+	end: number
+	onUpdate: (value: number) => void | boolean
+	easing?: EaseFn
+	duration?: number
+	onStarted?: () => void
+	onFinished?: () => void
+	getTime?: GetTimeFn
+	raf?: RegisterRafMethods['raf']
+	caf?: RegisterRafMethods['caf']
+}
+
+export type TransitionRunner = Promise<void> & {
+	cancel: () => void
+}
+
+export function runTransition(
+	options: RunTransitionOptions,
+): TransitionRunner {
 	const {
-		window = defaultWindow,
+		start,
+		end,
+		onUpdate,
+		onStarted,
+		onFinished,
+		raf = window.requestAnimationFrame,
+		caf = window.cancelAnimationFrame,
+		duration = 1000,
+		// eslint-disable-next-line ts/no-use-before-define
+		easing = easeLinear,
+		getTime = defaultGetTime,
 	} = options
-	const fromVal = toValue(from)
-	const toVal = toValue(to)
-	const v1 = toVec(fromVal)
-	const v2 = toVec(toVal)
-	const duration = toValue(options.duration) ?? 1000
-	const startedAt = Date.now()
-	const endAt = Date.now() + duration
-	const trans = typeof options.transition === 'function'
-		? options.transition
-		: (toValue(options.transition) ?? linear)
+	const rafMethos: RegisterRafMethods = { raf, caf }
 
-	const ease = typeof trans === 'function'
-		? trans
-		: createEasingFunction(trans)
+	let _cancelRaf = noop
+	let _canceled = false
 
-	return new Promise<void>((resolve) => {
-		source.value = fromVal
+	const promise = new Promise<void>((resolve) => {
+		const startAt = getTime()
+		onStarted?.()
 
-		const tick = () => {
-			if (options.abort?.()) {
+		const tick = (currentTime: number) => {
+			if (_canceled) {
 				resolve()
-
 				return
 			}
 
-			const now = Date.now()
-			const alpha = ease((now - startedAt) / duration)
-			const arr = toVec(source.value).map((n, i) => lerp(v1[i], v2[i], alpha))
+			const elapsed = currentTime - startAt
+			const progress = Math.min(elapsed / duration, 1)
 
-			if (Array.isArray(source.value))
-				(source.value as number[]) = arr.map((n, i) => lerp(v1[i] ?? 0, v2[i] ?? 0, alpha))
-			else if (typeof source.value === 'number')
-				(source.value as number) = arr[0]
+			const value = start + (end - start) * easing(progress)
+			onUpdate(value)
 
-			if (now < endAt) {
-				window?.requestAnimationFrame(tick)
+			if (progress < 1) {
+				_cancelRaf = registerRaf(tick, rafMethos)
 			}
 			else {
-				source.value = toVal
-
+				onFinished?.()
 				resolve()
 			}
 		}
 
-		tick()
-	})
+		_cancelRaf = registerRaf(tick, rafMethos)
+	}) as TransitionRunner
+
+	promise.cancel = () => {
+		_canceled = true
+		_cancelRaf()
+	}
+
+	return promise
 }
+
+export function runNoopTransition(): TransitionRunner {
+	const promise = (new Promise<void>(resolve => resolve())) as TransitionRunner
+	promise.cancel = noop
+	return promise
+}
+
+export type EaseFn = (t: number) => number
+
+export const easeLinear: EaseFn = t => t
+
+export const easeOut: EaseFn = t => Math.sin(t * Math.PI / 2)
+
+export const easeOutCubic: EaseFn = t => 1 - (1 - t) ** 3
