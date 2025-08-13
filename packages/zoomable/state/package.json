@@ -1,0 +1,43 @@
+{
+	"name": "@bouzu/zoomable",
+	"version": "0.0.0",
+	"private": false,
+	"author": "zhong666 <hi@zhong666.me>",
+	"license": "MIT",
+	"homepage": "https://bouzu.zhong666.me",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/aa900031/bouzu"
+	},
+	"bugs": {
+		"url": "https://github.com/aa900031/bouzu/issues"
+	},
+	"sideEffects": false,
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"import": "./dist/index.mjs",
+			"require": "./dist/index.cjs"
+		}
+	},
+	"main": "./dist/index.cjs",
+	"module": "./dist/index.mjs",
+	"types": "./dist/index.d.ts",
+	"files": [
+		"dist"
+	],
+	"publishConfig": {
+		"access": "public"
+	},
+	"scripts": {
+		"build": "unbuild",
+		"release": "release-it --ci"
+	},
+	"dependencies": {
+
+	},
+	"devDependencies": {
+		"@bouzu/release-it-config": "workspace:*",
+		"@bouzu/tsconfig": "workspace:*"
+	}
+}
