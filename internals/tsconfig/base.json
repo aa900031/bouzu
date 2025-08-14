@@ -31,7 +31,8 @@
 			"@bouzu/shared": ["../../packages/shared/src"],
 			"@bouzu/vue-helper": ["../../packages/utils/vue-helper/src"],
 			"@bouzu/zoomable": ["../../packages/zoomable/state/src"],
-			"@bouzu/zoomable-dom": ["../../packages/zoomable/dom/src"]
+			"@bouzu/zoomable-dom": ["../../packages/zoomable/dom/src"],
+			"@bouzu/vue-zoomable": ["../../packages/zoomable/vue/src"]
 		}
 	}
 }

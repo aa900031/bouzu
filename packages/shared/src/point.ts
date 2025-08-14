@@ -28,11 +28,6 @@ export function checkPointEqualWithTolerance(
 		&& Math.abs(a.y - b.y) < tolerance
 }
 
-export function updatePoint(dest: Point, src: Point): void {
-	dest.x = src.x
-	dest.y = src.y
-}
-
 export function getPointCenter(
 	p1: Point,
 	p2: Point,

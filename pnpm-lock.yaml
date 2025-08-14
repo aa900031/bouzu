@@ -313,6 +313,37 @@ importers:
         specifier: workspace:*
         version: link:../../../internals/tsconfig
 
+  packages/zoomable/vue:
+    dependencies:
+      '@bouzu/shared':
+        specifier: workspace:^
+        version: link:../../shared
+      '@bouzu/vue-helper':
+        specifier: workspace:^
+        version: link:../../utils/vue-helper
+      '@bouzu/zoomable':
+        specifier: workspace:^
+        version: link:../state
+      '@bouzu/zoomable-dom':
+        specifier: workspace:^
+        version: link:../dom
+      '@vueuse/core':
+        specifier: ^10.8.0
+        version: 10.8.0(vue@3.4.20)
+      vue-demi:
+        specifier: latest
+        version: 0.14.10(vue@3.4.20)
+    devDependencies:
+      '@bouzu/release-it-config':
+        specifier: workspace:*
+        version: link:../../../internals/release-it-config
+      '@bouzu/tsconfig':
+        specifier: workspace:*
+        version: link:../../../internals/tsconfig
+      vue:
+        specifier: ^3.4.20
+        version: 3.4.20(typescript@5.3.3)
+
   stories/vue:
     devDependencies:
       '@bouzu/tsconfig':
@@ -327,6 +358,9 @@ importers:
       '@bouzu/vue-virtualizer':
         specifier: workspace:*
         version: link:../../packages/virtualizer/vue
+      '@bouzu/vue-zoomable':
+        specifier: workspace:*
+        version: link:../../packages/zoomable/vue
       '@storybook/addon-essentials':
         specifier: ^8.0.0
         version: 8.0.0
@@ -4923,7 +4957,7 @@ packages:
   /@vueuse/shared@10.8.0(vue@3.4.20):
     resolution: {integrity: sha512-dUdy6zwHhULGxmr9YUg8e+EnB39gcM4Fe2oKBSrh3cOsV30JcMPtsyuspgFCUo5xxFNaeMf/W2yyKfST7Bg8oQ==}
     dependencies:
-      vue-demi: 0.14.7(vue@3.4.20)
+      vue-demi: 0.14.10(vue@3.4.20)
     transitivePeerDependencies:
       - '@vue/composition-api'
       - vue
@@ -11969,6 +12003,21 @@ packages:
   /vue-component-type-helpers@3.0.5:
     resolution: {integrity: sha512-uoNZaJ+a1/zppa/Vgmi8zIOP2PHXDN2rT8NyF+zQRK6ZG94lNB9prcV0GdLJbY9i9lrD47JOVIH92SaiA7oJ1A==}
     dev: true
+
+  /vue-demi@0.14.10(vue@3.4.20):
+    resolution: {integrity: sha512-nMZBOwuzabUO0nLgIcc6rycZEebF6eeUfaiQx9+WSk8e29IbLvPU9feI6tqW4kTo3hvoYAJkMh8n8D0fuISphg==}
+    engines: {node: '>=12'}
+    hasBin: true
+    requiresBuild: true
+    peerDependencies:
+      '@vue/composition-api': ^1.0.0-rc.1
+      vue: ^3.0.0-0 || ^2.6.0
+    peerDependenciesMeta:
+      '@vue/composition-api':
+        optional: true
+    dependencies:
+      vue: 3.4.20(typescript@5.3.3)
+    dev: false
 
   /vue-demi@0.14.6(vue@3.4.20):
     resolution: {integrity: sha512-8QA7wrYSHKaYgUxDA5ZC24w+eHm3sYCbp0EzcDwKqN3p6HqtTCGR/GVsPyZW92unff4UlcSh++lmqDWN3ZIq4w==}

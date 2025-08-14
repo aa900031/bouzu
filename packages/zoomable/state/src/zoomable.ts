@@ -1,5 +1,5 @@
 import type { AxisValue, Point, Rect, Size, TransitionRunner } from '@bouzu/shared'
-import { Axis, checkPointEqualWithTolerance, checkRectContainsPoint, clamp, clonePoint, createPoint, createSize, easeOutCubic, getPointCenter, getPointDistance, getSizeByAxis, runNoopTransition, runTransition, updatePoint } from '@bouzu/shared'
+import { Axis, checkPointEqualWithTolerance, checkRectContainsPoint, clamp, clonePoint, createPoint, createSize, easeOutCubic, getPointCenter, getPointDistance, getSizeByAxis, runNoopTransition, runTransition } from '@bouzu/shared'
 import type { Emitter } from 'mitt'
 import mitt from 'mitt'
 
@@ -16,6 +16,17 @@ export interface ZoomableProps {
 	options?: ZoomableOptions
 }
 
+export const ZoomableEventName = {
+	ChangeZoom: 'change-zoom',
+	ChangePan: 'change-pan',
+} as const
+
+// eslint-disable-next-line ts/consistent-type-definitions
+export type ZoomableEvents = {
+	[ZoomableEventName.ChangePan]: Point
+	[ZoomableEventName.ChangeZoom]: number
+}
+
 export interface WheelEventPayload {
 	client: Point
 	delta: Point
@@ -28,15 +39,20 @@ export interface GestureEventPayload {
 	}[]
 }
 
+export interface DoubleClickEventPayload {
+	client: Point
+}
+
 export interface Zoomable {
+	on: Emitter<ZoomableEvents>['on']
+	off: Emitter<ZoomableEvents>['off']
 	updateTo: (zoom: number, center?: Point) => void
 	updateIn: (step: number) => void
 	updateOut: (step: number) => void
 	getZoom: () => number
 	getPan: () => Point
 	reset: () => void
-	on: Emitter<any>['on']
-	off: Emitter<any>['off']
+	destroy: () => void
 	handlers: {
 		TouchStart: (event: GestureEventPayload) => void
 		TouchMove: (event: GestureEventPayload) => void
@@ -47,6 +63,7 @@ export interface Zoomable {
 		GlobalMouseMove: (event: GestureEventPayload) => void
 		GlobalMouseUp: (event: GestureEventPayload) => void
 		Wheel: (event: WheelEventPayload) => void
+		DoubleClick: (event: DoubleClickEventPayload) => void
 	}
 }
 
@@ -59,7 +76,7 @@ export function createZoomable(
 		initial: props.options?.initial ?? 1,
 		animationDuration: props.options?.animationDuration ?? 300,
 	}
-	const _emitter = mitt()
+	const _emitter = mitt<ZoomableEvents>()
 	const _panBounds = createPanBounds(props)
 	const _gesture = createGesture({
 		...props,
@@ -69,7 +86,6 @@ export function createZoomable(
 		onZoomStart: _handleZoomStart,
 		onZoomChange: _handleZoomChange,
 		onZoomEnd: _handleZoomEnd,
-		onDoubleTap: _handleDoubleTap,
 	})
 
 	let _currentZoom: number = _options.initial
@@ -86,16 +102,14 @@ export function createZoomable(
 		updateTo,
 		updateIn,
 		updateOut,
-		getZoom() {
-			return _currentZoom
-		},
-		getPan() {
-			return _pan
-		},
 		reset,
+		getZoom,
+		getPan,
+		destroy,
 		handlers: {
 			..._gesture.handlers,
 			Wheel: _handleWheel,
+			DoubleClick: _handleDoubleClick,
 		},
 	}
 
@@ -145,6 +159,18 @@ export function createZoomable(
 		_animateZoomAndPan(targetZoom, targetPan)
 	}
 
+	function getZoom() {
+		return _currentZoom
+	}
+
+	function getPan() {
+		return _pan
+	}
+
+	function destroy() {
+		_emitter.all.clear()
+	}
+
 	function _handleDragStart() {
 		_transitionPan.cancel()
 		_transitionZoomPan.cancel()
@@ -155,13 +181,10 @@ export function createZoomable(
 	function _handleDragChange() {
 		const delta = _gesture.getDragDelta()
 
-		const newPan = createPoint(
+		_pan = createPoint(
 			_pan.x + delta.x,
 			_pan.y + delta.y,
 		)
-
-		_pan.x = newPan.x
-		_pan.y = newPan.y
 
 		_applyChanges()
 	}
@@ -269,17 +292,16 @@ export function createZoomable(
 		_correctZoomAndPan()
 	}
 
-	function _handleDoubleTap(
-		point: Point,
+	function _handleDoubleClick(
+		event: DoubleClickEventPayload,
 	) {
 		const rect = props.getContainerBoundingClientRect()
 		const centerX = rect.width / 2
 		const centerY = rect.height / 2
 		const rel = createPoint(
-			point.x - centerX,
-			point.y - centerY,
+			event.client.x - centerX,
+			event.client.y - centerY,
 		)
-		// 在初始和最大縮放之間切換
 		const targetZoom = _currentZoom > _options.initial ? _options.initial : _options.max
 		updateTo(targetZoom, rel)
 	}
@@ -298,8 +320,8 @@ export function createZoomable(
 				const centerY = rect.height / 2
 
 				const zoomCenter = createPoint(
-					(event.client.x - rect.x) - centerX,
-					(event.client.y - rect.y) - centerY,
+					event.client.x - centerX,
+					event.client.y - centerY,
 				)
 				// 計算新的平移位置
 				const zoomFactor = newZoom / _currentZoom
@@ -345,9 +367,8 @@ export function createZoomable(
 	}
 
 	function _applyChanges() {
-		// TODO: 更新事件名稱
-		_emitter.emit('changezoom', _currentZoom)
-		_emitter.emit('changepan', _pan)
+		_emitter.emit(ZoomableEventName.ChangeZoom, _currentZoom)
+		_emitter.emit(ZoomableEventName.ChangePan, _pan)
 	}
 
 	function _createProjectPoint(
@@ -462,8 +483,11 @@ function createPanBounds(
 		zoom: number,
 	) {
 		const containerRect = props.getContainerBoundingClientRect()
-		const elementSize = props.getElementStyleSize()
-		const scaledSize = createSize(elementSize.width * zoom, elementSize.height * zoom)
+		const contentSize = props.getElementStyleSize()
+		const scaledSize = createSize(
+			contentSize.width * zoom,
+			contentSize.height * zoom,
+		)
 
 		_updateAxis(Axis.X, containerRect, scaledSize)
 		_updateAxis(Axis.Y, containerRect, scaledSize)
@@ -525,24 +549,23 @@ function createPanBounds(
 function createGesture(
 	props: {
 		getContainerBoundingClientRect: () => Rect
-		onDragStart?: () => void
-		onDragChange?: () => void
-		onDragEnd?: () => void
-		onZoomStart?: () => void
-		onZoomChange?: () => void
-		onZoomEnd?: () => void
-		onDoubleTap?: (point: Point) => void
+		onDragStart: () => void
+		onDragChange: () => void
+		onDragEnd: () => void
+		onZoomStart: () => void
+		onZoomChange: () => void
+		onZoomEnd: () => void
 	},
 ) {
 	const AXIS_SWIPE_HYSTERESIS = 10
 	const VELOCITY_HYSTERESIS = 50
 
-	const p1: Point = createPoint()
-	const p2: Point = createPoint()
-	const prevP1: Point = createPoint()
-	const prevP2: Point = createPoint()
-	const startP1: Point = createPoint()
-	const startP2: Point = createPoint()
+	let _p1: Point = createPoint()
+	let _p2: Point = createPoint()
+	let _prevP1: Point = createPoint()
+	let _prevP2: Point = createPoint()
+	let _startP1: Point = createPoint()
+	let _startP2: Point = createPoint()
 
 	const velocity: Point = createPoint()
 	let _dragAxis: AxisValue | null = null // TODO: 可以移除?
@@ -554,10 +577,7 @@ function createGesture(
 
 	let _numActivePoints: number = 0
 	let _intervalTime: number = 0
-	const _intervalP1: Point = createPoint()
-
-	let _lastTapTime: number = 0
-	let _lastTapPosition: Point = createPoint()
+	let _intervalP1: Point = createPoint()
 
 	return {
 		getVelocity() {
@@ -565,23 +585,23 @@ function createGesture(
 		},
 		getZoomDistance() {
 			if (_numActivePoints > 1)
-				return getPointDistance(p1, p2)
+				return getPointDistance(_p1, _p2)
 			return 0
 		},
 		getStartZoomDistance() {
 			if (_numActivePoints > 1)
-				return getPointDistance(startP1, startP2)
+				return getPointDistance(_startP1, _startP2)
 			return 0
 		},
 		getZoomCenter(): Point {
 			if (_numActivePoints > 1)
-				return getPointCenter(p1, p2)
-			return clonePoint(p1)
+				return getPointCenter(_p1, _p2)
+			return clonePoint(_p1)
 		},
 		getDragDelta(): Point {
 			return createPoint(
-				p1.x - prevP1.x,
-				p1.y - prevP1.y,
+				_p1.x - _prevP1.x,
+				_p1.y - _prevP1.y,
 			)
 		},
 		handlers: {
@@ -599,30 +619,6 @@ function createGesture(
 	function handleTouchStart(event: GestureEventPayload) {
 		_updatePointsFromTouch(event, 'down')
 		_onGestureStart()
-
-		// 檢查是否為雙擊
-		if (event.touches.length === 1) {
-			const currentTime = Date.now()
-			const timeDiff = currentTime - _lastTapTime
-			const touch = event.touches[0]
-			const currentPosition = _getTouchPoint(touch)
-
-			const distance = Math.sqrt(
-				(currentPosition.x - _lastTapPosition.x) ** 2
-				+ (currentPosition.y - _lastTapPosition.y) ** 2,
-			)
-
-			// 如果兩次點擊間隔小於 300ms 且位置相差不超過 30px，則視為雙擊
-			if (timeDiff < 300 && distance < 30) {
-				props.onDoubleTap?.(currentPosition)
-				_lastTapTime = 0
-				_lastTapPosition = createPoint() // TODO: 可能不需要
-			}
-			else {
-				_lastTapTime = currentTime
-				_lastTapPosition = currentPosition
-			}
-		}
 	}
 
 	function handleTouchMove(event: GestureEventPayload) {
@@ -676,32 +672,28 @@ function createGesture(
 		event: GestureEventPayload,
 		type: 'down' | 'move' | 'up',
 	) {
+		_numActivePoints = event.touches.length
+
 		switch (type) {
 			case 'down':
 			case 'move': {
-				_numActivePoints = event.touches.length
-
-				if (event.touches.length >= 1) {
+				if (_numActivePoints >= 1) {
 					const touch1 = event.touches[0]
 					const point1 = _getTouchPoint(touch1)
-					updatePoint(p1, point1)
+					_p1 = clonePoint(point1)
 
 					if (type === 'down')
-						updatePoint(startP1, point1)
+						_startP1 = clonePoint(point1)
 				}
 
-				if (event.touches.length >= 2) {
+				if (_numActivePoints >= 2) {
 					const touch2 = event.touches[1]
 					const point2 = _getTouchPoint(touch2)
-					updatePoint(p2, point2)
+					_p2 = clonePoint(point2)
 
 					if (type === 'down')
-						updatePoint(startP2, point2)
+						_startP2 = clonePoint(point2)
 				}
-				break
-			}
-			default: {
-				_numActivePoints = event.touches.length
 				break
 			}
 		}
@@ -720,12 +712,12 @@ function createGesture(
 		switch (type) {
 			case 'down': {
 				_numActivePoints = 1
-				updatePoint(p1, point)
-				updatePoint(startP1, point)
+				_p1 = clonePoint(point)
+				_startP1 = clonePoint(point)
 				break
 			}
 			case 'move': {
-				updatePoint(p1, point)
+				_p1 = clonePoint(point)
 				break
 			}
 			case 'up': {
@@ -738,7 +730,7 @@ function createGesture(
 	function _onGestureStart() {
 		_startTime = Date.now()
 		_intervalTime = _startTime
-		updatePoint(_intervalP1, p1)
+		_intervalP1 = clonePoint(_p1)
 
 		if (_numActivePoints === 1) {
 			_dragAxis = null
@@ -754,17 +746,19 @@ function createGesture(
 	function _onGestureChange() {
 		if (_numActivePoints === 1 && !_isZooming) {
 			if (!_isDragging) {
-				const diffX = Math.abs(p1.x - startP1.x)
-				const diffY = Math.abs(p1.y - startP1.y)
+				const diffX = Math.abs(_p1.x - _startP1.x)
+				const diffY = Math.abs(_p1.y - _startP1.y)
 
-				if (diffX >= AXIS_SWIPE_HYSTERESIS || diffY >= AXIS_SWIPE_HYSTERESIS) {
+				if (diffX >= AXIS_SWIPE_HYSTERESIS || diffY >= AXIS_SWIPE_HYSTERESIS)
 					_dragAxis = diffX > diffY ? 'x' : 'y'
+
+				if (_dragAxis) {
 					_isDragging = true
 					props.onDragStart?.()
 				}
 			}
 
-			if (_isDragging && !checkPointEqualWithTolerance(p1, prevP1)) {
+			if (_isDragging && !checkPointEqualWithTolerance(_p1, _prevP1)) {
 				_updateVelocity()
 				props.onDragChange?.()
 			}
@@ -775,7 +769,7 @@ function createGesture(
 				props.onZoomStart?.()
 			}
 
-			if (!checkPointEqualWithTolerance(p1, prevP1) || !checkPointEqualWithTolerance(p2, prevP2))
+			if (!checkPointEqualWithTolerance(_p1, _prevP1) || !checkPointEqualWithTolerance(_p2, _prevP2))
 				props.onZoomChange?.()
 		}
 
@@ -801,8 +795,8 @@ function createGesture(
 	}
 
 	function _updatePrevPoints() {
-		updatePoint(prevP1, p1)
-		updatePoint(prevP2, p2)
+		_prevP1 = clonePoint(_p1)
+		_prevP2 = clonePoint(_p2)
 	}
 
 	function _getTouchPoint(
@@ -828,14 +822,14 @@ function createGesture(
 		velocity.y = _getVelocity(Axis.Y, duration)
 
 		_intervalTime = time
-		updatePoint(_intervalP1, p1)
+		_intervalP1 = clonePoint(_p1)
 	}
 
 	function _getVelocity(
 		axis: AxisValue,
 		duration: number,
 	): number {
-		const displacement = p1[axis] - _intervalP1[axis]
+		const displacement = _p1[axis] - _intervalP1[axis]
 
 		if (Math.abs(displacement) > 1 && duration > 5)
 			return displacement / duration

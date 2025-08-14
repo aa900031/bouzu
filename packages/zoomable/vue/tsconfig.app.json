@@ -1,0 +1,17 @@
+{
+	"extends": "@bouzu/tsconfig/vue.json",
+	"references": [
+		{ "path": "../dom/tsconfig.app.json" },
+		{ "path": "../state/tsconfig.app.json" },
+		{ "path": "../../shared/tsconfig.app.json" },
+		{ "path": "../../utils/vue-helper/tsconfig.app.json" }
+	],
+	"include": [
+		"src/**/*.ts",
+		"src/**/*.d.ts"
+	],
+	"exclude": [
+		"src/**/*.test.ts",
+		"src/**/*.spec.ts"
+	]
+}
