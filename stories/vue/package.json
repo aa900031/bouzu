@@ -35,6 +35,7 @@
 		"@storybook/vue3-vite": "^8.0.0",
 		"@vitejs/plugin-vue": "^5.0.4",
 		"storybook": "^8.0.0",
+		"swiper": "^11.2.10",
 		"unocss": "^0.58.5",
 		"vite": "^5.1.6",
 		"vue": "^3.4.20"
