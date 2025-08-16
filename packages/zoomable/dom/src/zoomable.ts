@@ -5,6 +5,8 @@ import { createZoomable as createZoomableState } from '@bouzu/zoomable'
 
 export interface Zoomable {
 	state: ZoomableState
+	start: () => void
+	stop: () => void
 	mount: (container: HTMLElement, element: HTMLElement) => void
 	unmount: () => void
 	destroy: () => void
@@ -28,6 +30,8 @@ export function createZoomable(
 
 	return {
 		state,
+		start,
+		stop,
 		mount,
 		unmount,
 		destroy,
@@ -39,21 +43,14 @@ export function createZoomable(
 	) {
 		_container = container
 		_content = content
-
-		_container.addEventListener('touchstart', _handleTouchStart)
-		_container.addEventListener('touchmove', _handleTouchMove)
-		_container.addEventListener('touchend', _handleTouchEnd)
-		_container.addEventListener('touchcancel', _handleTouchEnd)
-		_container.addEventListener('mousedown', _handleMouseDown)
-		_container.addEventListener('mousemove', _handleMouseMove)
-		_container.addEventListener('mouseup', _handleMouseUp)
-		_container.addEventListener('wheel', _handleWheel, { passive: false })
-		_container.addEventListener('dblclick', _handleDoubleClick)
-		document.addEventListener('mousemove', _handleGlobalMouseMove)
-		document.addEventListener('mouseup', _handleGlobalMouseUp)
 	}
 
 	function unmount() {
+		_container = null
+		_content = null
+	}
+
+	function stop() {
 		if (_container) {
 			_container.removeEventListener('touchstart', _handleTouchStart)
 			_container.removeEventListener('touchmove', _handleTouchMove)
@@ -67,13 +64,27 @@ export function createZoomable(
 			document.removeEventListener('mousemove', _handleGlobalMouseMove)
 			document.removeEventListener('mouseup', _handleGlobalMouseUp)
 		}
+	}
 
-		_container = null
-		_content = null
+	function start() {
+		if (_container) {
+			_container.addEventListener('touchstart', _handleTouchStart)
+			_container.addEventListener('touchmove', _handleTouchMove)
+			_container.addEventListener('touchend', _handleTouchEnd)
+			_container.addEventListener('touchcancel', _handleTouchEnd)
+			_container.addEventListener('mousedown', _handleMouseDown)
+			_container.addEventListener('mousemove', _handleMouseMove)
+			_container.addEventListener('mouseup', _handleMouseUp)
+			_container.addEventListener('wheel', _handleWheel, { passive: false })
+			_container.addEventListener('dblclick', _handleDoubleClick)
+			document.addEventListener('mousemove', _handleGlobalMouseMove)
+			document.addEventListener('mouseup', _handleGlobalMouseUp)
+		}
 	}
 
 	function destroy() {
 		state.destroy()
+		stop()
 		unmount()
 	}
 
@@ -83,8 +94,8 @@ export function createZoomable(
 
 		const rect = _container.getBoundingClientRect()
 		return createRect(
-			rect.left,
-			rect.top,
+			rect.x,
+			rect.y,
 			rect.width,
 			rect.height,
 		)
@@ -94,8 +105,7 @@ export function createZoomable(
 		if (!_content)
 			throw new Error('No')
 
-		const element = _content.firstElementChild ?? _content
-		const style = window.getComputedStyle(element)
+		const style = window.getComputedStyle(_content)
 		const width = Number.parseFloat(style.width)
 		const height = Number.parseFloat(style.height)
 
@@ -144,7 +154,10 @@ export function createZoomable(
 		state.handlers.MouseDown({
 			touches: [
 				{
-					client: getRealClientPoint(event),
+					client: createPoint(
+						event.clientX,
+						event.clientY,
+					),
 				},
 			],
 		})
@@ -154,7 +167,10 @@ export function createZoomable(
 		state.handlers.MouseMove({
 			touches: [
 				{
-					client: getRealClientPoint(event),
+					client: createPoint(
+						event.clientX,
+						event.clientY,
+					),
 				},
 			],
 		})
@@ -164,7 +180,10 @@ export function createZoomable(
 		state.handlers.MouseUp({
 			touches: [
 				{
-					client: getRealClientPoint(event),
+					client: createPoint(
+						event.clientX,
+						event.clientY,
+					),
 				},
 			],
 		})
@@ -174,7 +193,10 @@ export function createZoomable(
 		state.handlers.GlobalMouseMove({
 			touches: [
 				{
-					client: getRealClientPoint(event),
+					client: createPoint(
+						event.clientX,
+						event.clientY,
+					),
 				},
 			],
 		})
@@ -183,7 +205,10 @@ export function createZoomable(
 		state.handlers.GlobalMouseUp({
 			touches: [
 				{
-					client: getRealClientPoint(event),
+					client: createPoint(
+						event.clientX,
+						event.clientY,
+					),
 				},
 			],
 		})
@@ -191,27 +216,27 @@ export function createZoomable(
 
 	function _handleWheel(event: WheelEvent) {
 		event.preventDefault()
+		const rect = _getContainerBoundingClientRect()
+
 		state.handlers.Wheel({
-			client: getRealClientPoint(event),
+			client: createPoint(
+				event.clientX - rect.x,
+				event.clientY - rect.y,
+			),
 			delta: createPoint(
 				event.deltaX,
 				event.deltaY,
 			),
-			withCtrl: event.ctrlKey || event.metaKey,
+			withCtrl: event.ctrlKey,
 		})
 	}
 
 	function _handleDoubleClick(event: MouseEvent) {
 		state.handlers.DoubleClick({
-			client: getRealClientPoint(event),
+			client: createPoint(
+				event.clientX,
+				event.clientY,
+			),
 		})
-	}
-
-	function getRealClientPoint(event: WheelEvent | MouseEvent) {
-		const rect = _getContainerBoundingClientRect()
-		return createPoint(
-			event.clientX - rect.x,
-			event.clientY - rect.y,
-		)
 	}
 }

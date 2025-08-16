@@ -9,10 +9,13 @@ import type { Point } from '@bouzu/shared'
 export function useZoomable(
 	container: MaybeRef<HTMLElement | null | undefined>,
 	content: MaybeRef<HTMLElement | null | undefined>,
-	options?: ZoomableOptions,
+	props?: {
+		disabled?: MaybeRef<boolean | undefined>
+		options?: ZoomableOptions
+	},
 ) {
 	const zoomable = markRaw(createZoomable({
-		options: unref(options),
+		options: unref(props?.options),
 	}))
 
 	const [zoom] = eventRef<number, (value: number) => void>({
@@ -47,11 +50,21 @@ export function useZoomable(
 			return
 
 		zoomable.mount(_container, _content)
+		if (unref(props?.disabled) !== true)
+			return zoomable.start()
 
 		onCleanup(() => {
+			zoomable.stop()
 			zoomable.unmount()
 		})
 	}, { flush: 'post', immediate: true })
+
+	watch(() => unref(props?.disabled), (val) => {
+		if (val === true)
+			zoomable.stop()
+		else
+			zoomable.start()
+	}, { immediate: true })
 
 	onScopeDispose(() => {
 		zoomable.destroy()

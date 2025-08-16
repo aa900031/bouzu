@@ -1,76 +1,35 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { useZoomable } from '@bouzu/vue-zoomable'
-
-const containerRef = ref(null)
-const contentRef = ref(null)
-const { pan, zoom } = useZoomable(containerRef, contentRef)
+import Zoomable from './components/Zoomable.vue'
 </script>
 
 <template>
-	<div
-		ref="containerRef"
-		style="
-			position: relative;
-			width: 600px;
-			height: 400px;
-			overflow: hidden;
-			border: 1px solid red;
-			border-radius: 10px;
-		"
-	>
-		<div
-			ref="contentRef"
-			style="
-				height: 100%;
-				width: 100%;
-				position: relative;
-				transform-origin: center center;
-				transition: none;
-				user-select: none;
-				touch-action: none;
-				will-change: transform;
-				display: flex;
-				align-items: center;
-				justify-content: center;
-			"
-			:style="{
-				transform: `translate3d(${pan.x}px, ${pan.y}px, 0px) scale3d(${zoom}, ${zoom}, 1)`,
-			}"
+	<div class="w-[600px] h-[400px]">
+		<Zoomable
+			class="w-full h-full border border-red rounded-2.5"
 		>
 			<div
-				style="
-					width: 400px;
-					height: 300px;
-					background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4);
-					border-radius: 12px;
-					display: flex;
-					flex-direction: column;
-					justify-content: center;
-					align-items: center;
-					color: white;
-					font-size: 18px;
-					font-weight: bold;
-					text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-					box-shadow: 0 8px 32px rgba(0,0,0,0.1);
-					cursor: grab;
+				class="
+					w-[400px] h-[300px] rounded-3 flex flex-col justify-center items-center text-white text-lg font-bold cursor-grab
+					[background:linear-gradient(45deg,#ff6b6b,#4ecdc4,#45b7d1,#96ceb4)]
+					shadow-[0_8px_32px_rgba(0,0,0,0.1)]
+					 [text-shadow:2px_2px_4px_rgba(0,0,0,0.3)]
 				"
 			>
-				<div style="text-align: center;">
-					<h2 style="margin: 0 0 10px 0;">
+				<div class="text-center">
+					<h2 class="m-0 mb-2.5">
 						🎯 縮放組件演示
 					</h2>
-					<p style="margin: 0;">
+					<p class="m-0">
 						雙指捏合或 Ctrl+滾輪縮放
 					</p>
-					<p style="margin: 5px 0 0 0;">
+					<p class="m-0 mt-1">
 						拖曳或滾輪移動內容
 					</p>
-					<p style="margin: 5px 0 0 0; font-size: 14px; opacity: 0.8;">
+					<p class="m-0 mt-1 text-sm opacity-80">
 						雙擊切換縮放
 					</p>
 				</div>
 			</div>
-		</div>
+		</Zoomable>
 	</div>
 </template>

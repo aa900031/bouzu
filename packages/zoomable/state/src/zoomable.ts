@@ -567,13 +567,12 @@ function createGesture(
 	let _startP1: Point = createPoint()
 	let _startP2: Point = createPoint()
 
-	const velocity: Point = createPoint()
-	let _dragAxis: AxisValue | null = null // TODO: 可以移除?
+	let _velocity: Point = createPoint()
+	let _dragAxis: AxisValue | null = null
 
 	let _startTime: number = 0
 	let _isDragging = false
 	let _isZooming = false
-	let _isMultitouch = false // TODO: 可以移除?
 
 	let _numActivePoints: number = 0
 	let _intervalTime: number = 0
@@ -581,7 +580,7 @@ function createGesture(
 
 	return {
 		getVelocity() {
-			return velocity
+			return _velocity
 		},
 		getZoomDistance() {
 			if (_numActivePoints > 1)
@@ -737,10 +736,8 @@ function createGesture(
 			_updatePrevPoints()
 		}
 
-		if (_numActivePoints > 1) {
-			_isMultitouch = true
+		if (_numActivePoints > 1)
 			_updatePrevPoints()
-		}
 	}
 
 	function _onGestureChange() {
@@ -788,8 +785,6 @@ function createGesture(
 				_isZooming = false
 				props.onZoomEnd?.()
 			}
-
-			_isMultitouch = false
 			_dragAxis = null
 		}
 	}
@@ -812,16 +807,17 @@ function createGesture(
 	function _updateVelocity(
 		force = false,
 	): void {
-		const time = Date.now()
-		const duration = time - _intervalTime
+		const currentTime = Date.now()
+		const duration = currentTime - _intervalTime
 
 		if (duration < VELOCITY_HYSTERESIS && !force)
 			return
 
-		velocity.x = _getVelocity(Axis.X, duration)
-		velocity.y = _getVelocity(Axis.Y, duration)
-
-		_intervalTime = time
+		_velocity = createPoint(
+			_getVelocity(Axis.X, duration),
+			_getVelocity(Axis.Y, duration),
+		)
+		_intervalTime = currentTime
 		_intervalP1 = clonePoint(_p1)
 	}
 
@@ -840,7 +836,7 @@ function createGesture(
 	function _checkPointInContainer(
 		touch: GestureEventPayload['touches'][number],
 	): boolean {
-		const point = createPoint(touch.client.x, touch.client.y)
+		const point = touch.client
 		const containerRect = props.getContainerBoundingClientRect()
 		return checkRectContainsPoint(containerRect, point)
 	}

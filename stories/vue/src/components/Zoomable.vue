@@ -1,10 +1,16 @@
 <script setup lang="ts">
 import { useZoomable } from '@bouzu/vue-zoomable'
-import { ref } from 'vue'
+import { ref, toRef } from 'vue'
+
+const props = defineProps<{
+	disabled?: boolean
+}>()
 
 const container = ref<HTMLElement | null>(null)
 const content = ref<HTMLElement | null>(null)
-const { zoom, pan, state } = useZoomable(container, content)
+const { zoom, pan, state } = useZoomable(container, content, {
+	disabled: toRef(() => props.disabled),
+})
 
 defineExpose({
 	_: state,

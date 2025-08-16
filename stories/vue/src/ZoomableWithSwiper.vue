@@ -4,16 +4,28 @@ import 'swiper/css'
 import 'swiper/css/navigation'
 import { Navigation } from 'swiper/modules'
 import type { Swiper as SwiperInstance } from 'swiper/types'
-import { ref, shallowRef, unref } from 'vue'
+import { computed, nextTick, ref, unref } from 'vue'
 import Zoomable from './components/Zoomable.vue'
 
 const modules = [
 	Navigation,
 ]
 
+const prevActiveIndex = ref<number | null>(null)
+const activeIndex = ref<number | null>(null)
 const zoomables = ref<(InstanceType<typeof Zoomable>)[]>([])
-const zoomable = shallowRef<InstanceType<typeof Zoomable> | null>(null)
-const prevZoomable = shallowRef<InstanceType<typeof Zoomable> | null>(null)
+const zoomable = computed(() => {
+	const _activeIndex = unref(activeIndex)
+	if (_activeIndex == null)
+		return null
+	return unref(zoomables)[_activeIndex] ?? null
+})
+const prevZoomable = computed(() => {
+	const _prevActiveIndex = unref(prevActiveIndex)
+	if (_prevActiveIndex == null)
+		return null
+	return unref(zoomables)[_prevActiveIndex] ?? null
+})
 
 function handleTouchStart(swiper: SwiperInstance, event: PointerEvent | MouseEvent | TouchEvent) {
 	const _zoomable = unref(zoomable)
@@ -37,23 +49,20 @@ function handleTouchMove(swiper: SwiperInstance, event: PointerEvent | MouseEven
 		event.preventDefault()
 }
 
-function handleTouchEnd(swiper: SwiperInstance, event: PointerEvent | MouseEvent | TouchEvent) {
+function handleTouchEnd(swiper: SwiperInstance, _event: PointerEvent | MouseEvent | TouchEvent) {
 	swiper.allowTouchMove = true
 }
 
 function handleSlideChange(swiper: SwiperInstance) {
-	prevZoomable.value = zoomable.value
-	zoomable.value = unref(zoomables)[swiper.activeIndex]
-}
-
-function handleSlideAfterChange(swiper: SwiperInstance) {
-	const _prevZoomable = unref(prevZoomable)
-	if (_prevZoomable != null)
-		_prevZoomable._.reset()
+	prevActiveIndex.value = unref(activeIndex)
+	activeIndex.value = swiper.activeIndex
+	nextTick(() => {
+		unref(prevZoomable)?._.reset()
+	})
 }
 
 function handleInit(swiper: SwiperInstance) {
-	zoomable.value = unref(zoomables)[swiper.activeIndex]
+	activeIndex.value = swiper.activeIndex
 }
 </script>
 
@@ -66,7 +75,6 @@ function handleInit(swiper: SwiperInstance) {
 		@touch-move="handleTouchMove"
 		@touch-end="handleTouchEnd"
 		@slide-change="handleSlideChange"
-		@slide-change-transition-end="handleSlideAfterChange"
 		@after-init="handleInit"
 	>
 		<SwiperSlide
@@ -76,9 +84,10 @@ function handleInit(swiper: SwiperInstance) {
 			<Zoomable
 				ref="zoomables"
 				class="w-full h-full"
+				:disabled="!(activeIndex === i - 1)"
 			>
 				<div class="w-56 h-55 bg-red">
-					Swiper {{ i + 1 }}
+					Swiper {{ i }}
 				</div>
 			</Zoomable>
 		</SwiperSlide>
