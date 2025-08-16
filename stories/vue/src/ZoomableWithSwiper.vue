@@ -1,120 +1,129 @@
 <script setup lang="ts">
-import { Swiper, SwiperSlide } from 'swiper/vue'
-import 'swiper/css'
-import 'swiper/css/navigation'
-import { Navigation } from 'swiper/modules'
-import type { Swiper as SwiperInstance } from 'swiper/types'
-import { computed, nextTick, ref, unref } from 'vue'
+import type { EmblaCarouselType } from 'embla-carousel'
+import useEmblaCarousel from 'embla-carousel-vue'
+import { ref, shallowRef, unref, watch } from 'vue'
 import Zoomable from './components/Zoomable.vue'
 
-const modules = [
-	Navigation,
-]
+const zoomables = ref<(InstanceType<typeof Zoomable>)[] | null>(null)
+const activeIndex = shallowRef<number | null>(null)
+const prevActiveIndex = shallowRef<number | null>(null)
 
-const prevActiveIndex = ref<number | null>(null)
-const activeIndex = ref<number | null>(null)
-const zoomables = ref<(InstanceType<typeof Zoomable>)[]>([])
-const zoomable = computed(() => {
+const [emblaRef, emblaApi] = useEmblaCarousel({
+	watchDrag,
+})
+
+watch(emblaApi, (api, _, onCleanup) => {
+	if (!api)
+		return
+
+	api.on('select', handleSelect)
+	handleSelect(api)
+
+	onCleanup(() => {
+		api.off('select', handleSelect)
+	})
+}, { immediate: true })
+
+function handleSelect(api: EmblaCarouselType) {
+	prevActiveIndex.value = api.previousScrollSnap() ?? null
+	activeIndex.value = api.selectedScrollSnap() ?? null
+}
+
+function watchDrag(api: EmblaCarouselType, event: TouchEvent | MouseEvent) {
 	const _activeIndex = unref(activeIndex)
 	if (_activeIndex == null)
-		return null
-	return unref(zoomables)[_activeIndex] ?? null
-})
-const prevZoomable = computed(() => {
-	const _prevActiveIndex = unref(prevActiveIndex)
-	if (_prevActiveIndex == null)
-		return null
-	return unref(zoomables)[_prevActiveIndex] ?? null
-})
+		return false
 
-function handleTouchStart(swiper: SwiperInstance, event: PointerEvent | MouseEvent | TouchEvent) {
-	const _zoomable = unref(zoomable)
-	if (!_zoomable)
-		return
+	const zoomable = unref(zoomables)?.[_activeIndex]
+	if (!zoomable)
+		return false
 
-	if (_zoomable._.getZoom() !== 1)
-		swiper.allowTouchMove = false
-	else
-		event.preventDefault()
-}
+	const isZoomable = zoomable._.getZoom() === 1
+	zoomable._.setEnablePan(!isZoomable)
 
-function handleTouchMove(swiper: SwiperInstance, event: PointerEvent | MouseEvent | TouchEvent) {
-	const _zoomable = unref(zoomable)
-	if (!_zoomable)
-		return
-
-	if (_zoomable._.getZoom() !== 1)
-		swiper.allowTouchMove = false
-	else
-		event.preventDefault()
-}
-
-function handleTouchEnd(swiper: SwiperInstance, _event: PointerEvent | MouseEvent | TouchEvent) {
-	swiper.allowTouchMove = true
-}
-
-function handleSlideChange(swiper: SwiperInstance) {
-	prevActiveIndex.value = unref(activeIndex)
-	activeIndex.value = swiper.activeIndex
-	nextTick(() => {
-		unref(prevZoomable)?._.reset()
-	})
-}
-
-function handleInit(swiper: SwiperInstance) {
-	activeIndex.value = swiper.activeIndex
+	return isZoomable
 }
 </script>
 
 <template>
-	<Swiper
-		:touch-start-prevent-default="false"
-		:navigation="true"
-		:modules="modules"
-		@touch-start="handleTouchStart"
-		@touch-move="handleTouchMove"
-		@touch-end="handleTouchEnd"
-		@slide-change="handleSlideChange"
-		@after-init="handleInit"
-	>
-		<SwiperSlide
-			v-for="i in 5"
-			:key="i"
+	<div class="embla">
+		<div
+			ref="emblaRef"
+			class="embla__viewport"
 		>
-			<Zoomable
-				ref="zoomables"
-				class="w-full h-full"
-				:disabled="!(activeIndex === i - 1)"
-			>
-				<div class="w-56 h-55 bg-red">
-					Swiper {{ i }}
+			<div class="embla__container">
+				<div
+					v-for="i in 5"
+					:key="i"
+					class="embla__slide"
+				>
+					<Zoomable
+						ref="zoomables"
+						class="w-full h-full"
+						:disabled="activeIndex !== (i - 1)"
+					>
+						<div
+							class="
+								w-[400px] h-[300px] rounded-3 flex flex-col justify-center items-center text-white text-lg font-bold cursor-grab
+								[background:linear-gradient(45deg,#ff6b6b,#4ecdc4,#45b7d1,#96ceb4)]
+								shadow-[0_8px_32px_rgba(0,0,0,0.1)]
+								[text-shadow:2px_2px_4px_rgba(0,0,0,0.3)]
+							"
+						>
+							<div class="text-center">
+								<h2 class="m-0 mb-2.5">
+									🎯 縮放組件演示
+								</h2>
+								<p class="m-0">
+									雙指捏合或 Ctrl+滾輪縮放
+								</p>
+								<p class="m-0 mt-1">
+									拖曳或滾輪移動內容
+								</p>
+								<p class="m-0 mt-1 text-sm opacity-80">
+									雙擊切換縮放
+								</p>
+							</div>
+						</div>
+					</Zoomable>
 				</div>
-			</Zoomable>
-		</SwiperSlide>
-	</Swiper>
+			</div>
+		</div>
+	</div>
 </template>
 
-<style>
-.swiper {
-  width: 600px;
-  height: 400px;
+<style scoped>
+.embla {
+  max-width: 48rem;
+  margin: auto;
+  --slide-height: 19rem;
+  --slide-spacing: 1rem;
+  --slide-size: 100%;
 }
-
-.swiper-slide {
-  text-align: center;
-  font-size: 18px;
-  background: #444;
-
-  /* Center slide text vertically */
+.embla__viewport {
+  overflow: hidden;
+	background: gray;
+}
+.embla__container {
   display: flex;
-  justify-content: center;
-  align-items: center;
+  touch-action: pan-y pinch-zoom;
+  margin-left: calc(var(--slide-spacing) * -1);
 }
-
-.swiper-slide img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+.embla__slide {
+  transform: translate3d(0, 0, 0);
+  flex: 0 0 var(--slide-size);
+  min-width: 0;
+  padding-left: var(--slide-spacing);
+}
+.embla__slide__number {
+	background: red;
+  box-shadow: inset 0 0 0 0.2rem var(--detail-medium-contrast);
+  border-radius: 1.8rem;
+  font-size: 4rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
 }
 </style>

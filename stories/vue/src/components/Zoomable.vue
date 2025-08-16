@@ -9,6 +9,9 @@ const props = defineProps<{
 const container = ref<HTMLElement | null>(null)
 const content = ref<HTMLElement | null>(null)
 const { zoom, pan, state } = useZoomable(container, content, {
+	options: {
+		min: 1,
+	},
 	disabled: toRef(() => props.disabled),
 })
 

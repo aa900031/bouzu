@@ -13,6 +13,9 @@ export interface ZoomableOptions {
 export interface ZoomableProps {
 	getContainerBoundingClientRect: () => Rect
 	getElementStyleSize: () => Size
+	enablePan?: boolean
+	enablePinch?: boolean
+	enableWheel?: boolean
 	options?: ZoomableOptions
 }
 
@@ -53,6 +56,12 @@ export interface Zoomable {
 	getPan: () => Point
 	reset: () => void
 	destroy: () => void
+	setEnablePan: (val: boolean) => void
+	getEnablePan: () => boolean
+	setEnablePinch: (val: boolean) => void
+	getEnablePinch: () => boolean
+	setEnableWheel: (val: boolean) => void
+	getEnableWheel: () => boolean
 	handlers: {
 		TouchStart: (event: GestureEventPayload) => void
 		TouchMove: (event: GestureEventPayload) => void
@@ -89,6 +98,10 @@ export function createZoomable(
 		onDoubleTap: _handleDoubleClick,
 	})
 
+	let _enablePan = props.enablePan ?? true
+	let _enablePinch = props.enablePinch ?? true
+	let _enableWheel = props.enableWheel ?? true
+
 	let _currentZoom: number = _options.initial
 	let _pan: Point = createPoint()
 	let _startZoom: number = _currentZoom
@@ -107,6 +120,24 @@ export function createZoomable(
 		getZoom,
 		getPan,
 		destroy,
+		setEnablePan(val: boolean) {
+			_enablePan = val
+		},
+		getEnablePan(): boolean {
+			return _enablePan
+		},
+		setEnablePinch(val: boolean) {
+			_enablePinch = val
+		},
+		getEnablePinch() {
+			return _enablePinch
+		},
+		setEnableWheel(val: boolean) {
+			_enableWheel = val
+		},
+		getEnableWheel() {
+			return _enableWheel
+		},
 		handlers: {
 			..._gesture.handlers,
 			Wheel: _handleWheel,
@@ -180,6 +211,9 @@ export function createZoomable(
 	}
 
 	function _handleDragChange() {
+		if (!_enablePan)
+			return
+
 		const delta = _gesture.getDragDelta()
 
 		_pan = createPoint(
@@ -191,6 +225,9 @@ export function createZoomable(
 	}
 
 	function _handleDragEnd() {
+		if (!_enablePan)
+			return
+
 		// 首先修正當前位置到邊界內
 		const correctedPan = _panBounds.getCorrectPan(_pan)
 
@@ -245,6 +282,9 @@ export function createZoomable(
 	}
 
 	function _handleZoomChange() {
+		if (!_enablePinch)
+			return
+
 		const currentDistance = _gesture.getZoomDistance()
 		const startDistance = _gesture.getStartZoomDistance()
 
@@ -308,6 +348,9 @@ export function createZoomable(
 	}
 
 	function _handleWheel(event: WheelEventPayload) {
+		if (_enableWheel === false)
+			return
+
 		// 檢查是否按下 Ctrl 鍵來決定是縮放還是拖曳
 		if (event.withCtrl) {
 			// Ctrl + 滾輪 = 縮放
