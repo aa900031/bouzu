@@ -22,6 +22,9 @@ export default defineConfig(env => ({
 					'@bouzu/vue-virtualizer': path.join(DIR_PKGS, './virtualizer/vue/src'),
 					'@bouzu/vue-helper': path.join(DIR_PKGS, './utils/vue-helper/src'),
 					'@bouzu/shared': path.join(DIR_PKGS, './shared/src'),
+					'@bouzu/zoomable': path.join(DIR_PKGS, './zoomable/state/src'),
+					'@bouzu/zoomable-dom': path.join(DIR_PKGS, './zoomable/dom/src'),
+					'@bouzu/vue-zoomable': path.join(DIR_PKGS, './zoomable/vue/src'),
 				}
 			: undefined,
 	},

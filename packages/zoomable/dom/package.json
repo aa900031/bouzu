@@ -1,6 +1,6 @@
 {
-	"name": "@bouzu/vue-helper",
-	"version": "0.0.2",
+	"name": "@bouzu/zoomable-dom",
+	"version": "0.0.0",
 	"private": false,
 	"author": "zhong666 <hi@zhong666.me>",
 	"license": "MIT",
@@ -31,29 +31,17 @@
 	},
 	"scripts": {
 		"build": "unbuild",
-		"test": "vitest run",
 		"release": "release-it --ci"
-	},
-	"peerDependencies": {
-		"@vue/composition-api": "^1.0.0",
-		"vue": "^2.6.12 || ^3.2.0"
-	},
-	"peerDependenciesMeta": {
-		"@vue/composition-api": {
-			"optional": true
-		},
-		"vue": {
-			"optional": true
-		}
 	},
 	"dependencies": {
 		"@bouzu/shared": "workspace:^",
-		"@vueuse/shared": "^10.8.0",
-		"vue-demi": "latest"
+		"@bouzu/zoomable": "workspace:^",
+		"dom-helpers": "^5.2.1",
+		"mitt": "^3.0.1",
+		"type-fest": "^3.13.1"
 	},
 	"devDependencies": {
 		"@bouzu/release-it-config": "workspace:*",
-		"@bouzu/tsconfig": "workspace:*",
-		"vue": "^3.4.20"
+		"@bouzu/tsconfig": "workspace:*"
 	}
 }

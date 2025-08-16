@@ -1,6 +1,6 @@
 {
-	"name": "@bouzu/vue-helper",
-	"version": "0.0.2",
+	"name": "@bouzu/vue-zoomable",
+	"version": "0.0.0",
 	"private": false,
 	"author": "zhong666 <hi@zhong666.me>",
 	"license": "MIT",
@@ -31,7 +31,6 @@
 	},
 	"scripts": {
 		"build": "unbuild",
-		"test": "vitest run",
 		"release": "release-it --ci"
 	},
 	"peerDependencies": {
@@ -48,7 +47,10 @@
 	},
 	"dependencies": {
 		"@bouzu/shared": "workspace:^",
-		"@vueuse/shared": "^10.8.0",
+		"@bouzu/vue-helper": "workspace:^",
+		"@bouzu/zoomable": "workspace:^",
+		"@bouzu/zoomable-dom": "workspace:^",
+		"@vueuse/core": "^10.8.0",
 		"vue-demi": "latest"
 	},
 	"devDependencies": {

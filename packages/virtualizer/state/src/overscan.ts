@@ -1,8 +1,6 @@
-import type { Rect } from '@bouzu/shared'
-import { cloneRect, createPoint, createRect } from '@bouzu/shared'
+import type { GetTimeFn, Rect } from '@bouzu/shared'
+import { cloneRect, createPoint, createRect, getTime as defaultGetTime } from '@bouzu/shared'
 import { createRollingAverage } from './utils/rolling-average'
-import { getTime as defaultGetTime } from './utils/time'
-import type { GetTimeFn } from './utils/time'
 
 export interface CreateOverscansProps {
 	throttleTime?: number

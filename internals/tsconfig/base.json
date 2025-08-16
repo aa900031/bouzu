@@ -29,7 +29,10 @@
 			"@bouzu/virtualizer-dom": ["../../packages/virtualizer/dom/src"],
 			"@bouzu/vue-virtualizer": ["../../packages/virtualizer/vue/src"],
 			"@bouzu/shared": ["../../packages/shared/src"],
-			"@bouzu/vue-helper": ["../../packages/utils/vue-helper/src"]
+			"@bouzu/vue-helper": ["../../packages/utils/vue-helper/src"],
+			"@bouzu/zoomable": ["../../packages/zoomable/state/src"],
+			"@bouzu/zoomable-dom": ["../../packages/zoomable/dom/src"],
+			"@bouzu/vue-zoomable": ["../../packages/zoomable/vue/src"]
 		}
 	}
 }

@@ -4,9 +4,6 @@ export default defineBuildConfig({
 	entries: [
 		'src/index',
 	],
-	externals: [
-		'type-fest',
-	],
 	declaration: true,
 	clean: true,
 	rollup: {

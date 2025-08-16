@@ -1,6 +1,5 @@
 export * from './scroller'
 export * from './axis-plugin'
-export * from './axis'
 export * from './reach-plugin'
 export * from './reach'
 export * from './direction-plugin'

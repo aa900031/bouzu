@@ -2,7 +2,8 @@
 	"extends": "@bouzu/tsconfig/vue.json",
 	"references": [
 		{ "path": "../../packages/scroller/vue/tsconfig.app.json" },
-		{ "path": "../../packages/virtualizer/vue/tsconfig.app.json" }
+		{ "path": "../../packages/virtualizer/vue/tsconfig.app.json" },
+		{ "path": "../../packages/zoomable/vue/tsconfig.app.json" }
 	],
 	"include": [
 		"env.d.ts",

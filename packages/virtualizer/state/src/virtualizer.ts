@@ -1,17 +1,12 @@
 import type { ValueOf } from 'type-fest'
 import type { Emitter, Handler } from 'mitt'
 import mitt from 'mitt'
-import type { Point, Rect, Size } from '@bouzu/shared'
-import { checkRectEqualPoint, checkRectEqualSize, checkSizeEqual, cloneRect, createPoint, createRect, createSize, getRectArea, getRectCornerInOther, getRectMaxX, getRectMaxY, getRectPointByRectCorner } from '@bouzu/shared'
-import type { Animation, EaseFn } from './animation'
-import { createAnimation, createNoopAnimation, easeOut } from './animation'
+import type { CancelRaf, EaseFn, GetTimeFn, Point, Rect, RegisterRafMethods, Size, TransitionRunner } from '@bouzu/shared'
+import { checkRectEqualPoint, checkRectEqualSize, checkSizeEqual, cloneRect, createPoint, createRect, createSize, easeOut, getRectArea, getRectCornerInOther, getRectMaxX, getRectMaxY, getRectPointByRectCorner, registerRaf, runNoopTransition, runTransition } from '@bouzu/shared'
 import type { Layout, Layouts, ReloadContext } from './layouts'
 import { mergeReloadContext } from './layouts'
 import { createOverscan } from './overscan'
 import type { ScrollAnchor } from './scroll-anchor'
-import type { CancelRaf, RegisterRafMethods } from './utils/raf'
-import { registerRaf } from './utils/raf'
-import type { GetTimeFn } from './utils/time'
 import type { ReuseView, View } from './view'
 import { createView, toReuseView, toView } from './view'
 import { differenceMap } from './utils/map-helper'
@@ -82,8 +77,8 @@ export interface Virtualizer<T extends object> {
 
 	updateItemSize: (item: T, size: Size) => void
 
-	scrollTo: (offset: Point, options?: ScrollToOptions) => Animation
-	scrollToItem: (item: T, options?: ScrollToItemOptions) => Animation | void
+	scrollTo: (offset: Point, options?: ScrollToOptions) => TransitionRunner
+	scrollToItem: (item: T, options?: ScrollToItemOptions) => TransitionRunner | void
 
 	destroy: () => void
 	collect: () => void
@@ -130,7 +125,7 @@ export function createVirtualizer<T extends object>(
 	let _cancelReloadLayout: CancelRaf | null = null
 
 	let _isScrolling = false
-	let _scrollAnimation: Animation | null = null
+	let _scrollAnimation: TransitionRunner | null = null
 	const _sizeUpdateQueue = new Map<T, Size>()
 
 	let _anchorScrollPosition = opts?.anchorScrollPosition ?? true
@@ -483,19 +478,34 @@ export function createVirtualizer<T extends object>(
 		// Set the content offset synchronously if the duration is zero
 		if (duration <= 0 || checkRectEqualPoint(_visibleRect, offset)) {
 			_setContentOffset(offset)
-			return createNoopAnimation()
+			return runNoopTransition()
 		}
 
 		setIsScrolling(true)
 
-		const result = createAnimation(
-			_visibleRect,
-			offset,
+		const result = runTransition({
+			start: 0,
+			end: 1,
 			duration,
-			ease,
-			offset => _setContentOffset(offset),
-			opts?.getTimeFn,
-		)
+			onUpdate: (progress) => {
+				const diff = createPoint(
+					offset.x - _visibleRect.x,
+					offset.y - _visibleRect.y,
+				)
+				const next = createPoint(
+					_visibleRect.x + diff.x * progress,
+					_visibleRect.y + diff.y * progress,
+				)
+				_setContentOffset(next)
+			},
+			onFinished: () => {
+				_setContentOffset(offset)
+			},
+			easing: ease,
+			getTime: opts?.getTimeFn,
+			raf: opts?.rafFn,
+			caf: opts?.cafFn,
+		})
 
 		result.then(() => {
 			_scrollAnimation = null
