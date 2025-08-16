@@ -39,15 +39,16 @@
 		"vue": "^2.6.12 || ^3.2.0"
 	},
 	"peerDependenciesMeta": {
-		"vue": {
+		"@vue/composition-api": {
 			"optional": true
 		},
-		"@vue/composition-api": {
+		"vue": {
 			"optional": true
 		}
 	},
 	"dependencies": {
 		"@bouzu/shared": "workspace:^",
+		"@vueuse/shared": "^10.8.0",
 		"vue-demi": "latest"
 	},
 	"devDependencies": {

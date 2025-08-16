@@ -162,6 +162,9 @@ importers:
       '@bouzu/shared':
         specifier: workspace:^
         version: link:../../shared
+      '@vueuse/shared':
+        specifier: ^10.8.0
+        version: 10.8.0(vue@3.4.20)
       vue-demi:
         specifier: latest
         version: 0.14.6(vue@3.4.20)
