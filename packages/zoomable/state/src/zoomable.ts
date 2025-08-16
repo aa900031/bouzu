@@ -3,20 +3,16 @@ import { Axis, checkPointEqualWithTolerance, checkRectContainsPoint, clamp, clon
 import type { Emitter } from 'mitt'
 import mitt from 'mitt'
 
-export interface ZoomableOptions {
+export interface ZoomableProps {
+	getContainerBoundingClientRect: () => Rect
+	getElementStyleSize: () => Size
 	min?: number
 	max?: number
 	initial?: number
 	animationDuration?: number
-}
-
-export interface ZoomableProps {
-	getContainerBoundingClientRect: () => Rect
-	getElementStyleSize: () => Size
 	enablePan?: boolean
 	enablePinch?: boolean
 	enableWheel?: boolean
-	options?: ZoomableOptions
 }
 
 export const ZoomableEventName = {
@@ -56,6 +52,14 @@ export interface Zoomable {
 	getPan: () => Point
 	reset: () => void
 	destroy: () => void
+	getMin: () => number
+	setMin: (value: number) => void
+	getMax: () => number
+	setMax: (value: number) => void
+	getInitial: () => number
+	setInitial: (value: number) => void
+	getAnimationDuration: () => number
+	setAnimationDuration: (value: number) => void
 	setEnablePan: (val: boolean) => void
 	getEnablePan: () => boolean
 	setEnablePinch: (val: boolean) => void
@@ -79,12 +83,6 @@ export interface Zoomable {
 export function createZoomable(
 	props: ZoomableProps,
 ): Zoomable {
-	const _options: Required<ZoomableOptions> = {
-		min: props.options?.min ?? 0.5,
-		max: props.options?.max ?? 3,
-		initial: props.options?.initial ?? 1,
-		animationDuration: props.options?.animationDuration ?? 300,
-	}
 	const _emitter = mitt<ZoomableEvents>()
 	const _panBounds = createPanBounds(props)
 	const _gesture = createGesture({
@@ -98,11 +96,15 @@ export function createZoomable(
 		onDoubleTap: _handleDoubleClick,
 	})
 
+	let _min = props.min ?? 0.5
+	let _max = props.max ?? 3
+	let _initial = props.initial ?? 1
+	let _animationDuration = props.animationDuration ?? 300
 	let _enablePan = props.enablePan ?? true
 	let _enablePinch = props.enablePinch ?? true
 	let _enableWheel = props.enableWheel ?? true
 
-	let _currentZoom: number = _options.initial
+	let _currentZoom: number = _initial
 	let _pan: Point = createPoint()
 	let _startZoom: number = _currentZoom
 	let _startPan: Point = createPoint()
@@ -120,6 +122,30 @@ export function createZoomable(
 		getZoom,
 		getPan,
 		destroy,
+		getMin() {
+			return _min
+		},
+		setMin(value: number) {
+			_min = value
+		},
+		getMax() {
+			return _max
+		},
+		setMax(value: number) {
+			_max = value
+		},
+		getInitial() {
+			return _initial
+		},
+		setInitial(value: number) {
+			_initial = value
+		},
+		getAnimationDuration() {
+			return _animationDuration
+		},
+		setAnimationDuration(value: number) {
+			_animationDuration = value
+		},
 		setEnablePan(val: boolean) {
 			_enablePan = val
 		},
@@ -149,7 +175,7 @@ export function createZoomable(
 		zoom: number,
 		center?: Point,
 	): void {
-		const targetZoom = clamp(zoom, _options.min, _options.max)
+		const targetZoom = clamp(zoom, _min, _max)
 
 		let targetPan = clonePoint(_pan)
 
@@ -186,7 +212,7 @@ export function createZoomable(
 	}
 
 	function reset(): void {
-		const targetZoom = _options.initial
+		const targetZoom = _initial
 		const targetPan = createPoint()
 		_animateZoomAndPan(targetZoom, targetPan)
 	}
@@ -293,15 +319,15 @@ export function createZoomable(
 			let newZoom = _startZoom * zoomFactor
 
 			// 限制縮放範圍，但允許輕微超出以提供反饋
-			const minZoomWithFriction = _options.min * 0.8
-			const maxZoomWithFriction = _options.max * 1.2
+			const minZoomWithFriction = _min * 0.8
+			const maxZoomWithFriction = _max * 1.2
 
-			if (newZoom < _options.min) {
-				newZoom = _options.min + (newZoom - _options.min) * 0.3
+			if (newZoom < _min) {
+				newZoom = _min + (newZoom - _min) * 0.3
 				newZoom = Math.max(newZoom, minZoomWithFriction)
 			}
-			else if (newZoom > _options.max) {
-				newZoom = _options.max + (newZoom - _options.max) * 0.3
+			else if (newZoom > _max) {
+				newZoom = _max + (newZoom - _max) * 0.3
 				newZoom = Math.min(newZoom, maxZoomWithFriction)
 			}
 
@@ -343,7 +369,7 @@ export function createZoomable(
 			event.client.x - centerX,
 			event.client.y - centerY,
 		)
-		const targetZoom = _currentZoom > _options.initial ? _options.initial : _options.max
+		const targetZoom = _currentZoom > _initial ? _initial : _max
 		updateTo(targetZoom, rel)
 	}
 
@@ -355,7 +381,7 @@ export function createZoomable(
 		if (event.withCtrl) {
 			// Ctrl + 滾輪 = 縮放
 			const delta = event.delta.y > 0 ? -0.1 : 0.1
-			const newZoom = clamp(_currentZoom + delta, _options.min, _options.max)
+			const newZoom = clamp(_currentZoom + delta, _min, _max)
 
 			if (newZoom !== _currentZoom) {
 				// 獲取滑鼠位置作為縮放中心（相對於容器中心）
@@ -433,7 +459,7 @@ export function createZoomable(
 		_transitionPan = runTransition({
 			start: 0,
 			end: 1,
-			duration: _options.animationDuration,
+			duration: _animationDuration,
 			easing: easeOutCubic,
 			onUpdate: (progress) => {
 				_pan = createPoint(
@@ -457,7 +483,7 @@ export function createZoomable(
 		_transitionZoomPan = runTransition({
 			start: 0,
 			end: 1,
-			duration: _options.animationDuration,
+			duration: _animationDuration,
 			onUpdate: (progress) => {
 				_pan = createPoint(
 					startPan.x + (targetPan.x - startPan.x) * progress,
@@ -476,12 +502,12 @@ export function createZoomable(
 		let targetPan = clonePoint(_pan)
 
 		// 檢查縮放範圍
-		if (_currentZoom < _options.min) {
-			targetZoom = _options.min
+		if (_currentZoom < _min) {
+			targetZoom = _min
 			needsCorrection = true
 		}
-		else if (_currentZoom > _options.max) {
-			targetZoom = _options.max
+		else if (_currentZoom > _max) {
+			targetZoom = _max
 			needsCorrection = true
 		}
 

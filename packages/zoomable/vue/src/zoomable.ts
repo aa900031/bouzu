@@ -1,22 +1,26 @@
+import type { ZoomableProps as ZoomableDomProps } from '@bouzu/zoomable-dom'
 import { createZoomable } from '@bouzu/zoomable-dom'
-import type { ZoomableOptions } from '@bouzu/zoomable'
 import { ZoomableEventName } from '@bouzu/zoomable'
 import { type MaybeRef, unrefElement } from '@vueuse/core'
 import { markRaw, onScopeDispose, unref, watch } from 'vue-demi'
-import { eventRef } from '@bouzu/vue-helper'
+import type { ToMaybeRefs } from '@bouzu/vue-helper'
+import { eventRef, unrefs } from '@bouzu/vue-helper'
 import type { Point } from '@bouzu/shared'
+
+export type ZoomableProps =
+	& ToMaybeRefs<ZoomableDomProps>
+	& {
+		disabled?: MaybeRef<boolean | undefined>
+	}
 
 export function useZoomable(
 	container: MaybeRef<HTMLElement | null | undefined>,
 	content: MaybeRef<HTMLElement | null | undefined>,
-	props?: {
-		disabled?: MaybeRef<boolean | undefined>
-		options?: ZoomableOptions
-	},
+	props?: ZoomableProps,
 ) {
-	const zoomable = markRaw(createZoomable({
-		options: unref(props?.options),
-	}))
+	const zoomable = markRaw(createZoomable(
+		unrefs(props ?? {}),
+	))
 
 	const [zoom] = eventRef<number, (value: number) => void>({
 		register: (handler) => {
@@ -66,6 +70,14 @@ export function useZoomable(
 			zoomable.start()
 	}, { immediate: true })
 
+	propRefSyncer(props?.min, zoomable.state.setMin)
+	propRefSyncer(props?.max, zoomable.state.setMax)
+	propRefSyncer(props?.initial, zoomable.state.setInitial)
+	propRefSyncer(props?.animationDuration, zoomable.state.setAnimationDuration)
+	propRefSyncer(props?.enablePan, zoomable.state.setEnablePan)
+	propRefSyncer(props?.enablePinch, zoomable.state.setEnablePinch)
+	propRefSyncer(props?.enableWheel, zoomable.state.setEnableWheel)
+
 	onScopeDispose(() => {
 		zoomable.destroy()
 	})
@@ -75,4 +87,14 @@ export function useZoomable(
 		zoom,
 		pan,
 	}
+}
+
+function propRefSyncer<T>(
+	ref: MaybeRef<T | undefined> | undefined,
+	setter: (val: T) => void,
+) {
+	watch(
+		() => unref(ref),
+		val => val != null && setter(val),
+	)
 }

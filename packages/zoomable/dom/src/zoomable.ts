@@ -1,6 +1,6 @@
 import type { Rect, Size } from '@bouzu/shared'
 import { createPoint, createRect, createSize } from '@bouzu/shared'
-import type { ZoomableOptions, Zoomable as ZoomableState } from '@bouzu/zoomable'
+import type { Zoomable as ZoomableState, ZoomableProps as ZoomableStateProps } from '@bouzu/zoomable'
 import { createZoomable as createZoomableState } from '@bouzu/zoomable'
 
 export interface Zoomable {
@@ -12,17 +12,15 @@ export interface Zoomable {
 	destroy: () => void
 }
 
-export interface CreateZoomableProps {
-	options?: ZoomableOptions
-}
+export type ZoomableProps = Omit<ZoomableStateProps, 'getContainerBoundingClientRect' | 'getElementStyleSize'>
 
 export function createZoomable(
-	props?: CreateZoomableProps,
+	props?: ZoomableProps,
 ): Zoomable {
 	const state = createZoomableState({
 		getContainerBoundingClientRect: _getContainerBoundingClientRect,
 		getElementStyleSize: _getElementStyleSize,
-		options: props?.options,
+		...props,
 	})
 
 	let _container: HTMLElement | null = null
