@@ -86,6 +86,7 @@ export function createZoomable(
 		onZoomStart: _handleZoomStart,
 		onZoomChange: _handleZoomChange,
 		onZoomEnd: _handleZoomEnd,
+		onDoubleTap: _handleDoubleClick,
 	})
 
 	let _currentZoom: number = _options.initial
@@ -555,6 +556,7 @@ function createGesture(
 		onZoomStart: () => void
 		onZoomChange: () => void
 		onZoomEnd: () => void
+		onDoubleTap: (payload: DoubleClickEventPayload) => void
 	},
 ) {
 	const AXIS_SWIPE_HYSTERESIS = 10
@@ -577,6 +579,9 @@ function createGesture(
 	let _numActivePoints: number = 0
 	let _intervalTime: number = 0
 	let _intervalP1: Point = createPoint()
+
+	let _lastTapTime: number = 0
+	let _lastTapPosition: Point = createPoint()
 
 	return {
 		getVelocity() {
@@ -618,6 +623,30 @@ function createGesture(
 	function handleTouchStart(event: GestureEventPayload) {
 		_updatePointsFromTouch(event, 'down')
 		_onGestureStart()
+
+		if (_numActivePoints === 1) {
+			const currentTime = Date.now()
+			const timeDiff = currentTime - _lastTapTime
+			const touch = event.touches[0]
+			const rect = props.getContainerBoundingClientRect()
+			const currentPosition = createPoint(
+				touch.client.x - rect.x,
+				touch.client.y - rect.y,
+			)
+			const distance = getPointDistance(currentPosition, _lastTapPosition)
+
+			// 如果兩次點擊間隔小於 300ms 且位置相差不超過 30px，則視為雙擊
+			if (timeDiff < 300 && distance < 30) {
+				props.onDoubleTap?.({
+					client: currentPosition,
+				})
+				_lastTapTime = 0
+			}
+			else {
+				_lastTapTime = currentTime
+				_lastTapPosition = currentPosition
+			}
+		}
 	}
 
 	function handleTouchMove(event: GestureEventPayload) {
