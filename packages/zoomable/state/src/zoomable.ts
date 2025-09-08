@@ -254,49 +254,40 @@ export function createZoomable(
 		if (!_enablePan)
 			return
 
-		// 首先修正當前位置到邊界內
 		const correctedPan = _panBounds.getCorrectPan(_pan)
-
-		// 檢查是否需要立即修正邊界
 		const needsBoundaryCorrection
 			= Math.abs(correctedPan.x - _pan.x) > 0.1
 			|| Math.abs(correctedPan.y - _pan.y) > 0.1
 
-		// 應用慣性
 		const velocity = _gesture.getVelocity()
 		const decelerationRate = 0.95
 
-		// 計算最終位置（從修正後的位置開始）
-		const projectPoint = _createProjectPoint(velocity, decelerationRate)
+		const projectPoint = createPoint(
+			velocity.x * decelerationRate / (1 - decelerationRate),
+			velocity.y * decelerationRate / (1 - decelerationRate),
+		)
 		const projectedPan = createPoint(
 			correctedPan.x + projectPoint.x,
 			correctedPan.y + projectPoint.y,
 		)
-
-		// 修正邊界
 		const finalPan = _panBounds.getCorrectPan(projectedPan)
-
-		// 檢查是否需要動畫
 		const needsInertiaAnimation
 			= Math.abs(finalPan.x - correctedPan.x) > 1
 			|| Math.abs(finalPan.y - correctedPan.y) > 1
 
 		if (needsBoundaryCorrection) {
-			// 如果超出邊界，優先修正邊界
 			if (needsInertiaAnimation) {
-				// 有慣性且需要邊界修正，動畫到最終位置
-				_animatePan(finalPan)
+				const inertiaDuration = _computeInertiaDuration(projectPoint)
+				_animatePan(finalPan, inertiaDuration)
 			}
 			else {
-				// 只需要邊界修正，動畫到邊界內
-				_animatePan(correctedPan)
+				_animatePan(correctedPan, Math.min(_animationDuration, 200))
 			}
 		}
 		else if (needsInertiaAnimation) {
-			// 在邊界內但有慣性，動畫到最終位置
-			_animatePan(finalPan)
+			const inertiaDuration = _computeInertiaDuration(projectPoint)
+			_animatePan(finalPan, inertiaDuration)
 		}
-		// 如果既不需要邊界修正也沒有明顯慣性，不執行動畫
 	}
 
 	function _handleZoomStart() {
@@ -318,7 +309,6 @@ export function createZoomable(
 			const zoomFactor = currentDistance / startDistance
 			let newZoom = _startZoom * zoomFactor
 
-			// 限制縮放範圍，但允許輕微超出以提供反饋
 			const minZoomWithFriction = _min * 0.8
 			const maxZoomWithFriction = _max * 1.2
 
@@ -331,7 +321,6 @@ export function createZoomable(
 				newZoom = Math.min(newZoom, maxZoomWithFriction)
 			}
 
-			// 獲取縮放中心點（相對於容器中心）
 			const zoomCenter = _gesture.getZoomCenter()
 			const containerRect = props.getContainerBoundingClientRect()
 			const centerX = containerRect.width / 2
@@ -340,7 +329,6 @@ export function createZoomable(
 			const relativeCenterX = zoomCenter.x - centerX
 			const relativeCenterY = zoomCenter.y - centerY
 
-			// 計算新的平移位置以保持縮放中心點固定
 			const actualZoomFactor = newZoom / _startZoom
 			const newPan = {
 				x: relativeCenterX - (relativeCenterX - _startPan.x) * actualZoomFactor,
@@ -377,14 +365,11 @@ export function createZoomable(
 		if (_enableWheel === false)
 			return
 
-		// 檢查是否按下 Ctrl 鍵來決定是縮放還是拖曳
 		if (event.withCtrl) {
-			// Ctrl + 滾輪 = 縮放
 			const delta = event.delta.y > 0 ? -0.1 : 0.1
 			const newZoom = clamp(_currentZoom + delta, _min, _max)
 
 			if (newZoom !== _currentZoom) {
-				// 獲取滑鼠位置作為縮放中心（相對於容器中心）
 				const rect = props.getContainerBoundingClientRect()
 				const centerX = rect.width / 2
 				const centerY = rect.height / 2
@@ -393,7 +378,6 @@ export function createZoomable(
 					event.client.x - centerX,
 					event.client.y - centerY,
 				)
-				// 計算新的平移位置
 				const zoomFactor = newZoom / _currentZoom
 				const newPan = createPoint(
 					zoomCenter.x - (zoomCenter.x - _pan.x) * zoomFactor,
@@ -405,11 +389,9 @@ export function createZoomable(
 				_panBounds.update(_currentZoom)
 				_applyChanges()
 
-				// 清除之前的計時器
 				if (_timeoutWheel)
 					clearTimeout(_timeoutWheel)
 
-				// 設置新的計時器，在滾輪事件結束後執行邊界檢查
 				_timeoutWheel = window.setTimeout(() => {
 					_correctZoomAndPan()
 					_timeoutWheel = null
@@ -417,20 +399,16 @@ export function createZoomable(
 			}
 		}
 		else {
-			// 滾輪的拖曳行為：垂直滾動對應垂直拖曳，水平滾動（如果支援）對應水平拖曳
-			const dragSpeed = 1.0 // 調整拖曳靈敏度
+			const dragSpeed = 1.0
 			const delta = createPoint(
 				event.delta.x * dragSpeed,
 				event.delta.y * dragSpeed,
 			)
-
-			// 更新平移位置
 			const newPan = createPoint(
-				_pan.x - delta.x, // 負號讓滾動方向符合直覺
+				_pan.x - delta.x,
 				_pan.y - delta.y,
 			)
 
-			// 滾輪拖曳時立即應用邊界限制，不使用動畫
 			_pan = _panBounds.getCorrectPan(newPan)
 			_applyChanges()
 		}
@@ -441,25 +419,16 @@ export function createZoomable(
 		_emitter.emit(ZoomableEventName.ChangePan, _pan)
 	}
 
-	function _createProjectPoint(
-		velocity: Point,
-		decelerationRate: number,
-	): Point {
-		return createPoint(
-			velocity.x * decelerationRate / (1 - decelerationRate),
-			velocity.y * decelerationRate / (1 - decelerationRate),
-		)
-	}
-
-	function _animatePan(targetPan: Point) {
+	function _animatePan(targetPan: Point, duration?: number) {
 		_transitionPan.cancel()
 
 		const startPan = clonePoint(_pan)
+		const useDuration = duration ?? _animationDuration
 
 		_transitionPan = runTransition({
 			start: 0,
 			end: 1,
-			duration: _animationDuration,
+			duration: useDuration,
 			easing: easeOutCubic,
 			onUpdate: (progress) => {
 				_pan = createPoint(
@@ -469,6 +438,12 @@ export function createZoomable(
 				_applyChanges()
 			},
 		})
+	}
+
+	function _computeInertiaDuration(projectPoint: Point) {
+		const distance = Math.hypot(projectPoint.x, projectPoint.y)
+		const duration = Math.min(1000, Math.max(150, distance * 0.5))
+		return Math.round(duration)
 	}
 
 	function _animateZoomAndPan(
@@ -501,7 +476,6 @@ export function createZoomable(
 		let targetZoom = _currentZoom
 		let targetPan = clonePoint(_pan)
 
-		// 檢查縮放範圍
 		if (_currentZoom < _min) {
 			targetZoom = _min
 			needsCorrection = true
@@ -511,16 +485,13 @@ export function createZoomable(
 			needsCorrection = true
 		}
 
-		// 如果縮放需要修正，重新計算邊界
 		if (targetZoom !== _currentZoom) {
-			// 暫時設置目標縮放來計算正確的邊界
 			const originalZoom = _currentZoom
 			_currentZoom = targetZoom
 			_panBounds.update(_currentZoom)
-			_currentZoom = originalZoom // 恢復原來的縮放
+			_currentZoom = originalZoom
 		}
 
-		// 檢查平移邊界
 		const correctedPan = _panBounds.getCorrectPan(targetPan)
 
 		if (!checkPointEqualWithTolerance(correctedPan, targetPan, 0.1)) {
