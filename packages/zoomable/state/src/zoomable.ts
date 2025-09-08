@@ -261,10 +261,12 @@ export function createZoomable(
 
 		const velocity = _gesture.getVelocity()
 		const decelerationRate = 0.95
+		const frameMs = 16
+		const inertiaMultiplier = 1.25
 
 		const projectPoint = createPoint(
-			velocity.x * decelerationRate / (1 - decelerationRate),
-			velocity.y * decelerationRate / (1 - decelerationRate),
+			velocity.x * frameMs / (1 - decelerationRate) * inertiaMultiplier,
+			velocity.y * frameMs / (1 - decelerationRate) * inertiaMultiplier,
 		)
 		const projectedPan = createPoint(
 			correctedPan.x + projectPoint.x,
@@ -277,7 +279,7 @@ export function createZoomable(
 
 		if (needsBoundaryCorrection) {
 			if (needsInertiaAnimation) {
-				const inertiaDuration = _computeInertiaDuration(projectPoint)
+				const inertiaDuration = _computeInertiaDuration(projectPoint, velocity)
 				_animatePan(finalPan, inertiaDuration)
 			}
 			else {
@@ -285,7 +287,7 @@ export function createZoomable(
 			}
 		}
 		else if (needsInertiaAnimation) {
-			const inertiaDuration = _computeInertiaDuration(projectPoint)
+			const inertiaDuration = _computeInertiaDuration(projectPoint, velocity)
 			_animatePan(finalPan, inertiaDuration)
 		}
 	}
@@ -440,9 +442,18 @@ export function createZoomable(
 		})
 	}
 
-	function _computeInertiaDuration(projectPoint: Point) {
+	function _computeInertiaDuration(projectPoint: Point, velocity: Point) {
 		const distance = Math.hypot(projectPoint.x, projectPoint.y)
-		const duration = Math.min(1000, Math.max(150, distance * 0.5))
+		const speed = velocity ? Math.hypot(velocity.x, velocity.y) : 0
+
+		let duration: number
+		if (speed > 0.001)
+			duration = distance / speed
+		else
+			duration = distance * 1.2
+
+		duration = Math.max(250, Math.min(2000, duration))
+
 		return Math.round(duration)
 	}
 
@@ -846,7 +857,7 @@ function createGesture(
 		if (_numActivePoints === 0) {
 			if (_isDragging) {
 				_isDragging = false
-				_updateVelocity(true)
+				_updateVelocity()
 				props.onDragEnd?.()
 			}
 
@@ -873,13 +884,10 @@ function createGesture(
 		)
 	}
 
-	function _updateVelocity(
-		force = false,
-	): void {
+	function _updateVelocity(): void {
 		const currentTime = Date.now()
 		const duration = currentTime - _intervalTime
-
-		if (duration < VELOCITY_HYSTERESIS && !force)
+		if (duration < VELOCITY_HYSTERESIS)
 			return
 
 		_velocity = createPoint(
