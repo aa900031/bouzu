@@ -180,7 +180,6 @@ export function createZoomable(
 		let targetPan = clonePoint(_pan)
 
 		if (center) {
-			// center 已經是相對於容器中心的座標
 			const zoomFactor = targetZoom / _currentZoom
 			targetPan = createPoint(
 				center.x - (center.x - _pan.x) * zoomFactor,
@@ -188,13 +187,11 @@ export function createZoomable(
 			)
 		}
 
-		// 計算正確的邊界
 		const tempZoom = _currentZoom
 		_currentZoom = targetZoom
 		_panBounds.update(_currentZoom)
 		_currentZoom = tempZoom
 
-		// 修正平移位置
 		const correctedPan = _panBounds.getCorrectPan(targetPan)
 		_animateZoomAndPan(targetZoom, correctedPan)
 	}
@@ -262,7 +259,7 @@ export function createZoomable(
 		const velocity = _gesture.getVelocity()
 		const decelerationRate = 0.95
 		const frameMs = 16
-		const inertiaMultiplier = 1.25
+		const inertiaMultiplier = 0.8
 
 		const projectPoint = createPoint(
 			velocity.x * frameMs / (1 - decelerationRate) * inertiaMultiplier,
@@ -686,7 +683,6 @@ function createGesture(
 			)
 			const distance = getPointDistance(currentPosition, _lastTapPosition)
 
-			// 如果兩次點擊間隔小於 300ms 且位置相差不超過 30px，則視為雙擊
 			if (timeDiff < 300 && distance < 30) {
 				props.onDoubleTap?.({
 					client: currentPosition,
