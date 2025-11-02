@@ -3,3 +3,5 @@ export function isObject(
 ): val is Record<PropertyKey, any> {
 	return Object.prototype.toString.call(val) === '[object Object]'
 }
+
+export const isClient = typeof window !== 'undefined' && typeof document !== 'undefined'
