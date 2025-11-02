@@ -30,7 +30,7 @@
 		"@vitejs/plugin-vue": "^6.0.1",
 		"embla-carousel-vue": "^8.6.0",
 		"storybook": "^10.0.2",
-		"unocss": "^0.58.5",
+		"unocss": "^66.5.4",
 		"vite": "^7.1.12",
 		"vue": "^3.4.20"
 	}
