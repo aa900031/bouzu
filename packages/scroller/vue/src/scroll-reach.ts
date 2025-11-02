@@ -1,10 +1,10 @@
-import type { Ref } from 'vue-demi'
-import { onScopeDispose, unref } from 'vue-demi'
-import { eventRef } from '@bouzu/vue-helper'
 import type { ReachEventHandler, ReachValue } from '@bouzu/scroller'
-import { Reach, ReachEvent, createReachPlugin } from '@bouzu/scroller'
-import { computedEager } from '@vueuse/core'
+import type { Ref } from 'vue-demi'
 import type { ScrollerContext } from './scroller'
+import { createReachPlugin, Reach, ReachEvent } from '@bouzu/scroller'
+import { eventRef } from '@bouzu/vue-helper'
+import { computedEager } from '@vueuse/core'
+import { onScopeDispose, unref } from 'vue-demi'
 import { useScrollerContext } from './scroller'
 
 export interface ScrollReach {

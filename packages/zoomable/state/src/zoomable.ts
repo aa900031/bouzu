@@ -1,6 +1,6 @@
 import type { AxisValue, Point, Rect, Size, TransitionRunner } from '@bouzu/shared'
-import { Axis, checkPointEqualWithTolerance, checkRectContainsPoint, clamp, clonePoint, createPoint, createSize, easeOutCubic, getPointCenter, getPointDistance, getSizeByAxis, runNoopTransition, runTransition } from '@bouzu/shared'
 import type { Emitter } from 'mitt'
+import { Axis, checkPointEqualWithTolerance, checkRectContainsPoint, clamp, clonePoint, createPoint, createSize, easeOutCubic, getPointCenter, getPointDistance, getSizeByAxis, runNoopTransition, runTransition } from '@bouzu/shared'
 import mitt from 'mitt'
 
 export interface ZoomableProps {
@@ -260,7 +260,7 @@ export function createZoomable(
 		// 檢查是否需要立即修正邊界
 		const needsBoundaryCorrection
 			= Math.abs(correctedPan.x - _pan.x) > 0.1
-			|| Math.abs(correctedPan.y - _pan.y) > 0.1
+				|| Math.abs(correctedPan.y - _pan.y) > 0.1
 
 		// 應用慣性
 		const velocity = _gesture.getVelocity()
@@ -279,7 +279,7 @@ export function createZoomable(
 		// 檢查是否需要動畫
 		const needsInertiaAnimation
 			= Math.abs(finalPan.x - correctedPan.x) > 1
-			|| Math.abs(finalPan.y - correctedPan.y) > 1
+				|| Math.abs(finalPan.y - correctedPan.y) > 1
 
 		if (needsBoundaryCorrection) {
 			// 如果超出邊界，優先修正邊界

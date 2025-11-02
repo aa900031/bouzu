@@ -25,9 +25,6 @@ Import:
 ```js
 // ESM
 import { createVirtualizer } from '@bouzu/virtualizer-dom'
-
-// CommonJS
-const { createVirtualizer } = require('@bouzu/virtualizer-dom')
 ```
 
 ## Development
@@ -43,7 +40,6 @@ const { createVirtualizer } = require('@bouzu/virtualizer-dom')
 Made with 💛
 
 Published under [MIT License](./LICENSE).
-
 
 <!-- Badges -->
 

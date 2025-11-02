@@ -1,8 +1,8 @@
-import type { Emitter, Handler } from 'mitt'
-import mitt from 'mitt'
 import type { Rect } from '@bouzu/shared'
-import { checkRectEqual } from '@bouzu/shared'
+import type { Emitter, Handler } from 'mitt'
 import type { ValueOf } from 'type-fest'
+import { checkRectEqual } from '@bouzu/shared'
+import mitt from 'mitt'
 import { getOffsetRect } from './offset-rect'
 
 export const OffsetObserveEvent = {

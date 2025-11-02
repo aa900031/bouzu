@@ -25,9 +25,6 @@ Import:
 ```js
 // ESM
 import * as shared from '@bouzu/shared'
-
-// CommonJS
-const shared = require('@bouzu/shared')
 ```
 
 ## Development
@@ -43,7 +40,6 @@ const shared = require('@bouzu/shared')
 Made with 💛
 
 Published under [MIT License](./LICENSE).
-
 
 <!-- Badges -->
 

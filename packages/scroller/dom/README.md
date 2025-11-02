@@ -25,9 +25,6 @@ Import:
 ```js
 // ESM
 import { createScroller } from '@bouzu/scroller-dom'
-
-// CommonJS
-const { createScroller } = require('@bouzu/scroller-dom')
 ```
 
 ## Development
@@ -44,7 +41,6 @@ Made with 💛
 
 Published under [MIT License](./LICENSE).
 
-
 <!-- Badges -->
 
 [npm-version-src]: https://img.shields.io/npm/v/@bouzu/scroller-dom?style=flat&colorA=18181B&colorB=F0DB4F
@@ -55,4 +51,3 @@ Published under [MIT License](./LICENSE).
 [bundle-href]: https://bundlephobia.com/result?p=@bouzu/scroller-dom
 [jsdocs-src]: https://img.shields.io/badge/jsDocs.io-reference-18181B?style=flat&colorA=18181B&colorB=F0DB4F
 [jsdocs-href]: https://www.jsdocs.io/package/@bouzu/scroller-dom
-

@@ -1,11 +1,11 @@
-import type { Simplify } from 'type-fest'
-import type { Scroller } from '@bouzu/scroller-dom'
-import { createScroller } from '@bouzu/scroller-dom'
 import type { ScrollerEventHandler, ScrollingEventHandler } from '@bouzu/scroller'
-import { ScrollerEvent, ScrollingEvent, createScrollingPlugin } from '@bouzu/scroller'
+import type { Scroller } from '@bouzu/scroller-dom'
 import type { Virtualizer as BaseVirtualizer, VirtualizerEventHandler, VirtualizerOptions } from '@bouzu/virtualizer'
-import { VirtualizerEvent, createVirtualizer as createBaseVirtualizer } from '@bouzu/virtualizer'
+import type { Simplify } from 'type-fest'
+import { createScrollingPlugin, ScrollerEvent, ScrollingEvent } from '@bouzu/scroller'
+import { createScroller } from '@bouzu/scroller-dom'
 import { checkRectEqual, createRect, noop } from '@bouzu/shared'
+import { createVirtualizer as createBaseVirtualizer, VirtualizerEvent } from '@bouzu/virtualizer'
 
 export type CreateVirtualizerProps = Simplify<
 	& VirtualizerOptions

@@ -1,9 +1,9 @@
-import type { Emitter, Handler } from 'mitt'
-import mitt from 'mitt'
-import type { Simplify, ValueOf } from 'type-fest'
 import type { AxisValue } from '@bouzu/shared'
-import { checkAxis } from '@bouzu/shared'
+import type { Emitter, Handler } from 'mitt'
+import type { Simplify, ValueOf } from 'type-fest'
 import type { ScrollerEventHandler, ScrollerPlugin } from './scroller'
+import { checkAxis } from '@bouzu/shared'
+import mitt from 'mitt'
 import { ScrollerEvent } from './scroller'
 
 export const AxisEvent = {

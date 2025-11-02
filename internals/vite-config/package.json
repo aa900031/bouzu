@@ -1,8 +1,8 @@
 {
 	"name": "@bouzu/vite-config",
+	"type": "module",
 	"version": "0.1.0",
 	"private": true,
-	"type": "module",
 	"author": "zhong666 <hi@zhong666.me>",
 	"devDependencies": {
 		"@bouzu/tsconfig": "workspace:^"

@@ -1,19 +1,19 @@
-import type { MaybeRef } from 'vue-demi'
-import { markRaw, unref, watch } from 'vue-demi'
 import type { CreateListLayoutsOptions } from '@bouzu/virtualizer'
-import { createListLayouts } from '@bouzu/virtualizer'
+import type { MaybeRef } from 'vue-demi'
 import type { UseVirtualizerProps, Virtualizer } from './virtualizer'
+import { createListLayouts } from '@bouzu/virtualizer'
+import { markRaw, unref, watch } from 'vue-demi'
 import { useVirtualizer } from './virtualizer'
 
 export type VirtualList<T extends object> = Virtualizer<T>
 
-export type UseVirtualListProps<T extends object> =
-	& Omit<UseVirtualizerProps<T>, 'layouts'>
-	& {
-		axis?: MaybeRef<CreateListLayoutsOptions['axis']>
-		itemSize?: MaybeRef<CreateListLayoutsOptions['itemSize']>
-		estimatedItemSize?: MaybeRef<CreateListLayoutsOptions['estimatedItemSize']>
-	}
+export type UseVirtualListProps<T extends object>
+	= & Omit<UseVirtualizerProps<T>, 'layouts'>
+		& {
+			axis?: MaybeRef<CreateListLayoutsOptions['axis']>
+			itemSize?: MaybeRef<CreateListLayoutsOptions['itemSize']>
+			estimatedItemSize?: MaybeRef<CreateListLayoutsOptions['estimatedItemSize']>
+		}
 
 export function useVirtualList<T extends object>(
 	props: UseVirtualListProps<T>,

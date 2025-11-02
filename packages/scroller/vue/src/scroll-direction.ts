@@ -1,10 +1,10 @@
+import type { DirectionEventHandler, DirectionTypeValue, DirectionValue } from '@bouzu/scroller'
 import type { Ref } from 'vue-demi'
-import { onScopeDispose, unref } from 'vue-demi'
+import type { ScrollerContext } from './scroller'
+import { createDirectionPlugin, Direction, DirectionEvent } from '@bouzu/scroller'
 import { eventRef } from '@bouzu/vue-helper'
 import { computedEager } from '@vueuse/core'
-import type { DirectionEventHandler, DirectionTypeValue, DirectionValue } from '@bouzu/scroller'
-import { Direction, DirectionEvent, createDirectionPlugin } from '@bouzu/scroller'
-import type { ScrollerContext } from './scroller'
+import { onScopeDispose, unref } from 'vue-demi'
 import { useScrollerContext } from './scroller'
 
 export interface ScrollDirection {

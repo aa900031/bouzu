@@ -50,18 +50,18 @@ export function toReuseView<T>(view: View<T>): ReuseView {
 
 export function isReuseView(val: unknown): val is ReuseView {
 	return val != null
-  && typeof val === 'object'
-  && 'key' in val && typeof (val as any).key === 'string'
-	&& 'index' in val && (val as any).index === null
-  && 'data' in val && (val as any).data === null
-  && 'layout' in val && (val as any).layout === null
+		&& typeof val === 'object'
+		&& 'key' in val && typeof (val as any).key === 'string'
+		&& 'index' in val && (val as any).index === null
+		&& 'data' in val && (val as any).data === null
+		&& 'layout' in val && (val as any).layout === null
 }
 
 export function isView<T>(val: unknown): val is View<T> {
 	return val != null
-  && typeof val === 'object'
-  && 'key' in val && typeof (val as any).key === 'string'
-	&& 'index' in val && (val as any).index != null
-  && 'data' in val && (val as any).data != null
-  && 'layout' in val && (val as any).layout != null
+		&& typeof val === 'object'
+		&& 'key' in val && typeof (val as any).key === 'string'
+		&& 'index' in val && (val as any).index != null
+		&& 'data' in val && (val as any).data != null
+		&& 'layout' in val && (val as any).layout != null
 }
