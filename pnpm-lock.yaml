@@ -26,18 +26,12 @@ importers:
       mockjs:
         specifier: ^1.1.0
         version: 1.1.0
-      npm-run-all2:
-        specifier: ^7.0.2
-        version: 7.0.2
       release-it:
         specifier: ^19.0.5
         version: 19.0.5
       rimraf:
         specifier: ^5.0.5
         version: 5.0.5
-      sirv-cli:
-        specifier: ^2.0.2
-        version: 2.0.2
       turbo:
         specifier: ^2.6.0
         version: 2.6.0
@@ -334,6 +328,9 @@ importers:
       mermaid:
         specifier: ^11.12.1
         version: 11.12.1
+      npm-run-all2:
+        specifier: ^7.0.2
+        version: 7.0.2
       react:
         specifier: ^19.2.0
         version: 19.2.0
@@ -343,6 +340,9 @@ importers:
       remark-gfm:
         specifier: ^4.0.1
         version: 4.0.1
+      sirv-cli:
+        specifier: ^2.0.2
+        version: 2.0.2
       storybook:
         specifier: ^10.0.2
         version: 10.0.2(react-dom@19.2.0)(react@19.2.0)(vite@7.1.12)
@@ -382,6 +382,9 @@ importers:
       embla-carousel-vue:
         specifier: ^8.6.0
         version: 8.6.0(vue@3.4.20)
+      npm-run-all2:
+        specifier: ^7.0.2
+        version: 7.0.2
       storybook:
         specifier: ^10.0.2
         version: 10.0.2(react-dom@19.2.0)(react@19.2.0)(vite@7.1.12)
@@ -2017,10 +2020,6 @@ packages:
   /@pkgr/core@0.1.2:
     resolution: {integrity: sha512-fdDH1LSGfZdTH2sxdpVMw31BanV28K/Gry0cVFxaNP77neJSkd82mM8ErPNYs9e+0O7SdHBLTDzDgwUuy18RnQ==}
     engines: {node: ^12.20.0 || ^14.18.0 || >=16.0.0}
-    dev: true
-
-  /@polka/url@1.0.0-next.21:
-    resolution: {integrity: sha512-a5Sab1C4/icpTZVzZc5Ghpz88yQtGOyNqYXcZgOssB2uuAr+wF/MvN6bgtW32q7HHrvBki+BsZ0OuNv6EV3K9g==}
     dev: true
 
   /@polka/url@1.0.0-next.24:
@@ -10031,7 +10030,7 @@ packages:
     resolution: {integrity: sha512-O9jm9BsID1P+0HOi81VpXPoDxYP374pkOLzACAoyUQ/3OUVndNpsz6wMnY2z+yOxzbllCKZrM+9QrWsv4THnyA==}
     engines: {node: '>= 10'}
     dependencies:
-      '@polka/url': 1.0.0-next.21
+      '@polka/url': 1.0.0-next.24
       mrmime: 1.0.1
       totalist: 3.0.1
     dev: true
