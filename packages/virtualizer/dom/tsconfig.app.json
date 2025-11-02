@@ -1,5 +1,5 @@
 {
-	"extends": "@bouzu/tsconfig/base.json",
+	"extends": "@bouzu/tsconfig/dom.json",
 	"references": [
 		{ "path": "../state/tsconfig.app.json" },
 		{ "path": "../../shared/tsconfig.app.json" },
