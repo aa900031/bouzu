@@ -22,7 +22,7 @@
 		"test": "turbo run test",
 		"lint": "eslint . --cache --cache-location node_modules/.cache/eslint",
 		"clean:cache": "turbo run clean:cache",
-		"release:pkgs": "turbo run release --concurrency=1 --filter=./packages/*"
+		"release:pkgs": "turbo run release --concurrency=1 --filter=./packages/**/*"
 	},
 	"devDependencies": {
 		"@aa900031/eslint-config": "^3.2.0",
