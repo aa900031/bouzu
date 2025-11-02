@@ -54,7 +54,6 @@
 		"vue-demi": "latest"
 	},
 	"devDependencies": {
-		"@bouzu/release-it-config": "workspace:*",
 		"@bouzu/tsconfig": "workspace:*",
 		"vue": "^3.4.20"
 	}

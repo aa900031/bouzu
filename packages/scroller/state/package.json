@@ -39,7 +39,6 @@
 		"type-fest": "^3.13.1"
 	},
 	"devDependencies": {
-		"@bouzu/release-it-config": "workspace:*",
 		"@bouzu/tsconfig": "workspace:*"
 	}
 }
