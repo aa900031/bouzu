@@ -13,31 +13,25 @@
 		"url": "https://github.com/aa900031/bouzu/issues"
 	},
 	"scripts": {
-		"dev": "vue-demi-switch 3 && storybook dev -p 6007 --no-open",
-		"build": "storybook build -o dist",
-		"preview": "sirv ./dist --host -p 7007",
-		"clean:cache": "rimraf ./node_moudles/.cache"
+		"dev": "run-s dev:prepare dev:sb",
+		"dev:sb": "storybook dev -p 6007 --no-open",
+		"dev:prepare": "run-p dev:prepare:*",
+		"dev:prepare:vue-3": "vue-demi-switch 3",
+		"build": "storybook build -o ../root/dist/vue"
 	},
 	"devDependencies": {
 		"@bouzu/tsconfig": "workspace:*",
-		"@bouzu/vite-config": "workspace:^",
 		"@bouzu/vue-scroller": "workspace:*",
 		"@bouzu/vue-virtualizer": "workspace:*",
 		"@bouzu/vue-zoomable": "workspace:*",
-		"@storybook/addon-essentials": "^8.0.0",
-		"@storybook/addon-interactions": "^8.0.0",
-		"@storybook/addon-links": "^8.0.0",
-		"@storybook/blocks": "^8.0.0",
-		"@storybook/manager-api": "^8.0.0",
-		"@storybook/test": "^8.0.0",
-		"@storybook/theming": "^8.0.0",
-		"@storybook/vue3": "^8.0.0",
-		"@storybook/vue3-vite": "^8.0.0",
-		"@vitejs/plugin-vue": "^5.0.4",
+		"@storybook/addon-docs": "^10.0.2",
+		"@storybook/addon-links": "^10.0.2",
+		"@storybook/vue3-vite": "^10.0.2",
+		"@vitejs/plugin-vue": "^6.0.1",
 		"embla-carousel-vue": "^8.6.0",
-		"storybook": "^8.0.0",
+		"storybook": "^10.0.2",
 		"unocss": "^0.58.5",
-		"vite": "^5.1.6",
+		"vite": "^7.1.12",
 		"vue": "^3.4.20"
 	}
 }

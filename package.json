@@ -14,15 +14,15 @@
 		"url": "https://github.com/aa900031/bouzu/issues"
 	},
 	"scripts": {
-		"dev:sb-vue": "turbo run dev --no-daemon --filter='./stories/vue'",
-		"build:sb": "turbo run build --no-daemon --filter='./stories/*'",
-		"build:pkgs": "turbo run build --no-daemon --filter='./packages/**/*'",
-		"preview:sb-vue": "turbo run preview --filter=@bouzu/storybook-vue",
+		"build:sb": "turbo run build --filter=./stories/*",
+		"build:pkgs": "turbo run build --filter='./packages/**/*'",
+		"preview:sb": "turbo run preview --filter=@bouzu/storybook",
 		"publish:pkgs": "pnpm -r --filter='./packages/**/*' publish --no-git-checks",
-		"test": "turbo run --no-daemon test",
+		"dev:sb": "turbo run dev --filter=./stories/*",
+		"test": "turbo run test",
 		"lint": "eslint . --cache --cache-location node_modules/.cache/eslint",
-		"clean:cache": "turbo run --no-daemon clean:cache",
-		"release": "turbo run --no-daemon release --concurrency=1"
+		"clean:cache": "turbo run clean:cache",
+		"release:pkgs": "turbo run release --concurrency=1 --filter=./packages/*"
 	},
 	"devDependencies": {
 		"@aa900031/eslint-config": "^3.2.0",
@@ -31,18 +31,13 @@
 		"eslint": "^9.38.0",
 		"happy-dom": "^11.2.0",
 		"mockjs": "^1.1.0",
+		"npm-run-all2": "^7.0.2",
 		"release-it": "^19.0.5",
 		"rimraf": "^5.0.5",
 		"sirv-cli": "^2.0.2",
-		"turbo": "^1.12.4",
+		"turbo": "^2.6.0",
 		"typescript": "^5.3.3",
 		"unbuild": "^3.6.1",
 		"vitest": "^0.34.6"
-	},
-	"pnpm": {
-		"overrides": {
-			"@storybook/core-common>file-system-cache": "2.4.1",
-			"@storybook/types>file-system-cache": "2.4.1"
-		}
 	}
 }
