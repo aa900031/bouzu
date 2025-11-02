@@ -4,7 +4,7 @@ Universal state for building Components.
 
 ## Document
 
-Visit our Storybook https://bouzu.zhong666.me
+Visit our Storybook https://bouzu.pages.dev
 
 ## Directory
 
