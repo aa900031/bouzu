@@ -1,6 +1,6 @@
 <script lang="ts" setup>
+import { useScrollAxis, useScrollDirection, useScroller, useScrolling, useScrollOverflow, useScrollReach } from '@bouzu/vue-scroller'
 import { ref, toRefs, watch } from 'vue'
-import { useScrollAxis, useScrollDirection, useScrollOverflow, useScrollReach, useScroller, useScrolling } from '@bouzu/vue-scroller'
 
 const props = defineProps<{
 	visibleByContent?: boolean

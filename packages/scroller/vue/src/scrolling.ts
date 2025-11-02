@@ -1,8 +1,8 @@
-import type { Ref } from 'vue-demi'
-import { eventRef } from '@bouzu/vue-helper'
 import type { ScrollingEventHandler } from '@bouzu/scroller'
-import { ScrollingEvent, createScrollingPlugin } from '@bouzu/scroller'
+import type { Ref } from 'vue-demi'
 import type { ScrollerContext } from './scroller'
+import { createScrollingPlugin, ScrollingEvent } from '@bouzu/scroller'
+import { eventRef } from '@bouzu/vue-helper'
 import { useScrollerContext } from './scroller'
 
 export interface Scrolling {

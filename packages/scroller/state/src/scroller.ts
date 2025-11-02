@@ -1,8 +1,8 @@
-import type { Emitter, Handler } from 'mitt'
-import mitt from 'mitt'
 import type { Rect, Size } from '@bouzu/shared'
-import { checkRectEqual, checkSizeEqual, createSize, usePrevious } from '@bouzu/shared'
+import type { Emitter, Handler } from 'mitt'
 import type { ValueOf } from 'type-fest'
+import { checkRectEqual, checkSizeEqual, createSize, usePrevious } from '@bouzu/shared'
+import mitt from 'mitt'
 
 export const ScrollerEvent = {
 	ChangeVisibleRect: 'change-visible-rect',

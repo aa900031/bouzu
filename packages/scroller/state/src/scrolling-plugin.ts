@@ -1,7 +1,7 @@
 import type { Emitter, Handler } from 'mitt'
-import mitt from 'mitt'
 import type { ValueOf } from 'type-fest'
 import type { ScrollerEventHandler, ScrollerPlugin } from './scroller'
+import mitt from 'mitt'
 import { ScrollerEvent } from './scroller'
 
 export const ScrollingEvent = {

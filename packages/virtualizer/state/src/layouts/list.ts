@@ -1,16 +1,16 @@
 import type { AxisValue, Rect, Size } from '@bouzu/shared'
-import { Axis, checkRectIntersectsByAxis, checkSizeEqual, createRect, createSize, getPointByAxis, getRectMaxByAxis, getSizeByAxis, updatePointByAxis, updateSizeByAxis } from '@bouzu/shared'
 import type { Layout, Layouts } from '../layouts'
+import { Axis, checkRectIntersectsByAxis, checkSizeEqual, createRect, createSize, getPointByAxis, getRectMaxByAxis, getSizeByAxis, updatePointByAxis, updateSizeByAxis } from '@bouzu/shared'
 import { createLayout } from '../layouts'
 import { createAssemble } from '../utils/assemble'
 
-export type ListLayouts<T extends object> =
-	& Layouts<T>
-	& {
-		setAxis: (value: AxisValue) => void
-		setItemSize: (value: number) => void
-		setEstimatedItemSize: (value: number) => void
-	}
+export type ListLayouts<T extends object>
+	= & Layouts<T>
+		& {
+			setAxis: (value: AxisValue) => void
+			setItemSize: (value: number) => void
+			setEstimatedItemSize: (value: number) => void
+		}
 
 export interface CreateListLayoutsOptions {
 	axis?: AxisValue

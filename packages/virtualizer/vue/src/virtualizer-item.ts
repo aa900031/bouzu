@@ -1,9 +1,9 @@
-import type { MaybeRef } from 'vue-demi'
-import { onScopeDispose, unref, watch } from 'vue-demi'
 import type { View } from '@bouzu/virtualizer'
-import { unrefElement } from '@vueuse/core'
-import { createVirtualizerItem } from '@bouzu/virtualizer-dom'
+import type { MaybeRef } from 'vue-demi'
 import type { VirtualizerContext } from './virtualizer'
+import { createVirtualizerItem } from '@bouzu/virtualizer-dom'
+import { unrefElement } from '@vueuse/core'
+import { onScopeDispose, unref, watch } from 'vue-demi'
 import { useVirtualizerContext } from './virtualizer'
 
 export interface UseVirtualizerItemProps<T extends object> {

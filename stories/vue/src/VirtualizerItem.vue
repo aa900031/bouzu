@@ -1,8 +1,8 @@
 <script lang="ts" setup>
-import type { PropType, StyleValue } from 'vue'
-import { computed, ref, toRef } from 'vue'
 import type { View } from '@bouzu/virtualizer'
+import type { PropType, StyleValue } from 'vue'
 import { useVirtualizerItem } from '@bouzu/vue-virtualizer'
+import { computed, ref, toRef } from 'vue'
 
 const props = defineProps({
 	view: {

@@ -1,11 +1,12 @@
+import type { AxisEventHandler } from '@bouzu/scroller'
+import type { AxisValue } from '@bouzu/shared'
 import type { Ref } from 'vue-demi'
-import { onScopeDispose, unref } from 'vue-demi'
+import type { ScrollerContext } from './scroller'
+import { AxisEvent, createAxisPlugin } from '@bouzu/scroller'
+import { Axis } from '@bouzu/shared'
 import { eventRef } from '@bouzu/vue-helper'
 import { computedEager } from '@vueuse/core'
-import type { AxisEventHandler } from '@bouzu/scroller'
-import { AxisEvent, createAxisPlugin } from '@bouzu/scroller'
-import { Axis, type AxisValue } from '@bouzu/shared'
-import type { ScrollerContext } from './scroller'
+import { onScopeDispose, unref } from 'vue-demi'
 import { useScrollerContext } from './scroller'
 
 export interface ScrollAxis {

@@ -1,5 +1,5 @@
-import { ref, watch } from 'vue-demi'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { ref, watch } from 'vue-demi'
 import { eventRef } from '.'
 
 type FnHandler = (val: number | string) => void
@@ -61,7 +61,8 @@ describe('eventRef', () => {
 			.mockImplementationOnce(() => {
 				expect(scrollTop.value).toBe(0)
 				_update(10)
-			}).mockImplementationOnce(() => {
+			})
+			.mockImplementationOnce(() => {
 				expect(scrollTop.value).toBe(10)
 				resolve()
 			})
@@ -84,10 +85,12 @@ describe('eventRef', () => {
 			.mockImplementationOnce(() => {
 				expect(scrollTop.value).toBe(0)
 				offset.value = 10
-			}).mockImplementationOnce(() => {
+			})
+			.mockImplementationOnce(() => {
 				expect(scrollTop.value).toBe(10)
 				_update(10)
-			}).mockImplementationOnce(() => {
+			})
+			.mockImplementationOnce(() => {
 				expect(scrollTop.value).toBe(20)
 				resolve()
 			})
@@ -110,13 +113,16 @@ describe('eventRef', () => {
 			.mockImplementationOnce(() => {
 				expect(scrollTop.value).toBe(0)
 				toString.value = true
-			}).mockImplementationOnce(() => {
+			})
+			.mockImplementationOnce(() => {
 				expect(scrollTop.value).toBe('0')
 				_update(10)
-			}).mockImplementationOnce(() => {
+			})
+			.mockImplementationOnce(() => {
 				expect(scrollTop.value).toBe('10')
 				toString.value = false
-			}).mockImplementationOnce(() => {
+			})
+			.mockImplementationOnce(() => {
 				expect(scrollTop.value).toBe(10)
 				resolve()
 			})

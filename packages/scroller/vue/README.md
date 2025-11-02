@@ -24,10 +24,7 @@ Import:
 
 ```js
 // ESM
-import { useScrollReach, useScroller } from '@bouzu/vue-scroller'
-
-// CommonJS
-const { useScroller, useScrollReach } = require('@bouzu/vue-scroller')
+import { useScroller, useScrollReach } from '@bouzu/vue-scroller'
 ```
 
 ## Development
@@ -43,7 +40,6 @@ const { useScroller, useScrollReach } = require('@bouzu/vue-scroller')
 Made with 💛
 
 Published under [MIT License](./LICENSE).
-
 
 <!-- Badges -->
 
