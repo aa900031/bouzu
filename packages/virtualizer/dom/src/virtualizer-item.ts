@@ -1,6 +1,6 @@
 import type { Size } from '@bouzu/shared'
-import { createSize, noop } from '@bouzu/shared'
 import type { View, Virtualizer } from '@bouzu/virtualizer'
+import { createSize, noop } from '@bouzu/shared'
 
 export interface VirtualizerItem<T extends object> {
 	mount: (el: HTMLElement) => void

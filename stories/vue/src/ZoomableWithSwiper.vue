@@ -29,7 +29,7 @@ function handleSelect(api: EmblaCarouselType) {
 	activeIndex.value = api.selectedScrollSnap() ?? null
 }
 
-function watchDrag(api: EmblaCarouselType, event: TouchEvent | MouseEvent) {
+function watchDrag(_api: EmblaCarouselType, _event: TouchEvent | MouseEvent) {
 	const _activeIndex = unref(activeIndex)
 	if (_activeIndex == null)
 		return false

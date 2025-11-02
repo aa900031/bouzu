@@ -1,11 +1,11 @@
 import type { Emitter, Handler } from 'mitt'
-import mitt from 'mitt'
 import type { ValueOf } from 'type-fest'
 import type { AxisPlugin } from './axis-plugin'
-import { createAxisPlugin } from './axis-plugin'
 import type { DirectionTypeValue, DirectionValue } from './direction'
-import { Direction, DirectionType, checkDirection } from './direction'
 import type { ScrollerEventHandler, ScrollerPlugin } from './scroller'
+import mitt from 'mitt'
+import { createAxisPlugin } from './axis-plugin'
+import { checkDirection, Direction, DirectionType } from './direction'
 import { ScrollerEvent } from './scroller'
 
 export const DirectionEvent = {

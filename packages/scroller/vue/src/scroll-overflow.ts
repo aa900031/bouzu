@@ -1,9 +1,9 @@
 import type { OverflowEventHandler } from '@bouzu/scroller'
-import { OverflowEvent, createOverflowPlugin } from '@bouzu/scroller'
-import { eventRef } from '@bouzu/vue-helper'
 import type { Ref } from 'vue-demi'
-import { onScopeDispose } from 'vue-demi'
 import type { ScrollerContext } from './scroller'
+import { createOverflowPlugin, OverflowEvent } from '@bouzu/scroller'
+import { eventRef } from '@bouzu/vue-helper'
+import { onScopeDispose } from 'vue-demi'
 import { useScrollerContext } from './scroller'
 
 export interface ScrollOverflow {

@@ -1,6 +1,7 @@
 import type { View } from '@bouzu/virtualizer'
+import type { ShallowReactive } from 'vue-demi'
 import { klona } from 'klona/json'
-import { type ShallowReactive, reactive, shallowReactive } from 'vue-demi'
+import { reactive, shallowReactive } from 'vue-demi'
 
 const views = new WeakMap<View<any>, ReactiveView<any>>()
 

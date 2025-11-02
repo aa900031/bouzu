@@ -1,8 +1,8 @@
 import type { ValueOf } from 'type-fest'
 import type { Point } from './point'
 import type { Rect } from './rect'
-import { checkRectIntersectsX, checkRectIntersectsY, getRectMaxX, getRectMaxY } from './rect'
 import type { Size } from './size'
+import { checkRectIntersectsX, checkRectIntersectsY, getRectMaxX, getRectMaxY } from './rect'
 
 export const Axis = {
 	X: 'x',

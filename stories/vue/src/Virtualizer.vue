@@ -1,9 +1,9 @@
 <!-- eslint-disable no-console -->
 <script lang="ts" setup>
-import Mock from 'mockjs'
 import type { StyleValue } from 'vue'
-import { computed, ref } from 'vue'
 import { useVirtualList } from '@bouzu/vue-virtualizer'
+import Mock from 'mockjs'
+import { computed, ref } from 'vue'
 import VirtualizerItem from './VirtualizerItem.vue'
 
 interface Item {

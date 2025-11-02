@@ -12,7 +12,7 @@ import Zoomable from './components/Zoomable.vue'
 					w-[400px] h-[300px] rounded-3 flex flex-col justify-center items-center text-white text-lg font-bold cursor-grab
 					[background:linear-gradient(45deg,#ff6b6b,#4ecdc4,#45b7d1,#96ceb4)]
 					shadow-[0_8px_32px_rgba(0,0,0,0.1)]
-					 [text-shadow:2px_2px_4px_rgba(0,0,0,0.3)]
+					[text-shadow:2px_2px_4px_rgba(0,0,0,0.3)]
 				"
 			>
 				<div class="text-center">

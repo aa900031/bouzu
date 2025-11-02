@@ -1,9 +1,9 @@
 import type { Emitter, Handler } from 'mitt'
-import mitt from 'mitt'
 import type { ValueOf } from 'type-fest'
 import type { Scroller, ScrollerPlugin } from './scroller'
-import { ScrollerEvent } from './scroller'
+import mitt from 'mitt'
 import { checkOverflow } from './overflow'
+import { ScrollerEvent } from './scroller'
 
 export const OverflowEvent = {
 	ChangeX: 'change-x',

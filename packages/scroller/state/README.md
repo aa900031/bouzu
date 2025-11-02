@@ -25,9 +25,6 @@ Import:
 ```js
 // ESM
 import { createReachPlugin, createScroller } from '@bouzu/scroller'
-
-// CommonJS
-const { createScroller, createReachPlugin } = require('@bouzu/scroller')
 ```
 
 ## Development

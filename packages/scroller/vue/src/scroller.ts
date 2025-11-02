@@ -1,12 +1,12 @@
-import type { InjectionKey, MaybeRef, Ref } from 'vue-demi'
-import { inject, markRaw, onScopeDispose, provide, unref, watch } from 'vue-demi'
-import type { Rect, Size } from '@bouzu/shared'
-import { createRect, toPoint } from '@bouzu/shared'
 import type { Scroller as ScrollerDom } from '@bouzu/scroller-dom'
-import { createScroller } from '@bouzu/scroller-dom'
+import type { Rect, Size } from '@bouzu/shared'
+import type { InjectionKey, MaybeRef, Ref } from 'vue-demi'
 import { ScrollerEvent } from '@bouzu/scroller'
-import { toRef, unrefElement } from '@vueuse/core'
+import { createScroller } from '@bouzu/scroller-dom'
+import { createRect, toPoint } from '@bouzu/shared'
 import { eventRef } from '@bouzu/vue-helper'
+import { toRef, unrefElement } from '@vueuse/core'
+import { inject, markRaw, onScopeDispose, provide, unref, watch } from 'vue-demi'
 
 export interface UseScrollerProps {
 	visibleByContent?: MaybeRef<boolean | undefined>

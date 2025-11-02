@@ -1,7 +1,7 @@
 import type { ValueOf } from 'type-fest'
 import type { Point } from './point'
-import { createPoint } from './point'
 import type { Size } from './size'
+import { createPoint } from './point'
 import { createSize } from './size'
 
 export type Rect = Size & Point
