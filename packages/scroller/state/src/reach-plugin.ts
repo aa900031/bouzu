@@ -1,10 +1,10 @@
 import type { Emitter, Handler } from 'mitt'
-import mitt from 'mitt'
 import type { ValueOf } from 'type-fest'
-import { Axis } from '@bouzu/shared'
 import type { ReachValue } from './reach'
-import { Reach, checkReach } from './reach'
 import type { Scroller, ScrollerPlugin } from './scroller'
+import { Axis } from '@bouzu/shared'
+import mitt from 'mitt'
+import { checkReach, Reach } from './reach'
 import { ScrollerEvent } from './scroller'
 
 export const ReachEvent = {

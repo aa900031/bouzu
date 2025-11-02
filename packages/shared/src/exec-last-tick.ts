@@ -2,8 +2,8 @@
 type WithoutFirstParameter<T> = T extends (arg1: any, ...args: infer U) => any ? U : any
 
 export function execLastTick<
-  TTickFn extends typeof setTimeout | typeof queueMicrotask | typeof requestAnimationFrame,
-  TFn extends (...args: any) => any,
+	TTickFn extends typeof setTimeout | typeof queueMicrotask | typeof requestAnimationFrame,
+	TFn extends (...args: any) => any,
 >(
 	tickFn: TTickFn,
 	fn: TFn,

@@ -1,6 +1,6 @@
 import type { Point, Rect, Size } from '@bouzu/shared'
-import { checkRectIntersectsX, checkRectIntersectsY, getRectMaxX, getRectMaxY } from '@bouzu/shared'
 import type { ValueOf } from 'type-fest'
+import { checkRectIntersectsX, checkRectIntersectsY, getRectMaxX, getRectMaxY } from '@bouzu/shared'
 
 export const Axis = {
 	X: 'x',

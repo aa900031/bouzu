@@ -1,8 +1,8 @@
+import type { Virtualizer, VirtualizerEventHandler } from './virtualizer'
 import Mock from 'mockjs'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { createListLayouts } from './layouts/list'
-import type { Virtualizer, VirtualizerEventHandler } from './virtualizer'
-import { VirtualizerEvent, createVirtualizer } from './virtualizer'
+import { createVirtualizer, VirtualizerEvent } from './virtualizer'
 
 interface Item {
 	index: number
@@ -11,7 +11,7 @@ interface Item {
 	// desc: string
 }
 
-const DATA: Item[] = Array.from(Array(100).keys()).map(index => ({
+const DATA: Item[] = Array.from(Array.from({ length: 100 }).keys()).map(index => ({
 	index: index + 1,
 	id: Mock.Random.guid(),
 	account: Mock.Random.name(),

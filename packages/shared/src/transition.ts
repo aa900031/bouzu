@@ -1,6 +1,7 @@
-import { noop } from './noop'
-import { type RegisterRafMethods, registerRaf } from './raf'
+import type { RegisterRafMethods } from './raf'
 import type { GetTimeFn } from './time'
+import { noop } from './noop'
+import { registerRaf } from './raf'
 import { getTime as defaultGetTime } from './time'
 
 export interface RunTransitionOptions {

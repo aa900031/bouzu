@@ -24,10 +24,7 @@ Import:
 
 ```js
 // ESM
-import { useVirtualList, useVirtualizer } from '@bouzu/vue-virtualizer'
-
-// CommonJS
-const { useVirtualList, useVirtualizer } = require('@bouzu/vue-virtualizer')
+import { useVirtualizer, useVirtualList } from '@bouzu/vue-virtualizer'
 ```
 
 ## Development
@@ -43,7 +40,6 @@ const { useVirtualList, useVirtualizer } = require('@bouzu/vue-virtualizer')
 Made with 💛
 
 Published under [MIT License](./LICENSE).
-
 
 <!-- Badges -->
 

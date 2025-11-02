@@ -36,6 +36,6 @@ export interface Layouts<T> {
 	reload: (data: T[], visibleRect: Rect, context: ReloadContext) => void
 	getItem: (item: T) => Layout | undefined
 	updateItemSize: (item: T, size: Size) => boolean
-	getVisibleItems: (rect: Rect) => { index: number; layout: Layout }[]
+	getVisibleItems: (rect: Rect) => { index: number, layout: Layout }[]
 	getContentSize: () => Size
 }

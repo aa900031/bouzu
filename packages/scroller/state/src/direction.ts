@@ -1,6 +1,6 @@
-import { Axis, getPointByAxis } from '@bouzu/shared'
 import type { AxisValue, Rect } from '@bouzu/shared'
 import type { ValueOf } from 'type-fest'
+import { Axis, getPointByAxis } from '@bouzu/shared'
 
 export const Direction = {
 	Up: 'up',

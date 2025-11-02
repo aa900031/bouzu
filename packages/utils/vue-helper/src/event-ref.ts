@@ -1,11 +1,11 @@
-import { computed, ref, shallowRef, triggerRef, watchEffect } from 'vue-demi'
-import { isObject, noop } from '@bouzu/shared'
 import type { Ref } from 'vue-demi'
+import { isObject, noop } from '@bouzu/shared'
+import { computed, ref, shallowRef, triggerRef, watchEffect } from 'vue-demi'
 
 type FnHandler = (...args: any[]) => void
 
 type FnRegister<THandler extends FnHandler> = (
-	handler: THandler
+	handler: THandler,
 ) => () => void
 
 export interface EventRefAccessor<T, THandler extends FnHandler> {
@@ -31,11 +31,11 @@ export type WritableEventRef<T> = [Ref<T>, () => void]
 export type EventRef<T> = [Ref<T> & { readonly value: T }, () => void]
 
 export function eventRef<T, THandler extends FnHandler = () => void>(
-	props: WritableEventRefProps<T, THandler>
+	props: WritableEventRefProps<T, THandler>,
 ): WritableEventRef<T>
 
 export function eventRef<T, THandler extends FnHandler = () => void>(
-	props: EventRefProps<T, THandler>
+	props: EventRefProps<T, THandler>,
 ): EventRef<T>
 
 export function eventRef<T, THandler extends FnHandler = () => void>(
@@ -117,7 +117,7 @@ export function eventRef<T, THandler extends FnHandler = () => void>(
 		if (!started.value)
 			return
 
-		// eslint-disable-next-line no-unused-expressions
+		// eslint-disable-next-line ts/no-unused-expressions
 		changed.value
 		targetRef.value = get(...handlerArgs)
 	}, { flush: 'sync' })
