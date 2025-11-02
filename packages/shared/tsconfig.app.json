@@ -1,5 +1,5 @@
 {
-	"extends": "@bouzu/tsconfig/base.json",
+	"extends": "@bouzu/tsconfig/dom.json",
 	"include": [
 		"src/**/*.ts",
 		"src/**/*.d.ts"
