@@ -29,13 +29,13 @@
 		"@aa900031/release-it-config": "^0.1.0",
 		"@types/mockjs": "^1.0.10",
 		"eslint": "^9.38.0",
-		"happy-dom": "^11.2.0",
+		"happy-dom": "^20.0.10",
 		"mockjs": "^1.1.0",
 		"release-it": "^19.0.5",
-		"rimraf": "^5.0.5",
+		"rimraf": "^6.1.0",
 		"turbo": "^2.6.0",
 		"typescript": "^5.3.3",
 		"unbuild": "^3.6.1",
-		"vitest": "^0.34.6"
+		"vitest": "^4.0.6"
 	}
 }
