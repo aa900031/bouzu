@@ -1,0 +1,14 @@
+{
+	"extends": "@bouzu/tsconfig/dom.json",
+	"compilerOptions": {
+		"jsx": "preserve"
+	},
+	"include": [
+		".storybook/preview.ts",
+		".storybook/components/*.tsx"
+	],
+	"exclude": [
+		"src/**/*.test.ts",
+		"src/**/*.spec.ts"
+	]
+}

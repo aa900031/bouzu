@@ -1,0 +1,38 @@
+{
+	"name": "@bouzu/storybook",
+	"type": "module",
+	"private": true,
+	"author": "zhong666 <hi@zhong666.me>",
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/aa900031/bouzu"
+	},
+	"bugs": {
+		"url": "https://github.com/aa900031/bouzu/issues"
+	},
+	"scripts": {
+		"dev": "run-p dev:wait-* && storybook dev -p 6006 --no-open",
+		"dev:wait-vue": "wait-on tcp:6007",
+		"build": "storybook build -o dist",
+		"preview": "sirv ./dist --host -p 7006"
+	},
+	"devDependencies": {
+		"@bouzu/tsconfig": "workspace:*",
+		"@storybook/addon-docs": "^10.0.2",
+		"@storybook/react-vite": "^10.0.2",
+		"@types/react": "^19.2.2",
+		"@types/react-dom": "^19.2.2",
+		"@vitejs/plugin-react": "^4.7.0",
+		"mdx-mermaid": "^2.0.3",
+		"mermaid": "^11.12.1",
+		"npm-run-all2": "^7.0.2",
+		"react": "^19.2.0",
+		"react-dom": "^19.2.0",
+		"remark-gfm": "^4.0.1",
+		"sirv-cli": "^2.0.2",
+		"storybook": "^10.0.2",
+		"vite": "^7.1.12",
+		"wait-on": "^8.0.5"
+	}
+}

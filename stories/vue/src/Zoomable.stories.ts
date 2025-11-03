@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/vue3'
+import type { Meta, StoryObj } from '@storybook/vue3-vite'
 import Zoomable from './Zoomable.vue'
 import ZoomableWithSwiper from './ZoomableWithSwiper.vue'
 
