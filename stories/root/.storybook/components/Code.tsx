@@ -1,6 +1,6 @@
 import { Mermaid } from 'mdx-mermaid/lib/Mermaid'
 
-export function Code({ className, children }: any) {
+export function Code({ className, children }: { className?: string; children: React.ReactNode }) {
 	if (className === 'language-mermaid') {
 		return (
 			<div className={className} style={{ margin: '20px 0 40px' }}>
