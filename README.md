@@ -35,6 +35,12 @@ Visit our [Storybook](https://bouzu.pages.dev)
 | [@bouzu/zoomable-dom](./packages/zoomable/dom) | [![npm version](https://img.shields.io/npm/v/@bouzu/zoomable-dom?style=flat&colorA=18181B&colorB=F0DB4F)](https://npmjs.com/package/@bouzu/zoomable-dom)        | [![npm downloads](https://img.shields.io/npm/dm/@bouzu/zoomable-dom?style=flat&colorA=18181B&colorB=F0DB4F)](https://www.npmcharts.com/compare/@bouzu/zoomable-dom?minimal=true) |
 | [@bouzu/vue-zoomable](./packages/zoomable/vue) | [![npm version](https://img.shields.io/npm/v/@bouzu/vue-zoomable?style=flat&colorA=18181B&colorB=F0DB4F)](https://npmjs.com/package/@bouzu/vue-zoomable) | [![npm downloads](https://img.shields.io/npm/dm/@bouzu/vue-zoomable?style=flat&colorA=18181B&colorB=F0DB4F)](https://www.npmcharts.com/compare/@bouzu/vue-zoomable?minimal=true) |
 
+## License
+
+Made with ❤️
+
+Published under the [MIT License](https://github.com/aa900031/bouzu/blob/main/LICENSE).
+
 [coverage-src]: https://img.shields.io/codecov/c/gh/aa900031/bouzu?logo=codecov&style=flat&colorA=18181B&colorB=F0DB4F
 [coverage-href]: https://codecov.io/gh/aa900031/bouzu
 [coderabbit-src]: https://img.shields.io/coderabbit/prs/github/aa900031/bouzu?style=flat&logo=coderabbit&logoColor=FF570A&label=CodeRabbit%20Reviews&colorA=18181B&colorB=F0DB4F
