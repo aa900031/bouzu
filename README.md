@@ -1,6 +1,6 @@
 # Bouzu
 
-[![coverage][coverage-src]][coverage-href]
+[![coverage][coverage-src]](coverage-href)
 ![coderabbit][coderabbit-src]
 
 Universal state for building Components.
