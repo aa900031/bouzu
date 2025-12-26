@@ -101,6 +101,7 @@ export function createReachPlugin(): ReachPlugin {
 	const init: Self['init'] = (scroller) => {
 		_scroller = scroller
 		_reachX = null
+		_reachY = null
 		scroller.on(ScrollerEvent.ChangeVisibleRect, handler)
 		scroller.on(ScrollerEvent.ChangeContentSize, handler)
 	}
@@ -109,6 +110,7 @@ export function createReachPlugin(): ReachPlugin {
 		_emitter.all.clear()
 		_scroller = null
 		_reachX = null
+		_reachY = null
 		scroller.off(ScrollerEvent.ChangeVisibleRect, handler)
 		scroller.off(ScrollerEvent.ChangeContentSize, handler)
 	}

@@ -23,7 +23,8 @@
 			"@bouzu/shared": ["../../packages/shared/src"],
 			"@bouzu/scroller": ["../../packages/scroller/state/src"],
 			"@bouzu/virtualizer": ["../../packages/virtualizer/state/src"],
-			"@bouzu/zoomable": ["../../packages/zoomable/state/src"]
+			"@bouzu/zoomable": ["../../packages/zoomable/state/src"],
+			"@bouzu/affix": ["../../packages/affix/state/src"]
 		}
 	}
 }

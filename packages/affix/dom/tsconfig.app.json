@@ -1,0 +1,15 @@
+{
+	"extends": "@bouzu/tsconfig/dom.json",
+	"references": [
+		{ "path": "../state/tsconfig.app.json" },
+		{ "path": "../../shared/tsconfig.app.json" }
+	],
+	"include": [
+		"src/**/*.ts",
+		"src/**/*.d.ts"
+	],
+	"exclude": [
+		"src/**/*.test.ts",
+		"src/**/*.spec.ts"
+	]
+}
