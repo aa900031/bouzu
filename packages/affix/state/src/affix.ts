@@ -152,7 +152,7 @@ export class Affix {
 			case AffixAlign.End: {
 				if (this.#containerBoundingRect) {
 					this.#updateFixed(
-						getSizeByAxis(this.#windowSize, this.#axis) - 0 < getRectMaxByAxis(this.#targetBoundingRect, this.#axis)
+						getSizeByAxis(this.#windowSize, this.#axis) < getRectMaxByAxis(this.#targetBoundingRect, this.#axis)
 						&& getSizeByAxis(this.#windowSize, this.#axis) > getPointByAxis(this.#containerBoundingRect, this.#axis),
 					)
 					const difference = getSizeByAxis(this.#windowSize, this.#axis) - getPointByAxis(this.#containerBoundingRect, this.#axis) - getSizeByAxis(this.#targetBoundingRect, this.#axis)
@@ -162,7 +162,7 @@ export class Affix {
 				}
 				else {
 					this.#updateFixed(
-						getSizeByAxis(this.#windowSize, this.#axis) - 0 < getRectMaxByAxis(this.#targetBoundingRect, this.#axis),
+						getSizeByAxis(this.#windowSize, this.#axis) < getRectMaxByAxis(this.#targetBoundingRect, this.#axis),
 					)
 					this.#updateDifference(undefined)
 				}
