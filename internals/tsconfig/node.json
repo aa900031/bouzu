@@ -5,8 +5,9 @@
 		"composite": true,
 		"module": "ESNext",
 		"moduleResolution": "Bundler",
+		"allowJs": true,
 		"types": [
 			"node"
-		]
+		],
 	}
 }

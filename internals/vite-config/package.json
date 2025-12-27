@@ -4,7 +4,10 @@
 	"version": "0.1.0",
 	"private": true,
 	"author": "zhong666 <hi@zhong666.me>",
+	"exports": {
+		"./alias": "./alias.mjs"
+	},
 	"devDependencies": {
-		"@bouzu/tsconfig": "workspace:^"
+		"@bouzu/tsconfig": "workspace:*"
 	}
 }

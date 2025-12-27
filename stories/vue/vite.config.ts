@@ -1,10 +1,7 @@
-import path from 'node:path'
-import { fileURLToPath, URL } from 'node:url'
+import alias from '@bouzu/vite-config/alias'
 import Vue from '@vitejs/plugin-vue'
 import Unocss from 'unocss/vite'
 import { defineConfig } from 'vite'
-
-const DIR_PKGS = fileURLToPath(new URL('../../packages', import.meta.url))
 
 export default defineConfig(env => ({
 	plugins: [
@@ -13,22 +10,7 @@ export default defineConfig(env => ({
 	],
 	resolve: {
 		alias: env.mode !== 'production'
-			? {
-					'@bouzu/scroller': path.join(DIR_PKGS, './scroller/state/src'),
-					'@bouzu/scroller-dom': path.join(DIR_PKGS, './scroller/dom/src'),
-					'@bouzu/vue-scroller': path.join(DIR_PKGS, './scroller/vue/src'),
-					'@bouzu/virtualizer': path.join(DIR_PKGS, './virtualizer/state/src'),
-					'@bouzu/virtualizer-dom': path.join(DIR_PKGS, './virtualizer/dom/src'),
-					'@bouzu/vue-virtualizer': path.join(DIR_PKGS, './virtualizer/vue/src'),
-					'@bouzu/vue-helper': path.join(DIR_PKGS, './utils/vue-helper/src'),
-					'@bouzu/shared': path.join(DIR_PKGS, './shared/src'),
-					'@bouzu/zoomable': path.join(DIR_PKGS, './zoomable/state/src'),
-					'@bouzu/zoomable-dom': path.join(DIR_PKGS, './zoomable/dom/src'),
-					'@bouzu/vue-zoomable': path.join(DIR_PKGS, './zoomable/vue/src'),
-					'@bouzu/affix': path.join(DIR_PKGS, './affix/state/src'),
-					'@bouzu/affix-dom': path.join(DIR_PKGS, './affix/dom/src'),
-					'@bouzu/vue-affix': path.join(DIR_PKGS, './affix/vue/src'),
-				}
+			? alias
 			: undefined,
 	},
 }))

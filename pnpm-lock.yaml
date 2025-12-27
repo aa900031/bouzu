@@ -54,7 +54,7 @@ importers:
   internals/vite-config:
     devDependencies:
       '@bouzu/tsconfig':
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../tsconfig
 
   packages/affix/dom:
@@ -424,6 +424,9 @@ importers:
       '@bouzu/tsconfig':
         specifier: workspace:*
         version: link:../../internals/tsconfig
+      '@bouzu/vite-config':
+        specifier: workspace:*
+        version: link:../../internals/vite-config
       '@bouzu/vue-affix':
         specifier: workspace:*
         version: link:../../packages/affix/vue
