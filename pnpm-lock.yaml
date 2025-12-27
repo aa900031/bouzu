@@ -424,6 +424,9 @@ importers:
       '@bouzu/tsconfig':
         specifier: workspace:*
         version: link:../../internals/tsconfig
+      '@bouzu/vue-affix':
+        specifier: workspace:*
+        version: link:../../packages/affix/vue
       '@bouzu/vue-scroller':
         specifier: workspace:*
         version: link:../../packages/scroller/vue

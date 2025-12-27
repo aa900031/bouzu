@@ -1,3 +1,5 @@
+import type { AxisValue } from './axis'
+
 export interface Point {
 	x: number
 	y: number
@@ -51,4 +53,13 @@ export function clonePoint(
 	a: Point,
 ): Point {
 	return createPoint(a.x, a.y)
+}
+
+export function createPointByAxis(
+	value: number,
+	axis: AxisValue,
+) {
+	const point = createPoint()
+	point[axis] = value
+	return point
 }

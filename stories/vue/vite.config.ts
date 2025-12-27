@@ -25,6 +25,9 @@ export default defineConfig(env => ({
 					'@bouzu/zoomable': path.join(DIR_PKGS, './zoomable/state/src'),
 					'@bouzu/zoomable-dom': path.join(DIR_PKGS, './zoomable/dom/src'),
 					'@bouzu/vue-zoomable': path.join(DIR_PKGS, './zoomable/vue/src'),
+					'@bouzu/affix': path.join(DIR_PKGS, './affix/state/src'),
+					'@bouzu/affix-dom': path.join(DIR_PKGS, './affix/dom/src'),
+					'@bouzu/vue-affix': path.join(DIR_PKGS, './affix/vue/src'),
 				}
 			: undefined,
 	},

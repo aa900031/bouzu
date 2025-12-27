@@ -1,128 +1,203 @@
-import type { Point, Rect, Size } from '@bouzu/shared'
-import type { Emitter } from 'mitt'
-import { Axis, createPoint, createRect, createSize, getPointByAxis, getRectMaxByAxis, getSizeByAxis } from '@bouzu/shared'
+import type { AxisValue, Point, Rect, Size } from '@bouzu/shared'
+import { Axis, checkPointEqual, createPointByAxis, createRect, createSize, getPointByAxis, getRectMaxByAxis, getSizeByAxis } from '@bouzu/shared'
 import mitt from 'mitt'
 
 export const AffixEvent = {
 	ChangeFixed: 'change-fixed',
+	ChangeDifference: 'change-difference',
 } as const
 
-export const AffixPosition = {
+export const AffixAlign = {
 	Start: 'start',
 	End: 'end',
 } as const
 
-export type AffixPositionValues = typeof AffixPosition[keyof typeof AffixPosition]
+export type AffixAlignValues = typeof AffixAlign[keyof typeof AffixAlign]
 
 // eslint-disable-next-line ts/consistent-type-definitions
 type Events = {
 	[AffixEvent.ChangeFixed]: {
 		value: boolean
 	}
+	[AffixEvent.ChangeDifference]: {
+		value: Point | undefined
+	}
 }
 
-export interface CreateAffixProps {
-	position?: AffixPositionValues
+export interface AffixOptions {
+	align?: AffixAlignValues
+	axis?: AxisValue
 }
 
-export interface Affix {
-	on: Emitter<Events>['on']
-	off: Emitter<Events>['off']
+export class Affix {
+	#emitter = mitt<Events>()
+	#align: AffixAlignValues
+	#axis: AxisValue
+	#disabled: boolean
 
-	getVisibleRect: () => Rect | undefined
-	setVisibleRect: (value: Rect) => void
+	#fixed: boolean
+	#difference: Point | undefined
 
-	getContentRect: () => Rect
-	setContentRect: (value: Rect) => void
+	#windowSize: Size
+	#targetBoundingRect: Rect
+	#containerBoundingRect: Rect | undefined
 
-	getContainerRect: () => Rect | undefined
-	setContainerRect: (value: Rect | undefined) => void
+	on = this.#emitter.on
+	off = this.#emitter.off
 
-	setPosition: (value: AffixPositionValues) => void
-
-	destroy: () => void
-}
-
-export function createAffix(
-	props?: CreateAffixProps,
-): Affix {
-	const _emitter = mitt<Events>()
-	let _position: AffixPositionValues = props?.position ?? AffixPosition.Start
-	let _visibleRect = createRect()
-	let _contentRect = createRect()
-	let _containerRect: Rect | undefined
-	let _transform: Point | undefined
-	let _axis = Axis.Y
-	let _fixed = false
-
-	return {
-		on: _emitter.on,
-		off: _emitter.off,
-		getVisibleRect,
-		setVisibleRect,
-		getContentRect,
-		setContentRect,
-		getContainerRect,
-		setContainerRect,
-		setPosition,
-		destroy,
-	}
-
-	function getVisibleRect() {
-		return _visibleRect
-	}
-
-	function setVisibleRect(
-		value: Rect,
+	constructor(
+		props?: AffixOptions,
 	) {
-		_visibleRect = value
-		update()
+		this.#disabled = false
+		this.#align = props?.align ?? AffixAlign.Start
+		this.#axis = props?.axis ?? Axis.Y
+
+		this.#fixed = false
+		this.#difference = undefined
+		this.#windowSize = createSize()
+		this.#targetBoundingRect = createRect()
+		this.#containerBoundingRect = undefined
 	}
 
-	function getContentRect() {
-		return _contentRect
+	public get align(): AffixAlignValues {
+		return this.#align
 	}
 
-	function setContentRect(
-		value: Rect,
+	public set align(val: AffixAlignValues) {
+		this.#align = val
+		this.update()
+	}
+
+	public get axis(): AxisValue {
+		return this.#axis
+	}
+
+	public set axis(v: AxisValue) {
+		this.#axis = v
+		this.update()
+	}
+
+	public get fixed(): boolean {
+		return this.#fixed
+	}
+
+	public get difference(): Point | undefined {
+		return this.#difference
+	}
+
+	public get targetBoundingRect(): Rect {
+		return this.#targetBoundingRect
+	}
+
+	public set targetBoundingRect(v: Rect) {
+		this.#targetBoundingRect = v
+		this.update()
+	}
+
+	public get containerBoundingRect(): Rect | undefined {
+		return this.#containerBoundingRect
+	}
+
+	public set containerBoundingRect(v: Rect | undefined) {
+		this.#containerBoundingRect = v
+		this.update()
+	}
+
+	public get windowSize(): Size {
+		return this.#windowSize
+	}
+
+	public set windowSize(v: Size) {
+		this.#windowSize = v
+		this.update()
+	}
+
+	public get disabled(): boolean {
+		return this.#disabled
+	}
+
+	public set disabled(
+		value: boolean,
 	) {
-		_contentRect = value
-		update()
+		this.#disabled = value
 	}
 
-	function getContainerRect() {
-		return _containerRect
-	}
-
-	function setContainerRect(
-		value: Rect | undefined,
+	public update(
+		force = false,
 	) {
-		_containerRect = value
-		_transform = undefined
-		update()
-	}
+		if (!force && this.#disabled)
+			return
 
-	function setPosition(
-		value: AffixPositionValues,
-	) {
-		_position = value
-		update()
-	}
+		switch (this.#align) {
+			case AffixAlign.Start: {
+				if (this.#containerBoundingRect) {
+					this.#updateFixed(
+						getPointByAxis(this.#targetBoundingRect, this.#axis) < 0
+						&& getRectMaxByAxis(this.#containerBoundingRect, this.#axis) > 0,
+					)
 
-	function destroy() {
-		_emitter.all.clear()
-	}
-
-	function update() {
-		switch (_position) {
-			case AffixPosition.Start: {
-				// TODO:
+					const difference = getRectMaxByAxis(this.#containerBoundingRect, this.#axis) - getSizeByAxis(this.#targetBoundingRect, this.#axis)
+					this.#updateDifference(
+						createPointByAxis(difference < 0 ? difference : 0, this.#axis),
+					)
+				}
+				else {
+					this.#updateFixed(
+						getPointByAxis(this.#targetBoundingRect, this.#axis) < 0,
+					)
+					this.#updateDifference(undefined)
+				}
 				break
 			}
-			case AffixPosition.End: {
-				// TODO:
+			case AffixAlign.End: {
+				if (this.#containerBoundingRect) {
+					this.#updateFixed(
+						getSizeByAxis(this.#windowSize, this.#axis) - 0 < getRectMaxByAxis(this.#targetBoundingRect, this.#axis)
+						&& getSizeByAxis(this.#windowSize, this.#axis) > getPointByAxis(this.#containerBoundingRect, this.#axis),
+					)
+					const difference = getSizeByAxis(this.#windowSize, this.#axis) - getPointByAxis(this.#containerBoundingRect, this.#axis) - getSizeByAxis(this.#targetBoundingRect, this.#axis)
+					this.#updateDifference(
+						createPointByAxis(difference < 0 ? -difference : 0, this.#axis),
+					)
+				}
+				else {
+					this.#updateFixed(
+						getSizeByAxis(this.#windowSize, this.#axis) - 0 < getRectMaxByAxis(this.#targetBoundingRect, this.#axis),
+					)
+					this.#updateDifference(undefined)
+				}
 				break
 			}
 		}
+	}
+
+	public destroy() {
+		this.#emitter.all.clear()
+	}
+
+	#updateFixed(val: boolean) {
+		if (val === this.#fixed)
+			return
+
+		this.#fixed = val
+		this.#emitter.emit(AffixEvent.ChangeFixed, {
+			value: this.#fixed,
+		})
+	}
+
+	#updateDifference(
+		val: Point | undefined,
+	) {
+		if (
+			(val === undefined && this.#difference === undefined)
+			|| (val !== undefined && this.#difference !== undefined && checkPointEqual(val, this.#difference))
+		) {
+			return
+		}
+
+		this.#difference = val
+		this.#emitter.emit(AffixEvent.ChangeDifference, {
+			value: this.#difference,
+		})
 	}
 }
