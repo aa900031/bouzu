@@ -1,7 +1,7 @@
 import type { AffixOptions } from '@bouzu/affix'
 import type { Emitter } from 'mitt'
-import { Affix as AffixState, AffixEvent as AffixStateEvent } from '@bouzu/affix'
-import { createRect, createSize } from '@bouzu/shared'
+import { AffixAlign, Affix as AffixState, AffixEvent as AffixStateEvent } from '@bouzu/affix'
+import { Axis, createRect, createSize } from '@bouzu/shared'
 import { shallowEqual } from 'fast-equals'
 import mitt from 'mitt'
 
@@ -216,10 +216,10 @@ export class Affix {
 						position: 'fixed',
 						height: `${this.state.targetBoundingRect.height}px`,
 						width: `${this.state.targetBoundingRect.width}px`,
-						top: this.state.align === 'start' && this.state.axis === 'y' ? '0' : undefined,
-						bottom: this.state.align === 'end' && this.state.axis === 'y' ? '0' : undefined,
-						left: this.state.align === 'start' && this.state.axis === 'x' ? '0' : undefined,
-						right: this.state.align === 'end' && this.state.axis === 'x' ? '0' : undefined,
+						top: this.state.align === AffixAlign.Start && this.state.axis === Axis.Y ? '0' : undefined,
+						bottom: this.state.align === AffixAlign.End && this.state.axis === Axis.Y ? '0' : undefined,
+						left: this.state.align === AffixAlign.Start && this.state.axis === Axis.X ? '0' : undefined,
+						right: this.state.align === AffixAlign.End && this.state.axis === Axis.X ? '0' : undefined,
 						transform: this.state.difference ? `translate(${this.state.difference.x}px, ${this.state.difference.y}px)` : undefined,
 					}
 				: undefined,

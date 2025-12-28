@@ -4,7 +4,7 @@ import type { MaybeRef } from '@vueuse/core'
 import { AffixEvent as AffixStateEvent } from '@bouzu/affix'
 import { Affix, AffixEvent } from '@bouzu/affix-dom'
 import { eventRef } from '@bouzu/vue-helper'
-import { tryOnScopeDispose } from '@vueuse/core'
+import { tryOnScopeDispose, unrefElement } from '@vueuse/core'
 import { markRaw, unref, watch } from 'vue-demi'
 
 export interface UseAffixProps {
@@ -56,15 +56,19 @@ export function useAffix(
 	}, { flush: 'sync' })
 
 	watch(() => [
-		unref(props.target),
-		unref(props.container),
+		unrefElement(props.target),
+		unrefElement(props.container),
 	] as const, ([
 		target,
 		container,
-	]) => {
-		if (target) {
-			affix.mount(target, container ?? undefined)
-		}
+	], _old, onCleanup) => {
+		if (!target)
+			return
+		affix.mount(target, container ?? undefined)
+
+		onCleanup(() => {
+			affix.unmount()
+		})
 	}, { flush: 'post' })
 
 	tryOnScopeDispose(() => {
