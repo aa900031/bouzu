@@ -24,7 +24,7 @@ Import:
 
 ```js
 // ESM
-import { createAffix } from '@bouzu/affix'
+import { Affix } from '@bouzu/affix'
 ```
 
 ## Development
