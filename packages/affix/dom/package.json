@@ -36,11 +36,9 @@
 	},
 	"dependencies": {
 		"@bouzu/affix": "workspace:^",
-		"@bouzu/scroller-dom": "workspace:^",
 		"@bouzu/shared": "workspace:^",
-		"dom-helpers": "^5.2.1",
-		"mitt": "^3.0.1",
-		"type-fest": "^3.13.1"
+		"fast-equals": "^6.0.0",
+		"mitt": "^3.0.1"
 	},
 	"devDependencies": {
 		"@bouzu/tsconfig": "workspace:*"

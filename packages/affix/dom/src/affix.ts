@@ -2,6 +2,7 @@ import type { AffixOptions } from '@bouzu/affix'
 import type { Emitter } from 'mitt'
 import { Affix as AffixState, AffixEvent as AffixStateEvent } from '@bouzu/affix'
 import { createRect, createSize } from '@bouzu/shared'
+import { shallowEqual } from 'fast-equals'
 import mitt from 'mitt'
 
 export const AffixEvent = {
@@ -35,6 +36,8 @@ export class Affix {
 
 	#targetStyle: Record<string, string | undefined> | undefined
 	#contentStyle: Record<string, string | undefined> | undefined
+
+	#isResizing = false
 
 	on = this.#emitter.on
 	off = this.#emitter.off
@@ -88,14 +91,19 @@ export class Affix {
 	}
 
 	async #handleWindowResizeForTargetElement() {
+		if (this.#isResizing)
+			return
+
 		if (!this.state.fixed) {
 			this.#updateTargetRect()
 		}
 		else {
+			this.#isResizing = true
 			this.state.fixed = false
 			await new Promise(resolve => window.requestAnimationFrame(resolve))
 			this.#updateTargetRect()
 			this.state.fixed = true
+			this.#isResizing = false
 		}
 	}
 
@@ -178,7 +186,7 @@ export class Affix {
 	#updateTargetStyle(
 		value: Record<string, string | undefined> | undefined,
 	) {
-		if (this.#targetStyle === value)
+		if (shallowEqual(this.#targetStyle, value))
 			return
 		this.#targetStyle = value
 		this.#emitter.emit(AffixEvent.ChangeTargetStyle, { value: this.#targetStyle })
@@ -187,7 +195,7 @@ export class Affix {
 	#updateContentStyle(
 		value: Record<string, string | undefined> | undefined,
 	) {
-		if (this.#contentStyle === value)
+		if (shallowEqual(this.#contentStyle, value))
 			return
 		this.#contentStyle = value
 		this.#emitter.emit(AffixEvent.ChangeContentStyle, { value: this.#contentStyle })
@@ -253,6 +261,7 @@ export class Affix {
 	public destroy() {
 		this.#emitter.all.clear()
 		this.state.destroy()
+		this.#unbindState?.()
 		this.unmount()
 	}
 

@@ -4,6 +4,7 @@ import type { MaybeRef } from '@vueuse/core'
 import { AffixEvent as AffixStateEvent } from '@bouzu/affix'
 import { Affix, AffixEvent } from '@bouzu/affix-dom'
 import { eventRef } from '@bouzu/vue-helper'
+import { tryOnScopeDispose } from '@vueuse/core'
 import { markRaw, unref, watch } from 'vue-demi'
 
 export interface UseAffixProps {
@@ -65,6 +66,10 @@ export function useAffix(
 			affix.mount(target, container ?? undefined)
 		}
 	}, { flush: 'post' })
+
+	tryOnScopeDispose(() => {
+		affix.destroy()
+	})
 
 	return {
 		fixed,
