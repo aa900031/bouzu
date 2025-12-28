@@ -6,11 +6,6 @@
 			"DOM",
 			"DOM.Iterable",
 			"ESNext"
-		],
-		"paths": {
-			"@bouzu/scroller-dom": ["../../packages/scroller/dom/src"],
-			"@bouzu/virtualizer-dom": ["../../packages/virtualizer/dom/src"],
-			"@bouzu/zoomable-dom": ["../../packages/zoomable/dom/src"]
-		}
+		]
 	}
 }

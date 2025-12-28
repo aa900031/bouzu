@@ -2,12 +2,6 @@
 	"$schema": "https://json.schemastore.org/tsconfig",
 	"extends": "./dom.json",
 	"compilerOptions": {
-		"jsxImportSource": "vue",
-		"paths": {
-			"@bouzu/vue-scroller": ["../../packages/scroller/vue/src"],
-			"@bouzu/vue-virtualizer": ["../../packages/virtualizer/vue/src"],
-			"@bouzu/vue-helper": ["../../packages/utils/vue-helper/src"],
-			"@bouzu/vue-zoomable": ["../../packages/zoomable/vue/src"]
-		}
+		"jsxImportSource": "vue"
 	}
 }

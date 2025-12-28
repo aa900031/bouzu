@@ -23,7 +23,17 @@
 			"@bouzu/shared": ["../../packages/shared/src"],
 			"@bouzu/scroller": ["../../packages/scroller/state/src"],
 			"@bouzu/virtualizer": ["../../packages/virtualizer/state/src"],
-			"@bouzu/zoomable": ["../../packages/zoomable/state/src"]
+			"@bouzu/zoomable": ["../../packages/zoomable/state/src"],
+			"@bouzu/affix": ["../../packages/affix/state/src"],
+			"@bouzu/scroller-dom": ["../../packages/scroller/dom/src"],
+			"@bouzu/virtualizer-dom": ["../../packages/virtualizer/dom/src"],
+			"@bouzu/zoomable-dom": ["../../packages/zoomable/dom/src"],
+			"@bouzu/affix-dom": ["../../packages/affix/dom/src"],
+			"@bouzu/vue-scroller": ["../../packages/scroller/vue/src"],
+			"@bouzu/vue-virtualizer": ["../../packages/virtualizer/vue/src"],
+			"@bouzu/vue-helper": ["../../packages/utils/vue-helper/src"],
+			"@bouzu/vue-zoomable": ["../../packages/zoomable/vue/src"],
+			"@bouzu/vue-affix": ["../../packages/affix/vue/src"]
 		}
 	}
 }

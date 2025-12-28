@@ -21,6 +21,8 @@
 	},
 	"devDependencies": {
 		"@bouzu/tsconfig": "workspace:*",
+		"@bouzu/vite-config": "workspace:*",
+		"@bouzu/vue-affix": "workspace:*",
 		"@bouzu/vue-scroller": "workspace:*",
 		"@bouzu/vue-virtualizer": "workspace:*",
 		"@bouzu/vue-zoomable": "workspace:*",

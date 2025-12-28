@@ -1,0 +1,61 @@
+{
+	"name": "@bouzu/vue-affix",
+	"version": "0.1.0",
+	"private": false,
+	"author": "zhong666 <hi@zhong666.me>",
+	"license": "MIT",
+	"homepage": "https://bouzu.zhong666.me",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/aa900031/bouzu",
+		"directory": "packages/affix/vue"
+	},
+	"bugs": {
+		"url": "https://github.com/aa900031/bouzu/issues"
+	},
+	"sideEffects": false,
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"import": "./dist/index.mjs",
+			"require": "./dist/index.cjs"
+		}
+	},
+	"main": "./dist/index.cjs",
+	"module": "./dist/index.mjs",
+	"types": "./dist/index.d.ts",
+	"files": [
+		"dist"
+	],
+	"publishConfig": {
+		"access": "public"
+	},
+	"scripts": {
+		"build": "unbuild",
+		"release": "release-it --ci"
+	},
+	"peerDependencies": {
+		"@vue/composition-api": "^1.0.0",
+		"vue": "^2.6.12 || ^3.2.0"
+	},
+	"peerDependenciesMeta": {
+		"@vue/composition-api": {
+			"optional": true
+		},
+		"vue": {
+			"optional": true
+		}
+	},
+	"dependencies": {
+		"@bouzu/affix": "workspace:^",
+		"@bouzu/affix-dom": "workspace:^",
+		"@bouzu/shared": "workspace:^",
+		"@bouzu/vue-helper": "workspace:^",
+		"@vueuse/core": "^10.8.0",
+		"vue-demi": "latest"
+	},
+	"devDependencies": {
+		"@bouzu/tsconfig": "workspace:*",
+		"vue": "^3.4.20"
+	}
+}
