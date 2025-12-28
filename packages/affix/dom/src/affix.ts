@@ -53,6 +53,7 @@ export class Affix {
 			return
 
 		const handler = this.#updateTargetRect.bind(this)
+		const handlerForWindowResize = this.#handleWindowResizeForTargetElement.bind(this)
 
 		const observer = new ResizeObserver(handler)
 		observer.observe(this.#targetElement)
@@ -62,13 +63,13 @@ export class Affix {
 			attributeFilter: ['style', 'class'],
 		})
 
-		window.addEventListener('resize', handler, { passive: true })
+		window.addEventListener('resize', handlerForWindowResize, { passive: true })
 		window.addEventListener('scroll', handler, { capture: true, passive: true })
 
 		return () => {
 			observer.disconnect()
 			observer2.disconnect()
-			window.removeEventListener('resize', handler)
+			window.removeEventListener('resize', handlerForWindowResize)
 			window.removeEventListener('scroll', handler)
 		}
 	}
@@ -84,6 +85,18 @@ export class Affix {
 			rect.width,
 			rect.height,
 		)
+	}
+
+	async #handleWindowResizeForTargetElement() {
+		if (!this.state.fixed) {
+			this.#updateTargetRect()
+		}
+		else {
+			this.state.fixed = false
+			await new Promise(resolve => window.requestAnimationFrame(resolve))
+			this.#updateTargetRect()
+			this.state.fixed = true
+		}
 	}
 
 	#bindWindowSize() {
@@ -181,8 +194,6 @@ export class Affix {
 	}
 
 	update() {
-		this.state.update()
-
 		this.#updateTargetStyle(
 			this.state.fixed
 				? {
@@ -226,6 +237,7 @@ export class Affix {
 
 		this.state.disabled = false
 
+		this.state.update()
 		this.update()
 	}
 

@@ -81,6 +81,10 @@ export class Affix {
 		return this.#fixed
 	}
 
+	public set fixed(val: boolean) {
+		this.#updateFixed(val)
+	}
+
 	public get difference(): Point | undefined {
 		return this.#difference
 	}
