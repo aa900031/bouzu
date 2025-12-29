@@ -25,9 +25,6 @@ Import:
 ```js
 // ESM
 import { eventRef } from '@bouzu/vue-helper'
-
-// CommonJS
-const { eventRef } = require('@bouzu/vue-helper')
 ```
 
 ## Development
@@ -43,7 +40,6 @@ const { eventRef } = require('@bouzu/vue-helper')
 Made with 💛
 
 Published under [MIT License](./LICENSE).
-
 
 <!-- Badges -->
 

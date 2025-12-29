@@ -1,10 +1,13 @@
 {
 	"name": "@bouzu/vite-config",
+	"type": "module",
 	"version": "0.1.0",
 	"private": true,
-	"type": "module",
 	"author": "zhong666 <hi@zhong666.me>",
+	"exports": {
+		"./alias": "./alias.mjs"
+	},
 	"devDependencies": {
-		"@bouzu/tsconfig": "workspace:^"
+		"@bouzu/tsconfig": "workspace:*"
 	}
 }

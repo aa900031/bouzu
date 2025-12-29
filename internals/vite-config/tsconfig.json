@@ -1,6 +1,0 @@
-{
-	"extends": "@bouzu/tsconfig/node.json",
-	"include": [
-		"./"
-	]
-}

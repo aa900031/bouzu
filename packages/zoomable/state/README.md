@@ -25,9 +25,6 @@ Import:
 ```js
 // ESM
 import { createZoomable } from '@bouzu/zoomable'
-
-// CommonJS
-const { createZoomable } = require('@bouzu/zoomable')
 ```
 
 ## Development

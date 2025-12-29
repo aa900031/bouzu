@@ -7,7 +7,8 @@
 	"homepage": "https://bouzu.zhong666.me",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/aa900031/bouzu"
+		"url": "https://github.com/aa900031/bouzu",
+		"directory": "packages/virtualizer/vue"
 	},
 	"bugs": {
 		"url": "https://github.com/aa900031/bouzu/issues"
@@ -38,10 +39,10 @@
 		"vue": "^2.6.12 || ^3.2.0"
 	},
 	"peerDependenciesMeta": {
-		"vue": {
+		"@vue/composition-api": {
 			"optional": true
 		},
-		"@vue/composition-api": {
+		"vue": {
 			"optional": true
 		}
 	},
@@ -56,7 +57,6 @@
 		"vue-demi": "latest"
 	},
 	"devDependencies": {
-		"@bouzu/release-it-config": "workspace:*",
 		"@bouzu/tsconfig": "workspace:*",
 		"vue": "^3.4.20"
 	}

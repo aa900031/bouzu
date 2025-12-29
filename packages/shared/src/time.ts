@@ -1,4 +1,6 @@
-const perf = window?.performance ?? null
+import { isClient } from './is'
+
+const perf = isClient ? window?.performance ?? null : null
 // eslint-disable-next-line ts/ban-ts-comment
 // @ts-expect-error
 const perfNowFn = perf?.now ?? perf?.webkitNow ?? perf?.msNow ?? perf?.mozNow

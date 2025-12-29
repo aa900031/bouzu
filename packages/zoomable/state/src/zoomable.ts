@@ -1,6 +1,6 @@
 import type { AxisValue, Point, Rect, Size, TransitionRunner } from '@bouzu/shared'
-import { Axis, checkPointEqualWithTolerance, checkRectContainsPoint, clamp, clonePoint, createPoint, createSize, easeOutCubic, getPointCenter, getPointDistance, getSizeByAxis, runNoopTransition, runTransition } from '@bouzu/shared'
 import type { Emitter } from 'mitt'
+import { Axis, checkPointEqualWithTolerance, checkRectContainsPoint, clamp, clonePoint, createPoint, createSize, easeOutCubic, getPointCenter, getPointDistance, getSizeByAxis, runNoopTransition, runTransition } from '@bouzu/shared'
 import mitt from 'mitt'
 
 export interface ZoomableProps {
@@ -254,7 +254,7 @@ export function createZoomable(
 		const correctedPan = _panBounds.getCorrectPan(_pan)
 		const needsBoundaryCorrection
 			= Math.abs(correctedPan.x - _pan.x) > 0.1
-			|| Math.abs(correctedPan.y - _pan.y) > 0.1
+				|| Math.abs(correctedPan.y - _pan.y) > 0.1
 
 		const velocity = _gesture.getVelocity()
 		const decelerationRate = 0.95
@@ -272,7 +272,7 @@ export function createZoomable(
 		const finalPan = _panBounds.getCorrectPan(projectedPan)
 		const needsInertiaAnimation
 			= Math.abs(finalPan.x - correctedPan.x) > 1
-			|| Math.abs(finalPan.y - correctedPan.y) > 1
+				|| Math.abs(finalPan.y - correctedPan.y) > 1
 
 		if (needsBoundaryCorrection) {
 			if (needsInertiaAnimation) {

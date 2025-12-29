@@ -7,7 +7,8 @@
 	"homepage": "https://bouzu.zhong666.me",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/aa900031/bouzu"
+		"url": "https://github.com/aa900031/bouzu",
+		"directory": "packages/utils/vue-helper"
 	},
 	"bugs": {
 		"url": "https://github.com/aa900031/bouzu/issues"
@@ -52,7 +53,6 @@
 		"vue-demi": "latest"
 	},
 	"devDependencies": {
-		"@bouzu/release-it-config": "workspace:*",
 		"@bouzu/tsconfig": "workspace:*",
 		"vue": "^3.4.20"
 	}

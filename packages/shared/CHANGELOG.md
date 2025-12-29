@@ -3,6 +3,41 @@
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
 
+## v0.2.0
+
+[compare changes](https://github.com/aa900031/bouzu/compare/@bouzu/shared@0.1.1...${npm.name}@0.2.0)
+
+### 🚀 Enhancements
+
+-  Affix (#42) ([e18062a](https://github.com/aa900031/bouzu/commit/e18062a093c06f52355b903a13f750e2aa7baa20))
+
+### 🏡 Chore
+
+-  Add pkg.pr.new (#39) ([4d3c43c](https://github.com/aa900031/bouzu/commit/4d3c43ce0504d5dd6a703dfd9423907b0102e183))
+-  **ci:** Autofix (#36) ([dede28e](https://github.com/aa900031/bouzu/commit/dede28ec937ea0031251a340b061f1e6fa53cdeb))
+-  Update release-it (#37) ([1574f35](https://github.com/aa900031/bouzu/commit/1574f3503dd0780dcdfd3d5451e48b214cd7d782))
+-  Update unbuild (#38) ([d48ece4](https://github.com/aa900031/bouzu/commit/d48ece49158269cd22459ae774fd06ad46e6a86f))
+
+
+
+#### ❤️ Contributors
+
+- Zhong666 <aa900031@gmail.com>
+
+## v0.1.1
+
+[compare changes](https://github.com/aa900031/bouzu/compare/@bouzu/shared@0.1.0...@bouzu/shared@0.1.1)
+
+### 🩹 Fixes
+
+-  **shared:** Window is undefined at get pref in server side runtime ([4d148ab](https://github.com/aa900031/bouzu/commit/4d148ab0f882af5ddf8ff06c8570349f8c2fd543))
+
+
+
+#### ❤️ Contributors
+
+- Zhong666 <aa900031@gmail.com>
+
 ## v0.1.0
 
 [compare changes](https://github.com/aa900031/bouzu/compare/@bouzu/shared@0.0.2...@bouzu/shared@0.1.0)

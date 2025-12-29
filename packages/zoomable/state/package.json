@@ -7,7 +7,8 @@
 	"homepage": "https://bouzu.zhong666.me",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/aa900031/bouzu"
+		"url": "https://github.com/aa900031/bouzu",
+		"directory": "packages/zoomable/state"
 	},
 	"bugs": {
 		"url": "https://github.com/aa900031/bouzu/issues"
@@ -38,7 +39,6 @@
 		"mitt": "^3.0.1"
 	},
 	"devDependencies": {
-		"@bouzu/release-it-config": "workspace:*",
 		"@bouzu/tsconfig": "workspace:*"
 	}
 }

@@ -2,3 +2,10 @@ packages:
   - packages/**/*
   - stories/**/*
   - internals/**/*
+
+ignoredBuiltDependencies:
+  - puppeteer
+
+onlyBuiltDependencies:
+  - esbuild
+  - vue-demi

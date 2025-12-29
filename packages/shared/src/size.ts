@@ -15,5 +15,5 @@ export function checkSizeEqual(
 	b: Size,
 ) {
 	return a.width === b.width
-  && a.height === b.height
+		&& a.height === b.height
 }

@@ -1,0 +1,4 @@
+{
+	"$schema": "../../../node_modules/release-it/schema/release-it.json",
+	"extends": "@aa900031/release-it-config/monorepo"
+}

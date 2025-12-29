@@ -1,13 +1,14 @@
 {
 	"name": "@bouzu/shared",
-	"version": "0.1.0",
+	"version": "0.2.0",
 	"private": false,
 	"author": "zhong666 <hi@zhong666.me>",
 	"license": "MIT",
 	"homepage": "https://bouzu.zhong666.me",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/aa900031/bouzu"
+		"url": "https://github.com/aa900031/bouzu",
+		"directory": "packages/shared"
 	},
 	"bugs": {
 		"url": "https://github.com/aa900031/bouzu/issues"
@@ -37,7 +38,6 @@
 		"type-fest": "^3.13.1"
 	},
 	"devDependencies": {
-		"@bouzu/release-it-config": "workspace:*",
 		"@bouzu/tsconfig": "workspace:*"
 	}
 }

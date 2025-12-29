@@ -1,0 +1,10 @@
+{
+	"extends": "@bouzu/tsconfig/node.json",
+	"include": [
+		"vite.config.ts",
+		".storybook/*.ts"
+	],
+	"exclude": [
+		".storybook/preview.ts"
+	]
+}

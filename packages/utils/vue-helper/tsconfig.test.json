@@ -1,13 +1,10 @@
 {
-	"extends": "@bouzu/tsconfig/base.json",
+	"extends": "@bouzu/tsconfig/vue.json",
 	"compilerOptions": {
 		"lib": [],
 		"types": [
 			"node"
 		]
 	},
-	"include": [
-		"src/**/*.ts",
-		"test/**/*.ts"
-	]
+	"exclude": []
 }

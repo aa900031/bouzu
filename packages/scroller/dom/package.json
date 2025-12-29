@@ -7,7 +7,8 @@
 	"homepage": "https://bouzu.zhong666.me",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/aa900031/bouzu"
+		"url": "https://github.com/aa900031/bouzu",
+		"directory": "packages/scroller/dom"
 	},
 	"bugs": {
 		"url": "https://github.com/aa900031/bouzu/issues"
@@ -41,7 +42,6 @@
 		"type-fest": "^3.13.1"
 	},
 	"devDependencies": {
-		"@bouzu/release-it-config": "workspace:*",
 		"@bouzu/tsconfig": "workspace:*"
 	}
 }

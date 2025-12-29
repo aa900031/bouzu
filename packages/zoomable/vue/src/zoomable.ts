@@ -1,17 +1,18 @@
-import type { ZoomableProps as ZoomableDomProps } from '@bouzu/zoomable-dom'
-import { createZoomable } from '@bouzu/zoomable-dom'
-import { ZoomableEventName } from '@bouzu/zoomable'
-import { type MaybeRef, unrefElement } from '@vueuse/core'
-import { markRaw, onScopeDispose, unref, watch } from 'vue-demi'
-import type { ToMaybeRefs } from '@bouzu/vue-helper'
-import { eventRef, unrefs } from '@bouzu/vue-helper'
 import type { Point } from '@bouzu/shared'
+import type { ToMaybeRefs } from '@bouzu/vue-helper'
+import type { ZoomableProps as ZoomableDomProps } from '@bouzu/zoomable-dom'
+import type { MaybeRef } from '@vueuse/core'
+import { eventRef, unrefs } from '@bouzu/vue-helper'
+import { ZoomableEventName } from '@bouzu/zoomable'
+import { createZoomable } from '@bouzu/zoomable-dom'
+import { unrefElement } from '@vueuse/core'
+import { markRaw, onScopeDispose, unref, watch } from 'vue-demi'
 
-export type ZoomableProps =
-	& ToMaybeRefs<ZoomableDomProps>
-	& {
-		disabled?: MaybeRef<boolean | undefined>
-	}
+export type ZoomableProps
+	= & ToMaybeRefs<ZoomableDomProps>
+		& {
+			disabled?: MaybeRef<boolean | undefined>
+		}
 
 export function useZoomable(
 	container: MaybeRef<HTMLElement | null | undefined>,

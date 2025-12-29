@@ -1,4 +1,4 @@
-import type { Preview } from '@storybook/vue3'
+import type { Preview } from '@storybook/vue3-vite'
 
 import '@unocss/reset/tailwind-compat.css'
 import 'uno.css'
