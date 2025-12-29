@@ -276,7 +276,8 @@ export function createZoomable(
 
 		if (needsBoundaryCorrection) {
 			if (needsInertiaAnimation) {
-				const inertiaDuration = _computeInertiaDuration(projectPoint, velocity)
+				const distance = getPointDistance(_pan, finalPan)
+				const inertiaDuration = _computeInertiaDuration(distance, velocity)
 				_animatePan(finalPan, inertiaDuration)
 			}
 			else {
@@ -284,7 +285,8 @@ export function createZoomable(
 			}
 		}
 		else if (needsInertiaAnimation) {
-			const inertiaDuration = _computeInertiaDuration(projectPoint, velocity)
+			const distance = getPointDistance(_pan, finalPan)
+			const inertiaDuration = _computeInertiaDuration(distance, velocity)
 			_animatePan(finalPan, inertiaDuration)
 		}
 	}
@@ -439,15 +441,18 @@ export function createZoomable(
 		})
 	}
 
-	function _computeInertiaDuration(projectPoint: Point, velocity: Point) {
-		const distance = Math.hypot(projectPoint.x, projectPoint.y)
+	function _computeInertiaDuration(distance: number, velocity: Point) {
 		const speed = velocity ? Math.hypot(velocity.x, velocity.y) : 0
 
 		let duration: number
-		if (speed > 0.001)
-			duration = distance / speed
-		else
+		if (speed > 0.001) {
+			// easeOutCubic initial velocity is 3 * distance / duration
+			// duration = 3 * distance / speed
+			duration = 3 * distance / speed
+		}
+		else {
 			duration = distance * 1.2
+		}
 
 		duration = Math.max(250, Math.min(2000, duration))
 
