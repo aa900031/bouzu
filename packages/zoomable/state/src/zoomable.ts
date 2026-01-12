@@ -2,6 +2,8 @@ import type { AxisValue, Point, Rect, Size, TransitionRunner } from '@bouzu/shar
 import { checkRectContainsPoint, clamp, clonePoint, createPoint, easeOutCubic, getPointCenter, getPointDistance, runNoopTransition, runTransition } from '@bouzu/shared'
 import mitt from 'mitt'
 
+const FRAME_TIME = 1000 / 60
+
 export interface ZoomableProps {
 	getContainerBoundingClientRect: () => Rect
 	getElementStyleSize: () => Size
@@ -58,7 +60,7 @@ export class Zoomable {
 	#offset: Point = createPoint()
 	#startZoom: number
 	#startOffset: Point = createPoint()
-	#timeoutWheel: any = null
+	#timeoutWheel: ReturnType<typeof setTimeout> | null = null
 	#transition: TransitionRunner = runNoopTransition()
 
 	#props: ZoomableProps
@@ -710,8 +712,8 @@ class Gesture {
 		const now = Date.now()
 		if (now - this.#intervalTime > this.#VELOCITY_HYSTERESIS) {
 			this.#velocity = createPoint(
-				(this.#p1.x - this.#intervalP1.x) / (now - this.#intervalTime) * 16.6,
-				(this.#p1.y - this.#intervalP1.y) / (now - this.#intervalTime) * 16.6,
+				(this.#p1.x - this.#intervalP1.x) / (now - this.#intervalTime) * FRAME_TIME,
+				(this.#p1.y - this.#intervalP1.y) / (now - this.#intervalTime) * FRAME_TIME,
 			)
 			this.#intervalTime = now
 			this.#intervalP1 = clonePoint(this.#p1)

@@ -53,6 +53,8 @@ export class Zoomable {
 	}
 
 	start() {
+		this.stop()
+
 		if (this.#container) {
 			this.#container.addEventListener('touchstart', this.#handleTouchStart)
 			this.#container.addEventListener('touchmove', this.#handleTouchMove)
