@@ -86,6 +86,7 @@ export class Zoomable {
 			onZoomStart: this.#handleZoomStart.bind(this),
 			onZoomChange: this.#handleZoomChange.bind(this),
 			onZoomEnd: this.#handleZoomEnd.bind(this),
+			onGestureStart: this.#handleGestureStart.bind(this),
 			onDoubleTap: this.#handleDoubleClick.bind(this),
 		})
 	}
@@ -208,9 +209,12 @@ export class Zoomable {
 		}
 	}
 
-	#handleDragStart() {
+	#handleGestureStart() {
 		this.#transitionPan.cancel()
 		this.#transitionZoomPan.cancel()
+	}
+
+	#handleDragStart() {
 		this.#startPan = clonePoint(this.#pan)
 	}
 
@@ -262,8 +266,6 @@ export class Zoomable {
 	}
 
 	#handleZoomStart() {
-		this.#transitionPan.cancel()
-		this.#transitionZoomPan.cancel()
 		this.#startZoom = this.#currentZoom
 		this.#startPan = clonePoint(this.#pan)
 	}
@@ -575,6 +577,7 @@ class Gesture {
 		onZoomStart: () => void
 		onZoomChange: () => void
 		onZoomEnd: () => void
+		onGestureStart: () => void
 		onDoubleTap: (payload: DoubleClickEventPayload) => void
 	}
 
@@ -586,6 +589,7 @@ class Gesture {
 		onZoomStart: () => void
 		onZoomChange: () => void
 		onZoomEnd: () => void
+		onGestureStart: () => void
 		onDoubleTap: (payload: DoubleClickEventPayload) => void
 	}) {
 		this.#props = props
@@ -768,6 +772,7 @@ class Gesture {
 	}
 
 	#onGestureStart() {
+		this.#props.onGestureStart?.()
 		this.#startTime = Date.now()
 		this.#intervalTime = this.#startTime
 		this.#intervalP1 = clonePoint(this.#p1)
