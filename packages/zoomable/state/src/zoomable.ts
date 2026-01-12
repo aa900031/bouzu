@@ -54,13 +54,12 @@ export class Zoomable {
 	#enablePinch: boolean
 	#enableWheel: boolean
 
-	#currentZoom: number
-	#pan: Point = createPoint()
+	#zoom: number
+	#offset: Point = createPoint()
 	#startZoom: number
-	#startPan: Point = createPoint()
+	#startOffset: Point = createPoint()
 	#timeoutWheel: any = null
-	#transitionPan: TransitionRunner = runNoopTransition()
-	#transitionZoomPan: TransitionRunner = runNoopTransition()
+	#transition: TransitionRunner = runNoopTransition()
 
 	#props: ZoomableProps
 
@@ -74,8 +73,8 @@ export class Zoomable {
 		this.#enablePinch = props.enablePinch ?? true
 		this.#enableWheel = props.enableWheel ?? true
 
-		this.#currentZoom = this.#initial
-		this.#startZoom = this.#currentZoom
+		this.#zoom = this.#initial
+		this.#startZoom = this.#zoom
 
 		this.#panBounds = new PanBounds(props)
 		this.#gesture = new Gesture({
@@ -94,39 +93,20 @@ export class Zoomable {
 	on = this.#emitter.on
 	off = this.#emitter.off
 
-	public updateTo(zoom: number, center?: Point): void {
-		const targetZoom = clamp(zoom, this.#min, this.#max)
-		let targetPan = clonePoint(this.#pan)
-
-		if (center) {
-			const zoomFactor = targetZoom / this.#currentZoom
-			targetPan = createPoint(
-				center.x - (center.x - this.#pan.x) * zoomFactor,
-				center.y - (center.y - this.#pan.y) * zoomFactor,
-			)
-		}
-
-		const tempZoom = this.#currentZoom
-		this.#currentZoom = targetZoom
-		this.#panBounds.update(this.#currentZoom)
-		this.#currentZoom = tempZoom
-
-		const correctedPan = this.#panBounds.getCorrectPan(targetPan)
-		this.#animateZoomAndPan(targetZoom, correctedPan)
+	public updateTo(zoom: number, focal?: Point): void {
+		this.#applyZoom(zoom, { focal, animate: true })
 	}
 
 	public updateIn(step = 0.2): void {
-		this.updateTo(this.#currentZoom + step, { x: 0, y: 0 })
+		this.updateTo(this.#zoom + step, createPoint())
 	}
 
 	public updateOut(step = 0.2): void {
-		this.updateTo(this.#currentZoom - step, { x: 0, y: 0 })
+		this.updateTo(this.#zoom - step, createPoint())
 	}
 
 	public reset(): void {
-		const targetZoom = this.#initial
-		const targetPan = createPoint()
-		this.#animateZoomAndPan(targetZoom, targetPan)
+		this.#animateTo(this.#initial, createPoint())
 	}
 
 	public destroy() {
@@ -190,7 +170,7 @@ export class Zoomable {
 	}
 
 	public get zoom() {
-		return this.#currentZoom
+		return this.#zoom
 	}
 
 	public set zoom(val: number) {
@@ -198,7 +178,7 @@ export class Zoomable {
 	}
 
 	public get pan() {
-		return this.#pan
+		return this.#offset
 	}
 
 	public get handlers() {
@@ -210,12 +190,11 @@ export class Zoomable {
 	}
 
 	#handleGestureStart() {
-		this.#transitionPan.cancel()
-		this.#transitionZoomPan.cancel()
+		this.#transition.cancel()
 	}
 
 	#handleDragStart() {
-		this.#startPan = clonePoint(this.#pan)
+		this.#startOffset = clonePoint(this.#offset)
 	}
 
 	#handleDragChange() {
@@ -223,9 +202,9 @@ export class Zoomable {
 			return
 
 		const delta = this.#gesture.getDragDelta()
-		this.#pan = createPoint(
-			this.#pan.x + delta.x,
-			this.#pan.y + delta.y,
+		this.#offset = createPoint(
+			this.#offset.x + delta.x,
+			this.#offset.y + delta.y,
 		)
 		this.#applyChanges()
 	}
@@ -234,40 +213,33 @@ export class Zoomable {
 		if (!this.#enablePan)
 			return
 
-		const correctedPan = this.#panBounds.getCorrectPan(this.#pan)
+		const correctedOffset = this.#panBounds.getCorrectOffset(this.#offset, this.#zoom)
 		const needsBoundaryCorrection
-			= Math.abs(correctedPan.x - this.#pan.x) > 0.1
-				|| Math.abs(correctedPan.y - this.#pan.y) > 0.1
+			= Math.abs(correctedOffset.x - this.#offset.x) > 0.1
+				|| Math.abs(correctedOffset.y - this.#offset.y) > 0.1
 
 		const velocity = this.#gesture.velocity
 		const decelerationRate = 0.95
 		const projectPoint = this.#createProjectPoint(velocity, decelerationRate)
-		const projectedPan = createPoint(
-			correctedPan.x + projectPoint.x,
-			correctedPan.y + projectPoint.y,
+		const projectedOffset = createPoint(
+			correctedOffset.x + projectPoint.x,
+			correctedOffset.y + projectPoint.y,
 		)
 
-		const finalPan = this.#panBounds.getCorrectPan(projectedPan)
+		const finalOffset = this.#panBounds.getCorrectOffset(projectedOffset, this.#zoom)
 		const needsInertiaAnimation
-			= Math.abs(finalPan.x - correctedPan.x) > 1
-				|| Math.abs(finalPan.y - correctedPan.y) > 1
+			= Math.abs(finalOffset.x - correctedOffset.x) > 1
+				|| Math.abs(finalOffset.y - correctedOffset.y) > 1
 
-		if (needsBoundaryCorrection) {
-			if (needsInertiaAnimation) {
-				this.#animatePan(finalPan)
-			}
-			else {
-				this.#animatePan(correctedPan)
-			}
-		}
-		else if (needsInertiaAnimation) {
-			this.#animatePan(finalPan)
+		if (needsBoundaryCorrection || needsInertiaAnimation) {
+			const target = needsInertiaAnimation ? finalOffset : correctedOffset
+			this.#animateTo(this.#zoom, target)
 		}
 	}
 
 	#handleZoomStart() {
-		this.#startZoom = this.#currentZoom
-		this.#startPan = clonePoint(this.#pan)
+		this.#startZoom = this.#zoom
+		this.#startOffset = clonePoint(this.#offset)
 	}
 
 	#handleZoomChange() {
@@ -279,55 +251,33 @@ export class Zoomable {
 
 		if (startDistance > 0) {
 			const zoomFactor = currentDistance / startDistance
-			let newZoom = this.#startZoom * zoomFactor
+			let targetZoom = this.#startZoom * zoomFactor
 
 			const minZoomWithFriction = this.#min * 0.8
 			const maxZoomWithFriction = this.#max * 1.2
 
-			if (newZoom < this.#min) {
-				newZoom = this.#min + (newZoom - this.#min) * 0.3
-				newZoom = Math.max(newZoom, minZoomWithFriction)
+			if (targetZoom < this.#min) {
+				targetZoom = this.#min + (targetZoom - this.#min) * 0.3
+				targetZoom = Math.max(targetZoom, minZoomWithFriction)
 			}
-			else if (newZoom > this.#max) {
-				newZoom = this.#max + (newZoom - this.#max) * 0.3
-				newZoom = Math.min(newZoom, maxZoomWithFriction)
-			}
-
-			const zoomCenter = this.#gesture.getZoomCenter()
-			const containerRect = this.#props.getContainerBoundingClientRect()
-			const centerX = containerRect.width / 2
-			const centerY = containerRect.height / 2
-
-			const relativeCenterX = zoomCenter.x - centerX
-			const relativeCenterY = zoomCenter.y - centerY
-
-			const actualZoomFactor = newZoom / this.#startZoom
-			const newPan = {
-				x: relativeCenterX - (relativeCenterX - this.#startPan.x) * actualZoomFactor,
-				y: relativeCenterY - (relativeCenterY - this.#startPan.y) * actualZoomFactor,
+			else if (targetZoom > this.#max) {
+				targetZoom = this.#max + (targetZoom - this.#max) * 0.3
+				targetZoom = Math.min(targetZoom, maxZoomWithFriction)
 			}
 
-			this.#currentZoom = newZoom
-			this.#pan = newPan
-			this.#panBounds.update(this.#currentZoom)
-			this.#applyChanges()
+			const focal = this.#getRelativePoint(this.#gesture.getZoomCenter())
+			this.#applyZoom(targetZoom, { focal })
 		}
 	}
 
 	#handleZoomEnd() {
-		this.#correctZoomAndPan()
+		this.#correctBoundary()
 	}
 
 	#handleDoubleClick(event: DoubleClickEventPayload) {
-		const rect = this.#props.getContainerBoundingClientRect()
-		const centerX = rect.width / 2
-		const centerY = rect.height / 2
-		const rel = createPoint(
-			event.client.x - centerX,
-			event.client.y - centerY,
-		)
-		const targetZoom = this.#currentZoom > this.#initial ? this.#initial : this.#max
-		this.updateTo(targetZoom, rel)
+		const targetZoom = this.#zoom > this.#initial ? this.#initial : this.#max
+		const focal = this.#getRelativePoint(event.client)
+		this.#applyZoom(targetZoom, { focal, animate: true })
 	}
 
 	#handleWheel(event: WheelEventPayload) {
@@ -335,78 +285,65 @@ export class Zoomable {
 			return
 
 		if (event.withCtrl) {
-			const delta = event.delta.y > 0 ? -0.1 : 0.1
-			const newZoom = clamp(this.#currentZoom + delta, this.#min, this.#max)
+			const step = 0.1
+			const wheel = event.delta.y > 0 ? -1 : 1
+			const targetZoom = this.#zoom * Math.exp(wheel * step)
+			const focal = this.#getRelativePoint(event.client)
 
-			if (newZoom !== this.#currentZoom) {
-				const rect = this.#props.getContainerBoundingClientRect()
-				const centerX = rect.width / 2
-				const centerY = rect.height / 2
+			this.#applyZoom(targetZoom, { focal })
 
-				const zoomCenter = createPoint(
-					event.client.x - centerX,
-					event.client.y - centerY,
-				)
-				const zoomFactor = newZoom / this.#currentZoom
-				const newPan = createPoint(
-					zoomCenter.x - (zoomCenter.x - this.#pan.x) * zoomFactor,
-					zoomCenter.y - (zoomCenter.y - this.#pan.y) * zoomFactor,
-				)
+			if (this.#timeoutWheel)
+				clearTimeout(this.#timeoutWheel)
 
-				this.#currentZoom = newZoom
-				this.#pan = newPan
-				this.#panBounds.update(this.#currentZoom)
-				this.#applyChanges()
-
-				if (this.#timeoutWheel)
-					clearTimeout(this.#timeoutWheel)
-
-				this.#timeoutWheel = setTimeout(() => {
-					this.#correctZoomAndPan()
-					this.#timeoutWheel = null
-				}, 150)
-			}
+			this.#timeoutWheel = setTimeout(() => {
+				this.#correctBoundary()
+				this.#timeoutWheel = null
+			}, 150)
 		}
 		else {
 			const dragSpeed = 1.0
-			const delta = createPoint(
-				event.delta.x * dragSpeed,
-				event.delta.y * dragSpeed,
-			)
-			const newPan = createPoint(
-				this.#pan.x - delta.x,
-				this.#pan.y - delta.y,
+			const newOffset = createPoint(
+				this.#offset.x - event.delta.x * dragSpeed,
+				this.#offset.y - event.delta.y * dragSpeed,
 			)
 
-			this.#pan = this.#panBounds.getCorrectPan(newPan)
+			this.#offset = this.#panBounds.getCorrectOffset(newOffset, this.#zoom)
+			this.#applyChanges()
+		}
+	}
+
+	#getRelativePoint(client: Point): Point {
+		const rect = this.#props.getContainerBoundingClientRect()
+		return createPoint(
+			client.x - rect.x - rect.width / 2,
+			client.y - rect.y - rect.height / 2,
+		)
+	}
+
+	#applyZoom(zoom: number, options: { focal?: Point, animate?: boolean } = {}) {
+		const targetZoom = clamp(zoom, this.#min * 0.8, this.#max * 1.2)
+		const focal = options.focal ?? createPoint()
+
+		// Formula: T_new = F - (F - T_old) * (z_new / z_old)
+		const zoomFactor = targetZoom / this.#zoom
+		const targetOffset = createPoint(
+			focal.x - (focal.x - this.#offset.x) * zoomFactor,
+			focal.y - (focal.y - this.#offset.y) * zoomFactor,
+		)
+
+		if (options.animate) {
+			this.#animateTo(targetZoom, targetOffset)
+		}
+		else {
+			this.#zoom = targetZoom
+			this.#offset = targetOffset
 			this.#applyChanges()
 		}
 	}
 
 	#applyChanges() {
-		this.#emitter.emit(ZoomableEventName.ChangeZoom, this.#currentZoom)
-		this.#emitter.emit(ZoomableEventName.ChangePan, this.#pan)
-	}
-
-	#animatePan(targetPan: Point, duration?: number) {
-		this.#transitionPan.cancel()
-
-		const startPan = clonePoint(this.#pan)
-		const useDuration = duration ?? this.#animationDuration
-
-		this.#transitionPan = runTransition({
-			start: 0,
-			end: 1,
-			duration: useDuration,
-			easing: easeOutCubic,
-			onUpdate: (progress) => {
-				this.#pan = createPoint(
-					startPan.x + (targetPan.x - startPan.x) * progress,
-					startPan.y + (targetPan.y - startPan.y) * progress,
-				)
-				this.#applyChanges()
-			},
-		})
+		this.#emitter.emit(ZoomableEventName.ChangeZoom, this.#zoom)
+		this.#emitter.emit(ZoomableEventName.ChangePan, this.#offset)
 	}
 
 	#createProjectPoint(velocity: Point, decelerationRate: number): Point {
@@ -417,67 +354,46 @@ export class Zoomable {
 		)
 	}
 
-	#animateZoomAndPan(
-		targetZoom: number,
-		targetPan: Point,
-	) {
-		this.#transitionZoomPan.cancel()
+	#animateTo(targetZoom: number, targetOffset: Point) {
+		this.#transition.cancel()
 
-		const startZoom = this.#currentZoom
-		const startPan = clonePoint(this.#pan)
+		const startZoom = this.#zoom
+		const startOffset = clonePoint(this.#offset)
 
-		this.#transitionZoomPan = runTransition({
+		const clampedZoom = clamp(targetZoom, this.#min, this.#max)
+		const finalOffset = this.#panBounds.getCorrectOffset(targetOffset, clampedZoom)
+
+		this.#transition = runTransition({
 			start: 0,
 			end: 1,
 			duration: this.#animationDuration,
+			easing: easeOutCubic,
 			onUpdate: (progress) => {
-				this.#pan = createPoint(
-					startPan.x + (targetPan.x - startPan.x) * progress,
-					startPan.y + (targetPan.y - startPan.y) * progress,
+				this.#offset = createPoint(
+					startOffset.x + (finalOffset.x - startOffset.x) * progress,
+					startOffset.y + (finalOffset.y - startOffset.y) * progress,
 				)
-				this.#currentZoom = startZoom + (targetZoom - startZoom) * progress
-				this.#panBounds.update(this.#currentZoom)
+				this.#zoom = startZoom + (clampedZoom - startZoom) * progress
 				this.#applyChanges()
 			},
 		})
 	}
 
-	#correctZoomAndPan() {
-		let needsCorrection = false
-		let targetZoom = this.#currentZoom
-		let targetPan = clonePoint(this.#pan)
+	#correctBoundary() {
+		const targetZoom = clamp(this.#zoom, this.#min, this.#max)
+		const targetOffset = this.#panBounds.getCorrectOffset(this.#offset, targetZoom)
 
-		if (this.#currentZoom < this.#min) {
-			targetZoom = this.#min
-			needsCorrection = true
-		}
-		else if (this.#currentZoom > this.#max) {
-			targetZoom = this.#max
-			needsCorrection = true
-		}
-
-		if (targetZoom !== this.#currentZoom) {
-			const originalZoom = this.#currentZoom
-			this.#currentZoom = targetZoom
-			this.#panBounds.update(this.#currentZoom)
-			this.#currentZoom = originalZoom
-		}
-
-		const correctedPan = this.#panBounds.getCorrectPan(targetPan)
-
-		if (!checkPointEqualWithTolerance(correctedPan, targetPan, 0.1)) {
-			targetPan = correctedPan
-			needsCorrection = true
-		}
+		const needsCorrection
+			= Math.abs(targetZoom - this.#zoom) > 0.001
+				|| Math.abs(targetOffset.x - this.#offset.x) > 0.1
+				|| Math.abs(targetOffset.y - this.#offset.y) > 0.1
 
 		if (needsCorrection)
-			this.#animateZoomAndPan(targetZoom, targetPan)
+			this.#animateTo(targetZoom, targetOffset)
 	}
 }
 
 class PanBounds {
-	#min: Point = createPoint()
-	#max: Point = createPoint()
 	#props: {
 		getContainerBoundingClientRect: () => Rect
 		getElementStyleSize: () => Size
@@ -490,57 +406,25 @@ class PanBounds {
 		this.#props = props
 	}
 
-	update(zoom: number) {
+	getCorrectOffset(offset: Point, zoom: number): Point {
 		const containerRect = this.#props.getContainerBoundingClientRect()
 		const contentSize = this.#props.getElementStyleSize()
-		const scaledSize = createSize(
-			contentSize.width * zoom,
-			contentSize.height * zoom,
-		)
 
-		this.#updateAxis(Axis.X, containerRect, scaledSize)
-		this.#updateAxis(Axis.Y, containerRect, scaledSize)
-	}
+		const scaledWidth = contentSize.width * zoom
+		const scaledHeight = contentSize.height * zoom
 
-	getCorrectPan(offset: Point): Point {
 		return createPoint(
-			this.#getCorrectPanAxis(Axis.X, offset),
-			this.#getCorrectPanAxis(Axis.Y, offset),
+			this.#getCorrectAxisOffset(offset.x, scaledWidth, containerRect.width),
+			this.#getCorrectAxisOffset(offset.y, scaledHeight, containerRect.height),
 		)
 	}
 
-	reset() {
-		this.#min = createPoint()
-		this.#max = createPoint()
-	}
+	#getCorrectAxisOffset(offset: number, scaledSize: number, containerSize: number): number {
+		if (scaledSize <= containerSize)
+			return 0
 
-	#updateAxis(
-		axis: AxisValue,
-		containerSize: Size,
-		scaledSize: Size,
-	) {
-		const _container = getSizeByAxis(containerSize, axis)
-		const _scaled = getSizeByAxis(scaledSize, axis)
-
-		if (_scaled > _container) {
-			const overflow = (_scaled - _container) / 2
-			this.#min[axis] = -overflow
-			this.#max[axis] = overflow
-		}
-		else {
-			this.#min[axis] = 0
-			this.#max[axis] = 0
-		}
-	}
-
-	#getCorrectPanAxis(
-		axis: AxisValue,
-		offset: Point,
-	) {
-		if (this.#min[axis] === this.#max[axis])
-			return this.#min[axis]
-
-		return Math.max(this.#min[axis], Math.min(offset[axis], this.#max[axis]))
+		const overflow = (scaledSize - containerSize) / 2
+		return clamp(offset, -overflow, overflow)
 	}
 }
 
@@ -645,10 +529,9 @@ class Gesture {
 			const currentTime = Date.now()
 			const timeDiff = currentTime - this.#lastTapTime
 			const touch = event.touches[0]
-			const rect = this.#props.getContainerBoundingClientRect()
 			const currentPosition = createPoint(
-				touch.client.x - rect.x,
-				touch.client.y - rect.y,
+				touch.client.x,
+				touch.client.y,
 			)
 			const distance = getPointDistance(currentPosition, this.#lastTapPosition)
 
@@ -801,38 +684,47 @@ class Gesture {
 				}
 			}
 
-			if (this.#isDragging && !checkPointEqualWithTolerance(this.#p1, this.#prevP1)) {
-				this.#updateVelocity()
+			if (this.#isDragging) {
 				this.#props.onDragChange?.()
+				this.#updatePrevPoints()
 			}
 		}
-		else if (this.#numActivePoints > 1 && !this.#isDragging) {
+
+		if (this.#numActivePoints > 1) {
 			if (!this.#isZooming) {
 				this.#isZooming = true
 				this.#props.onZoomStart?.()
 			}
 
-			if (!checkPointEqualWithTolerance(this.#p1, this.#prevP1) || !checkPointEqualWithTolerance(this.#p2, this.#prevP2))
+			if (this.#isZooming) {
 				this.#props.onZoomChange?.()
+				this.#updatePrevPoints()
+			}
 		}
 
-		this.#updatePrevPoints()
+		const now = Date.now()
+		if (now - this.#intervalTime > this.#VELOCITY_HYSTERESIS) {
+			this.#velocity = createPoint(
+				(this.#p1.x - this.#intervalP1.x) / (now - this.#intervalTime) * 16.6,
+				(this.#p1.y - this.#intervalP1.y) / (now - this.#intervalTime) * 16.6,
+			)
+			this.#intervalTime = now
+			this.#intervalP1 = clonePoint(this.#p1)
+		}
 	}
 
 	#onGestureEnd() {
-		if (this.#numActivePoints === 0) {
-			if (this.#isDragging) {
-				this.#isDragging = false
-				this.#updateVelocity()
-				this.#props.onDragEnd?.()
-			}
-
-			if (this.#isZooming) {
-				this.#isZooming = false
-				this.#props.onZoomEnd?.()
-			}
-			this.#dragAxis = null
+		if (this.#isDragging) {
+			this.#isDragging = false
+			this.#props.onDragEnd?.()
 		}
+
+		if (this.#isZooming) {
+			this.#isZooming = false
+			this.#props.onZoomEnd?.()
+		}
+
+		this.#dragAxis = null
 	}
 
 	#updatePrevPoints() {
@@ -840,47 +732,14 @@ class Gesture {
 		this.#prevP2 = clonePoint(this.#p2)
 	}
 
-	#getTouchPoint(
-		touch: GestureEventPayload['touches'][number],
-	): Point {
-		const containerRect = this.#props.getContainerBoundingClientRect()
-		return createPoint(
-			touch.client.x - containerRect.x,
-			touch.client.y - containerRect.y,
-		)
+	#getTouchPoint(touch: { client: Point }): Point {
+		return clonePoint(touch.client)
 	}
 
-	#updateVelocity(): void {
-		const currentTime = Date.now()
-		const duration = currentTime - this.#intervalTime
-		if (duration < this.#VELOCITY_HYSTERESIS)
-			return
-
-		this.#velocity = createPoint(
-			this.#getVelocity(Axis.X, duration),
-			this.#getVelocity(Axis.Y, duration),
-		)
-		this.#intervalTime = currentTime
-		this.#intervalP1 = clonePoint(this.#p1)
-	}
-
-	#getVelocity(
-		axis: AxisValue,
-		duration: number,
-	): number {
-		const displacement = this.#p1[axis] - this.#intervalP1[axis]
-
-		if (Math.abs(displacement) > 1 && duration > 5)
-			return displacement / duration
-
-		return 0
-	}
-
-	#checkPointInContainer(
-		touch: GestureEventPayload['touches'][number],
-	): boolean {
-		const point = touch.client
-		const containerRect = this.#props.getContainerBoundingClientRect()
-		return checkRectContainsPoint(containerRect, point)
+	#checkPointInContainer(touch: { client: Point }): boolean {
+		if (!touch)
+			return false
+		const rect = this.#props.getContainerBoundingClientRect()
+		return checkRectContainsPoint(rect, touch.client)
 	}
 }

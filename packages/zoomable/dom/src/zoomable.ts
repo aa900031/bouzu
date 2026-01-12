@@ -203,12 +203,11 @@ export class Zoomable {
 
 	#handleWheel = (event: WheelEvent) => {
 		event.preventDefault()
-		const rect = this.#getContainerBoundingClientRect()
 
 		this.#state.handlers.Wheel({
 			client: createPoint(
-				event.clientX - rect.x,
-				event.clientY - rect.y,
+				event.clientX,
+				event.clientY,
 			),
 			delta: createPoint(
 				event.deltaX,
