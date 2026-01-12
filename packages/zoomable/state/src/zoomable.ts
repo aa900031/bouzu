@@ -110,6 +110,11 @@ export class Zoomable {
 	}
 
 	public destroy() {
+		this.#transition.cancel()
+		if (this.#timeoutWheel) {
+			clearTimeout(this.#timeoutWheel)
+			this.#timeoutWheel = null
+		}
 		this.#emitter.all.clear()
 	}
 
