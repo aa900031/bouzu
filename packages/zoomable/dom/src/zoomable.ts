@@ -1,6 +1,7 @@
 import type { Rect, Size } from '@bouzu/shared'
+import type { ZoomableProps as ZoomableStateProps } from '@bouzu/zoomable'
 import { createPoint, createRect, createSize } from '@bouzu/shared'
-import { Zoomable as ZoomableState, ZoomableProps as ZoomableStateProps } from '@bouzu/zoomable'
+import { Zoomable as ZoomableState } from '@bouzu/zoomable'
 
 export type ZoomableProps = Omit<
 	ZoomableStateProps,
