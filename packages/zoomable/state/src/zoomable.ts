@@ -476,7 +476,6 @@ export class Zoomable {
 class PanBounds {
 	#min: Point = createPoint()
 	#max: Point = createPoint()
-	#center: Point = createPoint() // TODO: 可以不用
 	#props: {
 		getContainerBoundingClientRect: () => Rect
 		getElementStyleSize: () => Size
@@ -499,7 +498,6 @@ class PanBounds {
 
 		this.#updateAxis(Axis.X, containerRect, scaledSize)
 		this.#updateAxis(Axis.Y, containerRect, scaledSize)
-		this.#updateCenter()
 	}
 
 	getCorrectPan(offset: Point): Point {
@@ -512,7 +510,6 @@ class PanBounds {
 	reset() {
 		this.#min = createPoint()
 		this.#max = createPoint()
-		this.#center = createPoint()
 	}
 
 	#updateAxis(
@@ -532,13 +529,6 @@ class PanBounds {
 			this.#min[axis] = 0
 			this.#max[axis] = 0
 		}
-	}
-
-	#updateCenter() {
-		this.#center = createPoint(
-			(this.#min.x + this.#max.x) / 2,
-			(this.#min.y + this.#max.y) / 2,
-		)
 	}
 
 	#getCorrectPanAxis(
