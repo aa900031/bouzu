@@ -1,5 +1,5 @@
 import type { AxisValue, Point, Rect, Size, TransitionRunner } from '@bouzu/shared'
-import { Axis, checkPointEqualWithTolerance, checkRectContainsPoint, clamp, clonePoint, createPoint, createSize, easeOutCubic, getPointCenter, getPointDistance, getSizeByAxis, runNoopTransition, runTransition } from '@bouzu/shared'
+import { checkRectContainsPoint, clamp, clonePoint, createPoint, easeOutCubic, getPointCenter, getPointDistance, runNoopTransition, runTransition } from '@bouzu/shared'
 import mitt from 'mitt'
 
 export interface ZoomableProps {
