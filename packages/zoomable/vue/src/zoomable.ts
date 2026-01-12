@@ -28,8 +28,8 @@ export function useZoomable(
 			zoomable.state.on(ZoomableEventName.ChangeZoom, handler)
 			return () => zoomable.state.off(ZoomableEventName.ChangeZoom, handler)
 		},
-		get: e => e ?? zoomable.state.getZoom(),
-		set: val => zoomable.state.updateTo(val),
+		get: e => e ?? zoomable.state.zoom,
+		set: val => zoomable.state.zoom = val,
 	})
 
 	const [pan] = eventRef<Point, (value: Point) => void>({
@@ -37,7 +37,7 @@ export function useZoomable(
 			zoomable.state.on(ZoomableEventName.ChangePan, handler)
 			return () => zoomable.state.off(ZoomableEventName.ChangePan, handler)
 		},
-		get: e => e ?? zoomable.state.getPan(),
+		get: e => e ?? zoomable.state.pan,
 	})
 
 	watch(() => [

@@ -12,15 +12,13 @@ export type ZoomableProps = Omit<
 export class Zoomable {
 	#container: HTMLElement | undefined
 	#content: HTMLElement | undefined
-	#props: ZoomableProps
 	#state: ZoomableState
 
 	constructor(props?: ZoomableProps) {
-		this.#props = props ?? {}
 		this.#state = new ZoomableState({
 			getContainerBoundingClientRect: this.#getContainerBoundingClientRect.bind(this),
 			getElementStyleSize: this.#getElementStyleSize.bind(this),
-			...this.#props,
+			...props,
 		})
 	}
 

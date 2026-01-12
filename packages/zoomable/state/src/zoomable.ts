@@ -128,14 +128,6 @@ export class Zoomable {
 		this.#animateZoomAndPan(targetZoom, targetPan)
 	}
 
-	public getZoom() {
-		return this.#currentZoom
-	}
-
-	public getPan() {
-		return this.#pan
-	}
-
 	public destroy() {
 		this.#emitter.all.clear()
 	}
@@ -194,6 +186,18 @@ export class Zoomable {
 
 	public set enableWheel(val: boolean) {
 		this.#enableWheel = val
+	}
+
+	public get zoom() {
+		return this.#currentZoom
+	}
+
+	public set zoom(val: number) {
+		this.updateTo(val)
+	}
+
+	public get pan() {
+		return this.#pan
 	}
 
 	public get handlers() {
