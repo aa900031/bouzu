@@ -32,6 +32,7 @@ export class Zoomable {
 	}
 
 	unmount() {
+		this.stop()
 		this.#container = undefined
 		this.#content = undefined
 	}
@@ -72,7 +73,6 @@ export class Zoomable {
 
 	destroy() {
 		this.#state.destroy()
-		this.stop()
 		this.unmount()
 	}
 

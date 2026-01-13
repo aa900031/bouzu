@@ -342,7 +342,6 @@ export class Zoomable {
 		const targetZoom = clamp(zoom, this.#min * 0.8, this.#max * 1.2)
 		const focal = options.focal ?? createPoint()
 
-		// Formula: T_new = F - (F - T_old) * (z_new / z_old)
 		const zoomFactor = targetZoom / this.#zoom
 		const targetOffset = createPoint(
 			focal.x - (focal.x - this.#offset.x) * zoomFactor,
@@ -729,10 +728,11 @@ class Gesture {
 		}
 
 		const now = Date.now()
-		if (now - this.#intervalTime > this.#VELOCITY_HYSTERESIS) {
+		const elapsed = now - this.#intervalTime
+		if (elapsed > this.#VELOCITY_HYSTERESIS) {
 			this.#velocity = createPoint(
-				(this.#p1.x - this.#intervalP1.x) / (now - this.#intervalTime) * FRAME_TIME,
-				(this.#p1.y - this.#intervalP1.y) / (now - this.#intervalTime) * FRAME_TIME,
+				(this.#p1.x - this.#intervalP1.x) / elapsed * FRAME_TIME,
+				(this.#p1.y - this.#intervalP1.y) / elapsed * FRAME_TIME,
 			)
 			this.#intervalTime = now
 			this.#intervalP1 = clonePoint(this.#p1)
