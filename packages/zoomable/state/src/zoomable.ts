@@ -65,6 +65,19 @@ export class Zoomable {
 
 	#props: ZoomableProps
 
+	handlers: {
+		Wheel: (event: WheelEventPayload) => void
+		DoubleClick: (event: DoubleClickEventPayload) => void
+		TouchStart: (event: GestureEventPayload) => void
+		TouchMove: (event: GestureEventPayload) => void
+		TouchEnd: (event: GestureEventPayload) => void
+		MouseDown: (event: GestureEventPayload) => void
+		MouseMove: (event: GestureEventPayload) => void
+		MouseUp: (event: GestureEventPayload) => void
+		GlobalMouseMove: (event: GestureEventPayload) => void
+		GlobalMouseUp: (event: GestureEventPayload) => void
+	}
+
 	constructor(props: ZoomableProps) {
 		this.#props = props
 		this.#min = props.min ?? 0.5
@@ -90,6 +103,12 @@ export class Zoomable {
 			onGestureStart: this.#handleGestureStart.bind(this),
 			onDoubleTap: this.#handleDoubleClick.bind(this),
 		})
+
+		this.handlers = {
+			...this.#gesture.handlers,
+			Wheel: this.#handleWheel.bind(this),
+			DoubleClick: this.#handleDoubleClick.bind(this),
+		}
 	}
 
 	on = this.#emitter.on
@@ -186,14 +205,6 @@ export class Zoomable {
 
 	public get pan() {
 		return this.#offset
-	}
-
-	public get handlers() {
-		return {
-			...this.#gesture.handlers,
-			Wheel: this.#handleWheel.bind(this),
-			DoubleClick: this.#handleDoubleClick.bind(this),
-		}
 	}
 
 	#handleGestureStart() {
@@ -472,6 +483,17 @@ class Gesture {
 		onDoubleTap: (payload: DoubleClickEventPayload) => void
 	}
 
+	handlers: {
+		TouchStart: (event: GestureEventPayload) => void
+		TouchMove: (event: GestureEventPayload) => void
+		TouchEnd: (event: GestureEventPayload) => void
+		MouseDown: (event: GestureEventPayload) => void
+		MouseMove: (event: GestureEventPayload) => void
+		MouseUp: (event: GestureEventPayload) => void
+		GlobalMouseMove: (event: GestureEventPayload) => void
+		GlobalMouseUp: (event: GestureEventPayload) => void
+	}
+
 	constructor(props: {
 		getContainerBoundingClientRect: () => Rect
 		onDragStart: () => void
@@ -484,6 +506,16 @@ class Gesture {
 		onDoubleTap: (payload: DoubleClickEventPayload) => void
 	}) {
 		this.#props = props
+		this.handlers = {
+			TouchStart: this.#handleTouchStart.bind(this),
+			TouchMove: this.#handleTouchMove.bind(this),
+			TouchEnd: this.#handleTouchEnd.bind(this),
+			MouseDown: this.#handleMouseDown.bind(this),
+			MouseMove: this.#handleMouseMove.bind(this),
+			MouseUp: this.#handleMouseUp.bind(this),
+			GlobalMouseMove: this.#handleGlobalMouseMove.bind(this),
+			GlobalMouseUp: this.#handleGlobalMouseUp.bind(this),
+		}
 	}
 
 	get velocity() {
@@ -513,19 +545,6 @@ class Gesture {
 			this.#p1.x - this.#prevP1.x,
 			this.#p1.y - this.#prevP1.y,
 		)
-	}
-
-	get handlers() {
-		return {
-			TouchStart: this.#handleTouchStart.bind(this),
-			TouchMove: this.#handleTouchMove.bind(this),
-			TouchEnd: this.#handleTouchEnd.bind(this),
-			MouseDown: this.#handleMouseDown.bind(this),
-			MouseMove: this.#handleMouseMove.bind(this),
-			MouseUp: this.#handleMouseUp.bind(this),
-			GlobalMouseMove: this.#handleGlobalMouseMove.bind(this),
-			GlobalMouseUp: this.#handleGlobalMouseUp.bind(this),
-		}
 	}
 
 	#handleTouchStart(event: GestureEventPayload) {
