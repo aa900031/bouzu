@@ -740,6 +740,15 @@ class Gesture {
 	}
 
 	#onGestureEnd() {
+		const now = Date.now()
+		const elapsed = now - this.#intervalTime
+		if (elapsed > 0) {
+			this.#velocity = createPoint(
+				(this.#p1.x - this.#intervalP1.x) / elapsed * FRAME_TIME,
+				(this.#p1.y - this.#intervalP1.y) / elapsed * FRAME_TIME,
+			)
+		}
+
 		if (this.#isDragging) {
 			this.#isDragging = false
 			this.#props.onDragEnd?.()
