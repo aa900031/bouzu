@@ -40,9 +40,11 @@ export function runTransition(
 	const rafMethos: RegisterRafMethods = { raf, caf }
 
 	let _cancelRaf = noop
+	let _resolve = noop
 	let _canceled = false
 
 	const promise = new Promise<void>((resolve) => {
+		_resolve = resolve
 		const startAt = getTime()
 		onStarted?.()
 
@@ -73,6 +75,7 @@ export function runTransition(
 	promise.cancel = () => {
 		_canceled = true
 		_cancelRaf()
+		_resolve()
 	}
 
 	return promise
