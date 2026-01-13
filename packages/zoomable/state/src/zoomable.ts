@@ -204,7 +204,7 @@ export class Zoomable {
 	}
 
 	public get pan() {
-		return this.#offset
+		return clonePoint(this.#offset)
 	}
 
 	#handleGestureStart() {
@@ -518,7 +518,7 @@ class Gesture {
 	}
 
 	get velocity() {
-		return this.#velocity
+		return clonePoint(this.#velocity)
 	}
 
 	getZoomDistance() {
