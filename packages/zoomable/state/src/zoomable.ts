@@ -364,10 +364,10 @@ export class Zoomable {
 	}
 
 	#createProjectPoint(velocity: Point, decelerationRate: number): Point {
-		const factor = decelerationRate / (1 - decelerationRate)
+		const factor = 1 - decelerationRate
 		return createPoint(
-			velocity.x * factor,
-			velocity.y * factor,
+			velocity.x / factor,
+			velocity.y / factor,
 		)
 	}
 
