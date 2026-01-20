@@ -1,7 +1,7 @@
 # Bouzu
 
-[![coverage][coverage-src]](coverage-href)
-![coderabbit][coderabbit-src]
+[![coverage](https://img.shields.io/codecov/c/gh/aa900031/bouzu?logo=codecov&style=flat&colorA=18181B&colorB=F0DB4F)](https://codecov.io/gh/aa900031/bouzu)
+![coderabbit](https://img.shields.io/coderabbit/prs/github/aa900031/bouzu?style=flat&logo=coderabbit&logoColor=FF570A&label=CodeRabbit%20Reviews&colorA=18181B&colorB=F0DB4F)
 
 Universal state for building Components.
 
@@ -10,6 +10,14 @@ Universal state for building Components.
 Visit our [Storybook](https://bouzu.pages.dev)
 
 ## Packages
+
+### Affix
+
+| Package | Version | Downloads |
+|---|---|---|
+| [@bouzu/affix](./packages/affix/state)         | [![npm version](https://img.shields.io/npm/v/@bouzu/affix?style=flat&colorA=18181B&colorB=F0DB4F)](https://npmjs.com/package/@bouzu/affix)                      | [![npm downloads](https://img.shields.io/npm/dm/@bouzu/affix?style=flat&colorA=18181B&colorB=F0DB4F)](https://www.npmcharts.com/compare/@bouzu/affix?minimal=true) |
+| [@bouzu/affix-dom](./packages/affix/dom)       | [![npm version](https://img.shields.io/npm/v/@bouzu/affix-dom?style=flat&colorA=18181B&colorB=F0DB4F)](https://npmjs.com/package/@bouzu/affix-dom)              | [![npm downloads](https://img.shields.io/npm/dm/@bouzu/affix-dom?style=flat&colorA=18181B&colorB=F0DB4F)](https://www.npmcharts.com/compare/@bouzu/affix-dom?minimal=true) |
+| [@bouzu/vue-affix](./packages/affix/vue)       | [![npm version](https://img.shields.io/npm/v/@bouzu/vue-affix?style=flat&colorA=18181B&colorB=F0DB4F)](https://npmjs.com/package/@bouzu/vue-affix)              | [![npm downloads](https://img.shields.io/npm/dm/@bouzu/vue-affix?style=flat&colorA=18181B&colorB=F0DB4F)](https://www.npmcharts.com/compare/@bouzu/vue-affix?minimal=true) |
 
 ### Scroller
 
@@ -40,7 +48,3 @@ Visit our [Storybook](https://bouzu.pages.dev)
 Made with ❤️
 
 Published under the [MIT License](https://github.com/aa900031/bouzu/blob/main/LICENSE).
-
-[coverage-src]: https://img.shields.io/codecov/c/gh/aa900031/bouzu?logo=codecov&style=flat&colorA=18181B&colorB=F0DB4F
-[coverage-href]: https://codecov.io/gh/aa900031/bouzu
-[coderabbit-src]: https://img.shields.io/coderabbit/prs/github/aa900031/bouzu?style=flat&logo=coderabbit&logoColor=FF570A&label=CodeRabbit%20Reviews&colorA=18181B&colorB=F0DB4F
