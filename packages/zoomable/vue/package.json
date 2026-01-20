@@ -32,7 +32,7 @@
 	},
 	"scripts": {
 		"build": "unbuild",
-		"release": "release-it --ci"
+		"release": "release-it"
 	},
 	"peerDependencies": {
 		"@vue/composition-api": "^1.0.0",

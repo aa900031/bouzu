@@ -32,8 +32,7 @@
 	},
 	"scripts": {
 		"build": "unbuild",
-		"test": "vitest run",
-		"release": "release-it --ci"
+		"release": "release-it"
 	},
 	"peerDependencies": {
 		"@vue/composition-api": "^1.0.0",
@@ -54,6 +53,7 @@
 	},
 	"devDependencies": {
 		"@bouzu/tsconfig": "workspace:*",
+		"@bouzu/vite-config": "workspace:*",
 		"vue": "^3.4.20"
 	}
 }

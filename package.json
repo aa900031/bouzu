@@ -19,7 +19,7 @@
 		"preview:sb": "turbo run preview --filter=@bouzu/storybook",
 		"publish:pkgs": "pnpm -r --filter='./packages/**/*' publish --no-git-checks",
 		"dev:sb": "turbo run dev --filter='./stories/*'",
-		"test": "turbo run test",
+		"test": "vitest run",
 		"lint": "eslint . --cache --cache-location node_modules/.cache/eslint",
 		"release:pkgs": "turbo run release --concurrency=1 --filter='./packages/**/*'"
 	},
@@ -28,6 +28,7 @@
 		"@aa900031/release-it-config": "^0.1.0",
 		"@types/mockjs": "^1.0.10",
 		"@types/node": "^22.19.7",
+		"@vitest/coverage-istanbul": "^4.0.17",
 		"eslint": "^9.39.2",
 		"happy-dom": "^20.3.4",
 		"mockjs": "^1.1.0",

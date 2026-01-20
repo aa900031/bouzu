@@ -20,7 +20,9 @@ const DATA: Item[] = Array.from(Array.from({ length: 100 }).keys()).map(index =>
 
 describe('virtualizer', () => {
 	let virtualizer: Virtualizer<Item>
-	const handleVisibleViewsChange = vi.fn<Parameters<VirtualizerEventHandler<Item, typeof VirtualizerEvent.ChangeVisibleViews>>>()
+	const handleVisibleViewsChange = vi.fn<
+		(...args: Parameters<VirtualizerEventHandler<Item, typeof VirtualizerEvent.ChangeVisibleViews>>) => void
+	>()
 
 	beforeEach(() => {
 		virtualizer = createVirtualizer<Item>()
@@ -36,10 +38,11 @@ describe('virtualizer', () => {
 		const ITEM_HEIGHTS = [65, 80, 110]
 
 		handleVisibleViewsChange.mockImplementationOnce(({ value }) => {
-			expect(value[0].data.index).toBe(1)
-			expect(value.length).toBe(11)
-			expect(value.every(item => item.layout.estimated)).toBe(true)
-			value.forEach((view, index) => {
+			const views = Array.from(value)
+			expect(views[0].data.index).toBe(1)
+			expect(views.length).toBe(11)
+			expect(views.every((item: any) => item.layout.estimated)).toBe(true)
+			views.forEach((view: any, index: number) => {
 				if (!view.layout.estimated)
 					return
 				virtualizer.updateItemSize(view.data, {
@@ -48,14 +51,16 @@ describe('virtualizer', () => {
 				})
 			})
 		}).mockImplementationOnce(({ value }) => {
-			expect(value[0].data.index).toBe(1)
-			expect(value.length).toBe(6)
+			const views = Array.from(value)
+			expect(views[0].data.index).toBe(1)
+			expect(views.length).toBe(6)
 
 			// 模仿滾動到 500px
 			virtualizer.setVisibleRect({ x: 0, y: 500, width: 120, height: TOTAL_HEIGHT })
 		}).mockImplementationOnce(({ value }) => {
-			expect(value[0].data.index).toBe(6)
-			expect(value.length).toBe(8)
+			const views = Array.from(value) as any[]
+			expect(views[0].data.index).toBe(6)
+			expect(views.length).toBe(8)
 
 			const contentSize = virtualizer.getContentSize()
 			const visibleRect = virtualizer.getVisibleRect()
@@ -64,12 +69,13 @@ describe('virtualizer', () => {
 			// 模仿滾動到底
 			virtualizer.setVisibleRect({ x: 0, y: maxVisibleY, width: 120, height: TOTAL_HEIGHT })
 		}).mockImplementationOnce(({ value }) => {
-			expect(value[0].data.index).toBe(90)
-			expect(value[value.length - 1].data.index).toBe(100)
+			const views = Array.from(value)
+			expect(views[0].data.index).toBe(90)
+			expect(views[views.length - 1].data.index).toBe(100)
 			resolve()
 		})
 
-		virtualizer.on(VirtualizerEvent.ChangeVisibleViews, handleVisibleViewsChange)
+		virtualizer.on(VirtualizerEvent.ChangeVisibleViews, handleVisibleViewsChange as any)
 		virtualizer.setLayouts(createListLayouts())
 		virtualizer.setData(DATA)
 		virtualizer.setVisibleRect({ x: 0, y: 0, width: 120, height: TOTAL_HEIGHT })

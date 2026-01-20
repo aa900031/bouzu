@@ -19,10 +19,8 @@
 		"preview": {
 			"outputs": []
 		},
-		"test": {
-			"outputs": []
-		},
 		"release": {
+			"dependsOn": ["^release"],
 			"cache": false
 		}
 	}
