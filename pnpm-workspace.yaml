@@ -2,6 +2,9 @@ shellEmulator: true
 
 trustPolicy: no-downgrade
 
+trustPolicyExclude:
+  - undici@6.22.0
+
 packages:
   - packages/**/*
   - stories/**/*

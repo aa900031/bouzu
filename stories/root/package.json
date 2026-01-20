@@ -19,18 +19,17 @@
 	},
 	"devDependencies": {
 		"@bouzu/tsconfig": "workspace:*",
-		"@storybook/addon-docs": "^10.0.2",
-		"@storybook/react-vite": "^10.0.2",
-		"@types/react": "^19.2.2",
-		"@types/react-dom": "^19.2.2",
-		"@vitejs/plugin-react": "^5.1.0",
-		"npm-run-all2": "^8.0.4",
-		"react": "^19.2.0",
-		"react-dom": "^19.2.0",
+		"@storybook/addon-docs": "^10.1.11",
+		"@storybook/react-vite": "^10.1.11",
+		"@types/react": "^19.2.9",
+		"@types/react-dom": "^19.2.3",
+		"@vitejs/plugin-react": "^5.1.2",
+		"react": "^19.2.3",
+		"react-dom": "^19.2.3",
 		"remark-gfm": "^4.0.1",
 		"sirv-cli": "^3.0.1",
-		"storybook": "^10.0.2",
-		"vite": "^7.1.12",
-		"wait-on": "^9.0.1"
+		"storybook": "^10.1.11",
+		"vite": "^7.3.1",
+		"wait-on": "^9.0.3"
 	}
 }

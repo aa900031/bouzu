@@ -22,9 +22,6 @@
 		"test": {
 			"outputs": []
 		},
-		"clean:cache": {
-			"cache": false
-		},
 		"release": {
 			"cache": false
 		}
