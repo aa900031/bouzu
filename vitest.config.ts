@@ -5,7 +5,8 @@ export default defineConfig({
 		coverage: {
 			provider: 'istanbul',
 			include: [
-				'packages/**/src/**/*',
+				'packages/virtualizer/state/**/*.ts',
+				'packages/utils/vue-helper/**/*.ts',
 			],
 		},
 		projects: [

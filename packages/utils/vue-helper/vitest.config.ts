@@ -1,7 +1,7 @@
 import alias from '@bouzu/vite-config/alias'
-import { defineConfig } from 'vitest/config'
+import { defineProject } from 'vitest/config'
 
-export default defineConfig({
+export default defineProject({
 	test: {
 		environment: 'happy-dom',
 	},
