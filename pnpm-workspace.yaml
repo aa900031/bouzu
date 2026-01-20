@@ -8,7 +8,7 @@ packages:
   - internals/**/*
 
 ignoredBuiltDependencies:
-  - puppeteer
+  - '@aa900031/eslint-config'
 
 onlyBuiltDependencies:
   - esbuild

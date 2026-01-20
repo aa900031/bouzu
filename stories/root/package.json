@@ -12,7 +12,7 @@
 		"url": "https://github.com/aa900031/bouzu/issues"
 	},
 	"scripts": {
-		"dev": "run-p dev:wait-* && storybook dev -p 6006 --no-open",
+		"dev": "run-p 'dev:wait-*' && storybook dev -p 6006 --no-open",
 		"dev:wait-vue": "wait-on tcp:6007",
 		"build": "storybook build -o dist",
 		"preview": "sirv ./dist --host -p 7006"
@@ -24,8 +24,6 @@
 		"@types/react": "^19.2.2",
 		"@types/react-dom": "^19.2.2",
 		"@vitejs/plugin-react": "^5.1.0",
-		"mdx-mermaid": "^2.0.3",
-		"mermaid": "^11.12.1",
 		"npm-run-all2": "^8.0.4",
 		"react": "^19.2.0",
 		"react-dom": "^19.2.0",
