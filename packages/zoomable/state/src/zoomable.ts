@@ -237,21 +237,33 @@ export class Zoomable {
 				|| Math.abs(correctedOffset.y - this.#offset.y) > 0.1
 
 		const velocity = this.#gesture.velocity
-		const decelerationRate = 0.95
+		const decelerationRate = 0.98
 		const projectPoint = this.#createProjectPoint(velocity, decelerationRate)
+
 		const projectedOffset = createPoint(
 			correctedOffset.x + projectPoint.x,
 			correctedOffset.y + projectPoint.y,
 		)
 
 		const finalOffset = this.#panBounds.getCorrectOffset(projectedOffset, this.#zoom)
-		const needsInertiaAnimation
-			= Math.abs(finalOffset.x - correctedOffset.x) > 1
-				|| Math.abs(finalOffset.y - correctedOffset.y) > 1
+		const dx = Math.abs(finalOffset.x - correctedOffset.x)
+		const dy = Math.abs(finalOffset.y - correctedOffset.y)
+		const distance = Math.sqrt(dx * dx + dy * dy)
+
+		const needsInertiaAnimation = distance > 1
 
 		if (needsBoundaryCorrection || needsInertiaAnimation) {
 			const target = needsInertiaAnimation ? finalOffset : correctedOffset
-			this.#animateTo(this.#zoom, target)
+			const velocityMag = Math.sqrt(velocity.x * velocity.x + velocity.y * velocity.y)
+
+			let duration = this.#animationDuration
+			if (needsInertiaAnimation && velocityMag > 0) {
+				// T = 3 * distance / v_initial (for easeOutCubic deceleration)
+				// We use 2.5 to keep it slightly snappier.
+				duration = Math.max(this.#animationDuration, Math.min(1000, (distance / velocityMag) * FRAME_TIME * 2.5))
+			}
+
+			this.#animateTo(this.#zoom, target, duration)
 		}
 	}
 
@@ -371,7 +383,7 @@ export class Zoomable {
 		)
 	}
 
-	#animateTo(targetZoom: number, targetOffset: Point) {
+	#animateTo(targetZoom: number, targetOffset: Point, duration = this.#animationDuration) {
 		this.#transition.cancel()
 
 		const startZoom = this.#zoom
@@ -383,7 +395,7 @@ export class Zoomable {
 		this.#transition = runTransition({
 			start: 0,
 			end: 1,
-			duration: this.#animationDuration,
+			duration,
 			easing: easeOutCubic,
 			onUpdate: (progress) => {
 				this.#offset = createPoint(
@@ -447,7 +459,7 @@ class PanBounds {
 
 class Gesture {
 	#AXIS_SWIPE_HYSTERESIS = 10
-	#VELOCITY_HYSTERESIS = 50
+	#VELOCITY_HYSTERESIS = 16
 
 	#p1: Point = createPoint()
 	#p2: Point = createPoint()
@@ -729,7 +741,7 @@ class Gesture {
 
 		const now = Date.now()
 		const elapsed = now - this.#intervalTime
-		if (elapsed > this.#VELOCITY_HYSTERESIS) {
+		if (elapsed >= this.#VELOCITY_HYSTERESIS) {
 			this.#velocity = createPoint(
 				(this.#p1.x - this.#intervalP1.x) / elapsed * FRAME_TIME,
 				(this.#p1.y - this.#intervalP1.y) / elapsed * FRAME_TIME,
@@ -742,7 +754,12 @@ class Gesture {
 	#onGestureEnd() {
 		const now = Date.now()
 		const elapsed = now - this.#intervalTime
-		if (elapsed > 0) {
+
+		// If the user hasn't moved for a while (e.g. > 100ms), kill the velocity
+		if (elapsed > 100) {
+			this.#velocity = createPoint(0, 0)
+		}
+		else if (elapsed > 0) {
 			this.#velocity = createPoint(
 				(this.#p1.x - this.#intervalP1.x) / elapsed * FRAME_TIME,
 				(this.#p1.y - this.#intervalP1.y) / elapsed * FRAME_TIME,
