@@ -237,7 +237,7 @@ export class Zoomable {
 				|| Math.abs(correctedOffset.y - this.#offset.y) > 0.1
 
 		const velocity = this.#gesture.velocity
-		const decelerationRate = 0.98
+		const decelerationRate = 0.95
 		const projectPoint = this.#createProjectPoint(velocity, decelerationRate)
 
 		const projectedOffset = createPoint(
@@ -246,25 +246,17 @@ export class Zoomable {
 		)
 
 		const finalOffset = this.#panBounds.getCorrectOffset(projectedOffset, this.#zoom)
-		const dx = Math.abs(finalOffset.x - correctedOffset.x)
-		const dy = Math.abs(finalOffset.y - correctedOffset.y)
-		const distance = Math.sqrt(dx * dx + dy * dy)
-
-		const needsInertiaAnimation = distance > 5
+		const needsInertiaAnimation
+			= Math.abs(finalOffset.x - correctedOffset.x) > 1
+				|| Math.abs(finalOffset.y - correctedOffset.y) > 1
 
 		if (needsBoundaryCorrection || needsInertiaAnimation) {
 			const target = needsInertiaAnimation ? finalOffset : correctedOffset
-			const velocityMag = Math.sqrt(velocity.x * velocity.x + velocity.y * velocity.y)
-
-			let duration = this.#animationDuration
-			if (needsInertiaAnimation && velocityMag > 0) {
-				// For easeOutCubic: v0 = 3 * distance / duration
-				// duration = 3 * distance / v0
-				duration = (3 * distance / velocityMag) * FRAME_TIME
-				duration = clamp(duration, this.#animationDuration, 1200)
-			}
-
-			this.#animateTo(this.#zoom, target, duration)
+			
+			// For decelerationRate 0.95 (Factor 20), the physically matched duration for easeOutCubic
+			// is approx 3 * 20 * 16.6ms = 1000ms.
+			// We use 800ms to be slightly snappier/faster than "ice sliding".
+			this.#animateTo(this.#zoom, target, 800)
 		}
 	}
 
@@ -460,7 +452,7 @@ class PanBounds {
 
 class Gesture {
 	#AXIS_SWIPE_HYSTERESIS = 10
-	#VELOCITY_HYSTERESIS = 16
+	#VELOCITY_HYSTERESIS = 50
 
 	#p1: Point = createPoint()
 	#p2: Point = createPoint()
@@ -756,8 +748,8 @@ class Gesture {
 		const now = Date.now()
 		const elapsed = now - this.#intervalTime
 
-		// If the user hasn't moved for a while (e.g. > 150ms), kill the velocity
-		if (elapsed > 150) {
+		// If the user hasn't moved for a while (e.g. > 100ms), kill the velocity
+		if (elapsed > 100) {
 			this.#velocity = createPoint(0, 0)
 		}
 		else if (elapsed > 0) {
