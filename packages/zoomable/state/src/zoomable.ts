@@ -250,7 +250,7 @@ export class Zoomable {
 		const dy = Math.abs(finalOffset.y - correctedOffset.y)
 		const distance = Math.sqrt(dx * dx + dy * dy)
 
-		const needsInertiaAnimation = distance > 1
+		const needsInertiaAnimation = distance > 5
 
 		if (needsBoundaryCorrection || needsInertiaAnimation) {
 			const target = needsInertiaAnimation ? finalOffset : correctedOffset
@@ -258,9 +258,10 @@ export class Zoomable {
 
 			let duration = this.#animationDuration
 			if (needsInertiaAnimation && velocityMag > 0) {
-				// T = 3 * distance / v_initial (for easeOutCubic deceleration)
-				// We use 2.5 to keep it slightly snappier.
-				duration = Math.max(this.#animationDuration, Math.min(1000, (distance / velocityMag) * FRAME_TIME * 2.5))
+				// For easeOutCubic: v0 = 3 * distance / duration
+				// duration = 3 * distance / v0
+				duration = (3 * distance / velocityMag) * FRAME_TIME
+				duration = clamp(duration, this.#animationDuration, 1200)
 			}
 
 			this.#animateTo(this.#zoom, target, duration)
@@ -755,8 +756,8 @@ class Gesture {
 		const now = Date.now()
 		const elapsed = now - this.#intervalTime
 
-		// If the user hasn't moved for a while (e.g. > 100ms), kill the velocity
-		if (elapsed > 100) {
+		// If the user hasn't moved for a while (e.g. > 150ms), kill the velocity
+		if (elapsed > 150) {
 			this.#velocity = createPoint(0, 0)
 		}
 		else if (elapsed > 0) {
