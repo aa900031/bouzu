@@ -252,7 +252,7 @@ export class Zoomable {
 
 		if (needsBoundaryCorrection || needsInertiaAnimation) {
 			const target = needsInertiaAnimation ? finalOffset : correctedOffset
-			
+
 			// For decelerationRate 0.95 (Factor 20), the physically matched duration for easeOutCubic
 			// is approx 3 * 20 * 16.6ms = 1000ms.
 			// We use 800ms to be slightly snappier/faster than "ice sliding".
