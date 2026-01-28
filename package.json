@@ -33,9 +33,9 @@
 		"happy-dom": "^20.3.4",
 		"mockjs": "^1.1.0",
 		"npm-run-all2": "^8.0.4",
-		"release-it": "^19.2.3",
+		"release-it": "^19.2.4",
 		"turbo": "^2.7.5",
-		"typescript": "^5.3.3",
+		"typescript": "^5.9.3",
 		"unbuild": "^3.6.1",
 		"vitest": "^4.0.17"
 	}
