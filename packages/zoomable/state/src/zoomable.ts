@@ -1,6 +1,7 @@
-import type { AxisValue, Point, Rect, Size, TransitionRunner } from '@bouzu/shared'
+import type { AxisValue, Point, Rect, RegisterRafMethods, Size, TransitionRunner } from '@bouzu/shared'
 import { checkRectContainsPoint, clamp, clonePoint, createPoint, easeOutCubic, getPointCenter, getPointDistance, runNoopTransition, runTransition } from '@bouzu/shared'
 import mitt from 'mitt'
+import { Kinetic } from './kinetic'
 
 const FRAME_TIME = 1000 / 60
 
@@ -14,6 +15,8 @@ export interface ZoomableProps {
 	enablePan?: boolean
 	enablePinch?: boolean
 	enableWheel?: boolean
+	rafFn?: RegisterRafMethods['raf']
+	cafFn?: RegisterRafMethods['caf']
 }
 
 export const ZoomableEventName = {
@@ -47,6 +50,7 @@ export class Zoomable {
 	#emitter = mitt<ZoomableEvents>()
 	#panBounds: PanBounds
 	#gesture: Gesture
+	#kinetic: Kinetic
 
 	#min: number
 	#max: number
@@ -92,6 +96,17 @@ export class Zoomable {
 		this.#startZoom = this.#zoom
 
 		this.#panBounds = new PanBounds(props)
+		this.#kinetic = new Kinetic({
+			getPoint: () => this.#offset,
+			scroll: (x, y) => {
+				this.#offset = createPoint(x, y)
+				this.#applyChanges()
+			},
+			onComplete: () => this.#correctBoundary(),
+			getBounds: point => this.#panBounds.getCorrectOffset(point, this.#zoom),
+			rafFn: props.rafFn,
+			cafFn: props.cafFn,
+		})
 		this.#gesture = new Gesture({
 			...props,
 			onDragStart: this.#handleDragStart.bind(this),
@@ -132,6 +147,7 @@ export class Zoomable {
 
 	public destroy() {
 		this.#transition.cancel()
+		this.#kinetic.cancel()
 		if (this.#timeoutWheel) {
 			clearTimeout(this.#timeoutWheel)
 			this.#timeoutWheel = null
@@ -209,10 +225,12 @@ export class Zoomable {
 
 	#handleGestureStart() {
 		this.#transition.cancel()
+		this.#kinetic.cancel()
 	}
 
 	#handleDragStart() {
 		this.#startOffset = clonePoint(this.#offset)
+		this.#kinetic.start()
 	}
 
 	#handleDragChange() {
@@ -231,33 +249,7 @@ export class Zoomable {
 		if (!this.#enablePan)
 			return
 
-		const correctedOffset = this.#panBounds.getCorrectOffset(this.#offset, this.#zoom)
-		const needsBoundaryCorrection
-			= Math.abs(correctedOffset.x - this.#offset.x) > 0.1
-				|| Math.abs(correctedOffset.y - this.#offset.y) > 0.1
-
-		const velocity = this.#gesture.velocity
-		const decelerationRate = 0.95
-		const projectPoint = this.#createProjectPoint(velocity, decelerationRate)
-
-		const projectedOffset = createPoint(
-			correctedOffset.x + projectPoint.x,
-			correctedOffset.y + projectPoint.y,
-		)
-
-		const finalOffset = this.#panBounds.getCorrectOffset(projectedOffset, this.#zoom)
-		const needsInertiaAnimation
-			= Math.abs(finalOffset.x - correctedOffset.x) > 1
-				|| Math.abs(finalOffset.y - correctedOffset.y) > 1
-
-		if (needsBoundaryCorrection || needsInertiaAnimation) {
-			const target = needsInertiaAnimation ? finalOffset : correctedOffset
-
-			// For decelerationRate 0.95 (Factor 20), the physically matched duration for easeOutCubic
-			// is approx 3 * 20 * 16.6ms = 1000ms.
-			// We use 800ms to be slightly snappier/faster than "ice sliding".
-			this.#animateTo(this.#zoom, target, 800)
-		}
+		this.#kinetic.stop()
 	}
 
 	#handleZoomStart() {
@@ -366,14 +358,6 @@ export class Zoomable {
 	#applyChanges() {
 		this.#emitter.emit(ZoomableEventName.ChangeZoom, this.#zoom)
 		this.#emitter.emit(ZoomableEventName.ChangePan, this.#offset)
-	}
-
-	#createProjectPoint(velocity: Point, decelerationRate: number): Point {
-		const factor = 1 - decelerationRate
-		return createPoint(
-			velocity.x / factor,
-			velocity.y / factor,
-		)
 	}
 
 	#animateTo(targetZoom: number, targetOffset: Point, duration = this.#animationDuration) {
