@@ -38,8 +38,8 @@ function watchDrag(_api: EmblaCarouselType, _event: TouchEvent | MouseEvent) {
 	if (!zoomable)
 		return false
 
-	const isZoomable = zoomable._.getZoom() === 1
-	zoomable._.setEnablePan(!isZoomable)
+	const isZoomable = zoomable._.zoom === 1
+	zoomable._.enablePan = !isZoomable
 
 	return isZoomable
 }
