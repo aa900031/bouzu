@@ -1,7 +1,7 @@
 import type { AxisValue, Point, Rect, RegisterRafMethods, Size, TransitionRunner } from '@bouzu/shared'
-import { Axis, checkPointEqualWithTolerance, checkRectContainsPoint, clamp, clonePoint, createPoint, createSize, getPointCenter, getPointDistance, getSizeByAxis, runNoopTransition, runTransition } from '@bouzu/shared'
+import type { Emitter } from 'mitt'
+import { Axis, checkPointEqualWithTolerance, checkRectContainsPoint, clamp, clonePoint, createPoint, createSize, easeOutCubic, getPointCenter, getPointDistance, getSizeByAxis, runNoopTransition, runTransition } from '@bouzu/shared'
 import mitt from 'mitt'
-import { Kinetic } from './kinetic'
 
 export interface ZoomableProps {
 	getContainerBoundingClientRect: () => Rect
@@ -44,11 +44,16 @@ export interface DoubleClickEventPayload {
 	client: Point
 }
 
+export interface ZoomableHandlers extends GestureHandlers {
+	Wheel: (event: WheelEventPayload) => void
+	DoubleClick: (event: DoubleClickEventPayload) => void
+}
+
 export class Zoomable {
 	#emitter = mitt<ZoomableEvents>()
+	#props: ZoomableProps
 	#panBounds: PanBounds
 	#gesture: Gesture
-	#kinetic: Kinetic
 
 	#min: number
 	#max: number
@@ -59,29 +64,31 @@ export class Zoomable {
 	#enableWheel: boolean
 
 	#currentZoom: number
-	#pan: Point = createPoint()
+	#pan: Point
 	#startZoom: number
-	#startPan: Point = createPoint()
-	#timeoutWheel: ReturnType<typeof setTimeout> | null = null
-	#transitionZoomPan: TransitionRunner = runNoopTransition()
+	#startPan: Point
+	#timeoutWheel: ReturnType<typeof setTimeout> | null
+	#transitionPan: TransitionRunner
+	#transitionZoomPan: TransitionRunner
 
-	#props: ZoomableProps
-
-	handlers: {
-		TouchStart: (event: GestureEventPayload) => void
-		TouchMove: (event: GestureEventPayload) => void
-		TouchEnd: (event: GestureEventPayload) => void
-		MouseDown: (event: GestureEventPayload) => void
-		MouseMove: (event: GestureEventPayload) => void
-		MouseUp: (event: GestureEventPayload) => void
-		GlobalMouseMove: (event: GestureEventPayload) => void
-		GlobalMouseUp: (event: GestureEventPayload) => void
-		Wheel: (event: WheelEventPayload) => void
-		DoubleClick: (event: DoubleClickEventPayload) => void
-	}
+	on: Emitter<ZoomableEvents>['on'] = this.#emitter.on
+	off: Emitter<ZoomableEvents>['off'] = this.#emitter.off
+	handlers: ZoomableHandlers
 
 	constructor(props: ZoomableProps) {
 		this.#props = props
+		this.#panBounds = new PanBounds(props)
+		this.#gesture = new Gesture({
+			getContainerBoundingClientRect: this.#props.getContainerBoundingClientRect,
+			onDragStart: this.#handleDragStart,
+			onDragChange: this.#handleDragChange,
+			onDragEnd: this.#handleDragEnd,
+			onZoomStart: this.#handleZoomStart,
+			onZoomChange: this.#handleZoomChange,
+			onZoomEnd: this.#handleZoomEnd,
+			onDoubleTap: this.#handleDoubleClick,
+		})
+
 		this.#min = props.min ?? 0.5
 		this.#max = props.max ?? 3
 		this.#initial = props.initial ?? 1
@@ -91,42 +98,24 @@ export class Zoomable {
 		this.#enableWheel = props.enableWheel ?? true
 
 		this.#currentZoom = this.#initial
+		this.#pan = createPoint()
 		this.#startZoom = this.#currentZoom
-
-		this.#panBounds = new PanBounds(props)
-		this.#kinetic = new Kinetic({
-			getPoint: () => this.#pan,
-			onScroll: (x, y) => {
-				this.#pan = createPoint(x, y)
-				this.#applyChanges()
-			},
-			onComplete: () => this.#correctPanBounds(),
-			getBounds: point => this.#panBounds.getCorrectPan(point),
-			rafFn: this.#props.rafFn,
-			cafFn: this.#props.cafFn,
-		})
-		this.#gesture = new Gesture({
-			...props,
-			onDragStart: this.#handleDragStart.bind(this),
-			onDragChange: this.#handleDragChange.bind(this),
-			onDragEnd: this.#handleDragEnd.bind(this),
-			onZoomStart: this.#handleZoomStart.bind(this),
-			onZoomChange: this.#handleZoomChange.bind(this),
-			onZoomEnd: this.#handleZoomEnd.bind(this),
-			onDoubleTap: this.#handleDoubleClick.bind(this),
-		})
+		this.#startPan = createPoint()
+		this.#timeoutWheel = null
+		this.#transitionPan = runNoopTransition()
+		this.#transitionZoomPan = runNoopTransition()
 
 		this.handlers = {
 			...this.#gesture.handlers,
-			Wheel: this.#handleWheel.bind(this),
-			DoubleClick: this.#handleDoubleClick.bind(this),
+			Wheel: this.#handleWheel,
+			DoubleClick: this.#handleDoubleClick,
 		}
 	}
 
-	on = this.#emitter.on
-	off = this.#emitter.off
-
-	public updateTo(zoom: number, center?: Point): void {
+	public updateTo(
+		zoom: number,
+		center?: Point,
+	): void {
 		const targetZoom = clamp(zoom, this.#min, this.#max)
 
 		let targetPan = clonePoint(this.#pan)
@@ -148,11 +137,15 @@ export class Zoomable {
 		this.#animateZoomAndPan(targetZoom, correctedPan)
 	}
 
-	public updateIn(step = 0.2): void {
+	public updateIn(
+		step = 0.2,
+	): void {
 		this.updateTo(this.#currentZoom + step, { x: 0, y: 0 })
 	}
 
-	public updateOut(step = 0.2): void {
+	public updateOut(
+		step = 0.2,
+	): void {
 		this.updateTo(this.#currentZoom - step, { x: 0, y: 0 })
 	}
 
@@ -162,87 +155,86 @@ export class Zoomable {
 		this.#animateZoomAndPan(targetZoom, targetPan)
 	}
 
-	public get zoom(): number {
+	get zoom() {
 		return this.#currentZoom
 	}
 
-	public set zoom(v: number) {
-		this.updateTo(v)
+	set zoom(val: number) {
+		this.updateTo(val)
 	}
 
-	public get pan(): Point {
+	get pan() {
 		return this.#pan
 	}
 
-	public destroy(): void {
+	public destroy() {
 		this.#emitter.all.clear()
 	}
 
-	public get min(): number {
+	get min() {
 		return this.#min
 	}
 
-	public set min(value: number) {
+	set min(value: number) {
 		this.#min = value
 	}
 
-	public get max(): number {
+	get max() {
 		return this.#max
 	}
 
-	public set max(value: number) {
+	set max(value: number) {
 		this.#max = value
 	}
 
-	public get initial(): number {
+	get initial() {
 		return this.#initial
 	}
 
-	public set initial(value: number) {
+	set initial(value: number) {
 		this.#initial = value
 	}
 
-	public get animationDuration(): number {
+	get animationDuration() {
 		return this.#animationDuration
 	}
 
-	public set animationDuration(value: number) {
+	set animationDuration(value: number) {
 		this.#animationDuration = value
 	}
 
-	public get enablePan(): boolean {
+	get enablePan(): boolean {
 		return this.#enablePan
 	}
 
-	public set enablePan(val: boolean) {
+	set enablePan(val: boolean) {
 		this.#enablePan = val
 	}
 
-	public get enablePinch(): boolean {
+	get enablePinch() {
 		return this.#enablePinch
 	}
 
-	public set enablePinch(val: boolean) {
+	set enablePinch(val: boolean) {
 		this.#enablePinch = val
 	}
 
-	public get enableWheel(): boolean {
+	get enableWheel() {
 		return this.#enableWheel
 	}
 
-	public set enableWheel(val: boolean) {
+	set enableWheel(val: boolean) {
 		this.#enableWheel = val
 	}
 
-	#handleDragStart(): void {
-		this.#kinetic.cancel()
+	#handleDragStart = () => {
+		this.#transitionPan.cancel()
 		this.#transitionZoomPan.cancel()
 
 		this.#startPan = clonePoint(this.#pan)
-		this.#kinetic.start()
 	}
 
-	#handleDragChange(): void {
+	#handleDragChange = () => {
 		if (!this.#enablePan)
 			return
 
@@ -256,22 +248,52 @@ export class Zoomable {
 		this.#applyChanges()
 	}
 
-	#handleDragEnd(): void {
+	#handleDragEnd = () => {
 		if (!this.#enablePan)
 			return
 
-		this.#kinetic.stop()
+		const correctedPan = this.#panBounds.getCorrectPan(this.#pan)
+		const needsBoundaryCorrection
+			= Math.abs(correctedPan.x - this.#pan.x) > 0.1
+				|| Math.abs(correctedPan.y - this.#pan.y) > 0.1
+
+		const velocity = this.#gesture.velocity
+		const decelerationRate = 0.95
+
+		const projectPoint = this.#createProjectPoint(velocity, decelerationRate)
+		const projectedPan = createPoint(
+			correctedPan.x + projectPoint.x,
+			correctedPan.y + projectPoint.y,
+		)
+
+		const finalPan = this.#panBounds.getCorrectPan(projectedPan)
+
+		const needsInertiaAnimation
+			= Math.abs(finalPan.x - correctedPan.x) > 1
+				|| Math.abs(finalPan.y - correctedPan.y) > 1
+
+		if (needsBoundaryCorrection) {
+			if (needsInertiaAnimation) {
+				this.#animatePan(finalPan)
+			}
+			else {
+				this.#animatePan(correctedPan)
+			}
+		}
+		else if (needsInertiaAnimation) {
+			this.#animatePan(finalPan)
+		}
 	}
 
-	#handleZoomStart(): void {
-		this.#kinetic.cancel()
+	#handleZoomStart = () => {
+		this.#transitionPan.cancel()
 		this.#transitionZoomPan.cancel()
 
 		this.#startZoom = this.#currentZoom
 		this.#startPan = clonePoint(this.#pan)
 	}
 
-	#handleZoomChange(): void {
+	#handleZoomChange = () => {
 		if (!this.#enablePinch)
 			return
 
@@ -316,11 +338,13 @@ export class Zoomable {
 		}
 	}
 
-	#handleZoomEnd(): void {
+	#handleZoomEnd = () => {
 		this.#correctZoomAndPan()
 	}
 
-	#handleDoubleClick(event: DoubleClickEventPayload): void {
+	#handleDoubleClick = (
+		event: DoubleClickEventPayload,
+	) => {
 		const rect = this.#props.getContainerBoundingClientRect()
 		const centerX = rect.width / 2
 		const centerY = rect.height / 2
@@ -332,7 +356,7 @@ export class Zoomable {
 		this.updateTo(targetZoom, rel)
 	}
 
-	#handleWheel(event: WheelEventPayload): void {
+	#handleWheel = (event: WheelEventPayload) => {
 		if (this.#enableWheel === false)
 			return
 
@@ -363,7 +387,7 @@ export class Zoomable {
 				if (this.#timeoutWheel)
 					clearTimeout(this.#timeoutWheel)
 
-				this.#timeoutWheel = setTimeout(() => {
+				this.#timeoutWheel = globalThis.setTimeout(() => {
 					this.#correctZoomAndPan()
 					this.#timeoutWheel = null
 				}, 150)
@@ -386,22 +410,47 @@ export class Zoomable {
 		}
 	}
 
-	#applyChanges(): void {
+	#applyChanges() {
 		this.#emitter.emit(ZoomableEventName.ChangeZoom, this.#currentZoom)
 		this.#emitter.emit(ZoomableEventName.ChangePan, this.#pan)
 	}
 
-	#correctPanBounds(): void {
-		const correctedPan = this.#panBounds.getCorrectPan(this.#pan)
-		const needsCorrection
-			= Math.abs(correctedPan.x - this.#pan.x) > 0.1
-				|| Math.abs(correctedPan.y - this.#pan.y) > 0.1
-
-		if (needsCorrection)
-			this.#animateZoomAndPan(this.#currentZoom, correctedPan)
+	#createProjectPoint(
+		velocity: Point,
+		decelerationRate: number,
+	): Point {
+		return createPoint(
+			velocity.x * decelerationRate / (1 - decelerationRate),
+			velocity.y * decelerationRate / (1 - decelerationRate),
+		)
 	}
 
-	#animateZoomAndPan(targetZoom: number, targetPan: Point): void {
+	#animatePan(targetPan: Point) {
+		this.#transitionPan.cancel()
+
+		const startPan = clonePoint(this.#pan)
+
+		this.#transitionPan = runTransition({
+			start: 0,
+			end: 1,
+			duration: this.#animationDuration,
+			easing: easeOutCubic,
+			onUpdate: (progress) => {
+				this.#pan = createPoint(
+					startPan.x + (targetPan.x - startPan.x) * progress,
+					startPan.y + (targetPan.y - startPan.y) * progress,
+				)
+				this.#applyChanges()
+			},
+			raf: this.#props.rafFn,
+			caf: this.#props.cafFn,
+		})
+	}
+
+	#animateZoomAndPan(
+		targetZoom: number,
+		targetPan: Point,
+	) {
 		this.#transitionZoomPan.cancel()
 
 		const startZoom = this.#currentZoom
@@ -411,7 +460,7 @@ export class Zoomable {
 			start: 0,
 			end: 1,
 			duration: this.#animationDuration,
-			onUpdate: (progress: number) => {
+			onUpdate: (progress) => {
 				this.#pan = createPoint(
 					startPan.x + (targetPan.x - startPan.x) * progress,
 					startPan.y + (targetPan.y - startPan.y) * progress,
@@ -425,7 +474,7 @@ export class Zoomable {
 		})
 	}
 
-	#correctZoomAndPan(): void {
+	#correctZoomAndPan() {
 		let needsCorrection = false
 		let targetZoom = this.#currentZoom
 		let targetPan = clonePoint(this.#pan)
@@ -466,16 +515,19 @@ class PanBounds {
 
 	#min: Point = createPoint()
 	#max: Point = createPoint()
-	#center: Point = createPoint() // TODO: 可以不用
 
-	constructor(props: {
-		getContainerBoundingClientRect: () => Rect
-		getElementStyleSize: () => Size
-	}) {
+	constructor(
+		props: {
+			getContainerBoundingClientRect: () => Rect
+			getElementStyleSize: () => Size
+		},
+	) {
 		this.#props = props
 	}
 
-	update(zoom: number): void {
+	public update(
+		zoom: number,
+	) {
 		const containerRect = this.#props.getContainerBoundingClientRect()
 		const contentSize = this.#props.getElementStyleSize()
 		const scaledSize = createSize(
@@ -485,28 +537,32 @@ class PanBounds {
 
 		this.#updateAxis(Axis.X, containerRect, scaledSize)
 		this.#updateAxis(Axis.Y, containerRect, scaledSize)
-		this.#updateCenter()
 	}
 
-	getCorrectPan(offset: Point): Point {
+	public getCorrectPan(
+		offset: Point,
+	): Point {
 		return createPoint(
 			this.#getCorrectPanAxis(Axis.X, offset),
 			this.#getCorrectPanAxis(Axis.Y, offset),
 		)
 	}
 
-	reset(): void {
+	public reset() {
 		this.#min = createPoint()
 		this.#max = createPoint()
-		this.#center = createPoint()
 	}
 
-	#updateAxis(axis: AxisValue, containerSize: Size, scaledSize: Size): void {
-		const _container = getSizeByAxis(containerSize, axis)
-		const _scaled = getSizeByAxis(scaledSize, axis)
+	#updateAxis(
+		axis: AxisValue,
+		containerSize: Size,
+		scaledSize: Size,
+	) {
+		const container = getSizeByAxis(containerSize, axis)
+		const scaled = getSizeByAxis(scaledSize, axis)
 
-		if (_scaled > _container) {
-			const overflow = (_scaled - _container) / 2
+		if (scaled > container) {
+			const overflow = (scaled - container) / 2
 			this.#min[axis] = -overflow
 			this.#max[axis] = overflow
 		}
@@ -516,14 +572,10 @@ class PanBounds {
 		}
 	}
 
-	#updateCenter(): void {
-		this.#center = createPoint(
-			(this.#min.x + this.#max.x) / 2,
-			(this.#min.y + this.#max.y) / 2,
-		)
-	}
-
-	#getCorrectPanAxis(axis: AxisValue, offset: Point): number {
+	#getCorrectPanAxis(
+		axis: AxisValue,
+		offset: Point,
+	) {
 		if (this.#min[axis] === this.#max[axis])
 			return this.#min[axis]
 
@@ -531,9 +583,31 @@ class PanBounds {
 	}
 }
 
+interface GestureHandlers {
+	TouchStart: (event: GestureEventPayload) => void
+	TouchMove: (event: GestureEventPayload) => void
+	TouchEnd: (event: GestureEventPayload) => void
+	MouseDown: (event: GestureEventPayload) => void
+	MouseMove: (event: GestureEventPayload) => void
+	MouseUp: (event: GestureEventPayload) => void
+	GlobalMouseMove: (event: GestureEventPayload) => void
+	GlobalMouseUp: (event: GestureEventPayload) => void
+}
+
 class Gesture {
-	#AXIS_SWIPE_HYSTERESIS = 10
-	#VELOCITY_HYSTERESIS = 50
+	#props: {
+		getContainerBoundingClientRect: () => Rect
+		onDragStart: () => void
+		onDragChange: () => void
+		onDragEnd: () => void
+		onZoomStart: () => void
+		onZoomChange: () => void
+		onZoomEnd: () => void
+		onDoubleTap: (payload: DoubleClickEventPayload) => void
+	}
+
+	#axisSwipeHysteresis = 10
+	#velocityHysteresis = 50
 
 	#p1: Point = createPoint()
 	#p2: Point = createPoint()
@@ -556,77 +630,62 @@ class Gesture {
 	#lastTapTime: number = 0
 	#lastTapPosition: Point = createPoint()
 
-	#props: {
-		getContainerBoundingClientRect: () => Rect
-		onDragStart: () => void
-		onDragChange: () => void
-		onDragEnd: () => void
-		onZoomStart: () => void
-		onZoomChange: () => void
-		onZoomEnd: () => void
-		onDoubleTap: (payload: DoubleClickEventPayload) => void
+	public handlers: GestureHandlers = {
+		TouchStart: (event: GestureEventPayload) => this.#handleTouchStart(event),
+		TouchMove: (event: GestureEventPayload) => this.#handleTouchMove(event),
+		TouchEnd: (event: GestureEventPayload) => this.#handleTouchEnd(event),
+		MouseDown: (event: GestureEventPayload) => this.#handleMouseDown(event),
+		MouseMove: (event: GestureEventPayload) => this.#handleMouseMove(event),
+		MouseUp: (event: GestureEventPayload) => this.#handleMouseUp(event),
+		GlobalMouseMove: (event: GestureEventPayload) => this.#handleGlobalMouseMove(event),
+		GlobalMouseUp: (event: GestureEventPayload) => this.#handleGlobalMouseUp(event),
 	}
 
-	handlers: {
-		TouchStart: (event: GestureEventPayload) => void
-		TouchMove: (event: GestureEventPayload) => void
-		TouchEnd: (event: GestureEventPayload) => void
-		MouseDown: (event: GestureEventPayload) => void
-		MouseMove: (event: GestureEventPayload) => void
-		MouseUp: (event: GestureEventPayload) => void
-		GlobalMouseMove: (event: GestureEventPayload) => void
-		GlobalMouseUp: (event: GestureEventPayload) => void
-	}
-
-	constructor(props: {
-		getContainerBoundingClientRect: () => Rect
-		onDragStart: () => void
-		onDragChange: () => void
-		onDragEnd: () => void
-		onZoomStart: () => void
-		onZoomChange: () => void
-		onZoomEnd: () => void
-		onDoubleTap: (payload: DoubleClickEventPayload) => void
-	}) {
+	constructor(
+		props: {
+			getContainerBoundingClientRect: () => Rect
+			onDragStart: () => void
+			onDragChange: () => void
+			onDragEnd: () => void
+			onZoomStart: () => void
+			onZoomChange: () => void
+			onZoomEnd: () => void
+			onDoubleTap: (payload: DoubleClickEventPayload) => void
+		},
+	) {
 		this.#props = props
-		this.handlers = {
-			TouchStart: this.#handleTouchStart.bind(this),
-			TouchMove: this.#handleTouchMove.bind(this),
-			TouchEnd: this.#handleTouchEnd.bind(this),
-			MouseDown: this.#handleMouseDown.bind(this),
-			MouseMove: this.#handleMouseMove.bind(this),
-			MouseUp: this.#handleMouseUp.bind(this),
-			GlobalMouseMove: this.#handleGlobalMouseMove.bind(this),
-			GlobalMouseUp: this.#handleGlobalMouseUp.bind(this),
-		}
 	}
 
-	get zoomDistance(): number {
+	public get velocity() {
+		return this.#velocity
+	}
+
+	public get zoomDistance() {
 		if (this.#numActivePoints > 1)
 			return getPointDistance(this.#p1, this.#p2)
 		return 0
 	}
 
-	get startZoomDistance(): number {
+	public get startZoomDistance() {
 		if (this.#numActivePoints > 1)
 			return getPointDistance(this.#startP1, this.#startP2)
 		return 0
 	}
 
-	get zoomCenter(): Point {
+	public get zoomCenter(): Point {
 		if (this.#numActivePoints > 1)
 			return getPointCenter(this.#p1, this.#p2)
 		return clonePoint(this.#p1)
 	}
 
-	get dragDelta(): Point {
+	public get dragDelta(): Point {
 		return createPoint(
 			this.#p1.x - this.#prevP1.x,
 			this.#p1.y - this.#prevP1.y,
 		)
 	}
 
-	#handleTouchStart(event: GestureEventPayload): void {
+	#handleTouchStart = (event: GestureEventPayload) => {
 		this.#updatePointsFromTouch(event, 'down')
 		this.#onGestureStart()
 
@@ -654,22 +713,22 @@ class Gesture {
 		}
 	}
 
-	#handleTouchMove(event: GestureEventPayload): void {
+	#handleTouchMove = (event: GestureEventPayload) => {
 		this.#updatePointsFromTouch(event, 'move')
 		this.#onGestureChange()
 	}
 
-	#handleTouchEnd(event: GestureEventPayload): void {
+	#handleTouchEnd = (event: GestureEventPayload) => {
 		this.#updatePointsFromTouch(event, 'up')
 		this.#onGestureEnd()
 	}
 
-	#handleMouseDown(event: GestureEventPayload): void {
+	#handleMouseDown = (event: GestureEventPayload) => {
 		this.#updatePointsFromMouse(event, 'down')
 		this.#onGestureStart()
 	}
 
-	#handleMouseMove(event: GestureEventPayload): void {
+	#handleMouseMove = (event: GestureEventPayload) => {
 		if (this.#numActivePoints > 0) {
 			if (this.#checkPointInContainer(event.touches[0])) {
 				this.#updatePointsFromMouse(event, 'move')
@@ -682,12 +741,12 @@ class Gesture {
 		}
 	}
 
-	#handleMouseUp(event: GestureEventPayload): void {
+	#handleMouseUp = (event: GestureEventPayload) => {
 		this.#updatePointsFromMouse(event, 'up')
 		this.#onGestureEnd()
 	}
 
-	#handleGlobalMouseMove(event: GestureEventPayload): void {
+	#handleGlobalMouseMove = (event: GestureEventPayload) => {
 		if (this.#numActivePoints > 0 && !this.#checkPointInContainer(event.touches[0])) {
 			if (this.#isDragging) {
 				this.#numActivePoints = 0
@@ -696,12 +755,15 @@ class Gesture {
 		}
 	}
 
-	#handleGlobalMouseUp(event: GestureEventPayload): void {
+	#handleGlobalMouseUp = (event: GestureEventPayload) => {
 		if (this.#numActivePoints > 0)
 			this.#handleMouseUp(event)
 	}
 
-	#updatePointsFromTouch(event: GestureEventPayload, type: 'down' | 'move' | 'up'): void {
+	#updatePointsFromTouch(
+		event: GestureEventPayload,
+		type: 'down' | 'move' | 'up',
+	) {
 		this.#numActivePoints = event.touches.length
 
 		switch (type) {
@@ -729,7 +791,10 @@ class Gesture {
 		}
 	}
 
-	#updatePointsFromMouse(event: GestureEventPayload, type: 'down' | 'move' | 'up'): void {
+	#updatePointsFromMouse(
+		event: GestureEventPayload,
+		type: 'down' | 'move' | 'up',
+	) {
 		const touch = event.touches[0]
 		if (!touch)
 			return
@@ -754,7 +819,7 @@ class Gesture {
 		}
 	}
 
-	#onGestureStart(): void {
+	#onGestureStart() {
 		this.#startTime = Date.now()
 		this.#intervalTime = this.#startTime
 		this.#intervalP1 = clonePoint(this.#p1)
@@ -768,13 +833,13 @@ class Gesture {
 			this.#updatePrevPoints()
 	}
 
-	#onGestureChange(): void {
+	#onGestureChange() {
 		if (this.#numActivePoints === 1 && !this.#isZooming) {
 			if (!this.#isDragging) {
 				const diffX = Math.abs(this.#p1.x - this.#startP1.x)
 				const diffY = Math.abs(this.#p1.y - this.#startP1.y)
 
-				if (diffX >= this.#AXIS_SWIPE_HYSTERESIS || diffY >= this.#AXIS_SWIPE_HYSTERESIS)
+				if (diffX >= this.#axisSwipeHysteresis || diffY >= this.#axisSwipeHysteresis)
 					this.#dragAxis = diffX > diffY ? 'x' : 'y'
 
 				if (this.#dragAxis) {
@@ -801,7 +866,7 @@ class Gesture {
 		this.#updatePrevPoints()
 	}
 
-	#onGestureEnd(): void {
+	#onGestureEnd() {
 		if (this.#numActivePoints === 0) {
 			if (this.#isDragging) {
 				this.#isDragging = false
@@ -817,12 +882,14 @@ class Gesture {
 		}
 	}
 
-	#updatePrevPoints(): void {
+	#updatePrevPoints() {
 		this.#prevP1 = clonePoint(this.#p1)
 		this.#prevP2 = clonePoint(this.#p2)
 	}
 
-	#getTouchPoint(touch: GestureEventPayload['touches'][number]): Point {
+	#getTouchPoint(
+		touch: GestureEventPayload['touches'][number],
+	): Point {
 		const containerRect = this.#props.getContainerBoundingClientRect()
 		return createPoint(
 			touch.client.x - containerRect.x,
@@ -830,11 +897,13 @@ class Gesture {
 		)
 	}
 
-	#updateVelocity(force = false): void {
+	#updateVelocity(
+		force = false,
+	): void {
 		const currentTime = Date.now()
 		const duration = currentTime - this.#intervalTime
 
-		if (duration < this.#VELOCITY_HYSTERESIS && !force)
+		if (duration < this.#velocityHysteresis && !force)
 			return
 
 		this.#velocity = createPoint(
@@ -845,7 +914,10 @@ class Gesture {
 		this.#intervalP1 = clonePoint(this.#p1)
 	}
 
-	#getVelocity(axis: AxisValue, duration: number): number {
+	#getVelocity(
+		axis: AxisValue,
+		duration: number,
+	): number {
 		const displacement = this.#p1[axis] - this.#intervalP1[axis]
 
 		if (Math.abs(displacement) > 1 && duration > 5)
@@ -854,7 +926,9 @@ class Gesture {
 		return 0
 	}
 
-	#checkPointInContainer(touch: GestureEventPayload['touches'][number]): boolean {
+	#checkPointInContainer(
+		touch: GestureEventPayload['touches'][number],
+	): boolean {
 		const point = touch.client
 		const containerRect = this.#props.getContainerBoundingClientRect()
 		return checkRectContainsPoint(containerRect, point)

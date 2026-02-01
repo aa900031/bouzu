@@ -76,20 +76,21 @@ export class Kinetic {
 			this.#targetY += this.#ay
 		}
 
-		const boundedTarget = this.#props.getBounds(createPoint(this.#targetX, this.#targetY))
-		this.#targetX = boundedTarget.x
-		this.#targetY = boundedTarget.y
+		this.#scroller = registerRaf(this.#autoScroll, { raf: this.#props.rafFn, caf: this.#props.cafFn })
 
-		if (this.#ax !== 0 || this.#ay !== 0) {
-			this.#scroller = registerRaf(this.#autoScroll, { raf: this.#props.rafFn, caf: this.#props.cafFn })
-		}
-		else {
-			const currentPos = this.#props.getPoint()
-			const bounded = this.#props.getBounds(currentPos)
-			if (Math.abs(bounded.x - currentPos.x) > 0.1 || Math.abs(bounded.y - currentPos.y) > 0.1) {
-				this.#props.onComplete()
-			}
-		}
+		// const boundedTarget = this.#props.getBounds(createPoint(this.#targetX, this.#targetY))
+		// this.#targetX = boundedTarget.x
+		// this.#targetY = boundedTarget.y
+		// if (this.#ax !== 0 || this.#ay !== 0) {
+		// 	this.#scroller = registerRaf(this.#autoScroll, { raf: this.#props.rafFn, caf: this.#props.cafFn })
+		// }
+		// else {
+		// 	const currentPos = this.#props.getPoint()
+		// 	const bounded = this.#props.getBounds(currentPos)
+		// 	if (Math.abs(bounded.x - currentPos.x) > 0.1 || Math.abs(bounded.y - currentPos.y) > 0.1) {
+		// 		this.#props.onComplete()
+		// 	}
+		// }
 	}
 
 	cancel() {
@@ -144,10 +145,6 @@ export class Kinetic {
 		if (moving) {
 			this.#props.onScroll(this.#targetX + dx, this.#targetY + dy)
 			this.#scroller = registerRaf(this.#autoScroll, { raf: this.#props.rafFn, caf: this.#props.cafFn })
-		}
-		else {
-			this.#props.onScroll(this.#targetX, this.#targetY)
-			this.#props.onComplete()
 		}
 	}
 }

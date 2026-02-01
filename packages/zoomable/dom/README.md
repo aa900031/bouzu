@@ -24,7 +24,7 @@ Import:
 
 ```js
 // ESM
-import { createZoomable } from '@bouzu/zoomable-dom'
+import { Zoomable } from '@bouzu/zoomable-dom'
 ```
 
 ## Development
