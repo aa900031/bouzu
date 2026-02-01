@@ -1,6 +1,7 @@
-import type { AxisValue, Point, Rect, Size, TransitionRunner } from '@bouzu/shared'
-import { Axis, checkPointEqualWithTolerance, checkRectContainsPoint, clamp, clonePoint, createPoint, createSize, easeOutCubic, getPointCenter, getPointDistance, getSizeByAxis, runNoopTransition, runTransition } from '@bouzu/shared'
+import type { AxisValue, Point, Rect, RegisterRafMethods, Size, TransitionRunner } from '@bouzu/shared'
+import { Axis, checkPointEqualWithTolerance, checkRectContainsPoint, clamp, clonePoint, createPoint, createSize, getPointCenter, getPointDistance, getSizeByAxis, runNoopTransition, runTransition } from '@bouzu/shared'
 import mitt from 'mitt'
+import { Kinetic } from './kinetic'
 
 export interface ZoomableProps {
 	getContainerBoundingClientRect: () => Rect
@@ -12,6 +13,8 @@ export interface ZoomableProps {
 	enablePan?: boolean
 	enablePinch?: boolean
 	enableWheel?: boolean
+	rafFn?: RegisterRafMethods['raf']
+	cafFn?: RegisterRafMethods['caf']
 }
 
 export const ZoomableEventName = {
@@ -45,6 +48,7 @@ export class Zoomable {
 	#emitter = mitt<ZoomableEvents>()
 	#panBounds: PanBounds
 	#gesture: Gesture
+	#kinetic: Kinetic
 
 	#min: number
 	#max: number
@@ -59,7 +63,6 @@ export class Zoomable {
 	#startZoom: number
 	#startPan: Point = createPoint()
 	#timeoutWheel: ReturnType<typeof setTimeout> | null = null
-	#transitionPan: TransitionRunner = runNoopTransition()
 	#transitionZoomPan: TransitionRunner = runNoopTransition()
 
 	#props: ZoomableProps
@@ -91,6 +94,17 @@ export class Zoomable {
 		this.#startZoom = this.#currentZoom
 
 		this.#panBounds = new PanBounds(props)
+		this.#kinetic = new Kinetic({
+			getPoint: () => this.#pan,
+			onScroll: (x, y) => {
+				this.#pan = createPoint(x, y)
+				this.#applyChanges()
+			},
+			onComplete: () => this.#correctPanBounds(),
+			getBounds: point => this.#panBounds.getCorrectPan(point),
+			rafFn: this.#props.rafFn,
+			cafFn: this.#props.cafFn,
+		})
 		this.#gesture = new Gesture({
 			...props,
 			onDragStart: this.#handleDragStart.bind(this),
@@ -118,7 +132,6 @@ export class Zoomable {
 		let targetPan = clonePoint(this.#pan)
 
 		if (center) {
-			// center 已經是相對於容器中心的座標
 			const zoomFactor = targetZoom / this.#currentZoom
 			targetPan = createPoint(
 				center.x - (center.x - this.#pan.x) * zoomFactor,
@@ -126,13 +139,11 @@ export class Zoomable {
 			)
 		}
 
-		// 計算正確的邊界
 		const tempZoom = this.#currentZoom
 		this.#currentZoom = targetZoom
 		this.#panBounds.update(this.#currentZoom)
 		this.#currentZoom = tempZoom
 
-		// 修正平移位置
 		const correctedPan = this.#panBounds.getCorrectPan(targetPan)
 		this.#animateZoomAndPan(targetZoom, correctedPan)
 	}
@@ -153,6 +164,10 @@ export class Zoomable {
 
 	public get zoom(): number {
 		return this.#currentZoom
+	}
+
+	public set zoom(v: number) {
+		this.updateTo(v)
 	}
 
 	public get pan(): Point {
@@ -220,17 +235,18 @@ export class Zoomable {
 	}
 
 	#handleDragStart(): void {
-		this.#transitionPan.cancel()
+		this.#kinetic.cancel()
 		this.#transitionZoomPan.cancel()
 
 		this.#startPan = clonePoint(this.#pan)
+		this.#kinetic.start()
 	}
 
 	#handleDragChange(): void {
 		if (!this.#enablePan)
 			return
 
-		const delta = this.#gesture.getDragDelta()
+		const delta = this.#gesture.dragDelta
 
 		this.#pan = createPoint(
 			this.#pan.x + delta.x,
@@ -244,53 +260,11 @@ export class Zoomable {
 		if (!this.#enablePan)
 			return
 
-		// 首先修正當前位置到邊界內
-		const correctedPan = this.#panBounds.getCorrectPan(this.#pan)
-
-		// 檢查是否需要立即修正邊界
-		const needsBoundaryCorrection
-			= Math.abs(correctedPan.x - this.#pan.x) > 0.1
-				|| Math.abs(correctedPan.y - this.#pan.y) > 0.1
-
-		// 應用慣性
-		const velocity = this.#gesture.getVelocity()
-		const decelerationRate = 0.95
-
-		// 計算最終位置（從修正後的位置開始）
-		const projectPoint = this.#createProjectPoint(velocity, decelerationRate)
-		const projectedPan = createPoint(
-			correctedPan.x + projectPoint.x,
-			correctedPan.y + projectPoint.y,
-		)
-
-		// 修正邊界
-		const finalPan = this.#panBounds.getCorrectPan(projectedPan)
-
-		// 檢查是否需要動畫
-		const needsInertiaAnimation
-			= Math.abs(finalPan.x - correctedPan.x) > 1
-				|| Math.abs(finalPan.y - correctedPan.y) > 1
-
-		if (needsBoundaryCorrection) {
-			// 如果超出邊界，優先修正邊界
-			if (needsInertiaAnimation) {
-				// 有慣性且需要邊界修正，動畫到最終位置
-				this.#animatePan(finalPan)
-			}
-			else {
-				// 只需要邊界修正，動畫到邊界內
-				this.#animatePan(correctedPan)
-			}
-		}
-		else if (needsInertiaAnimation) {
-			// 在邊界內但有慣性，動畫到最終位置
-			this.#animatePan(finalPan)
-		}
-		// 如果既不需要邊界修正也沒有明顯慣性，不執行動畫
+		this.#kinetic.stop()
 	}
 
 	#handleZoomStart(): void {
-		this.#transitionPan.cancel()
+		this.#kinetic.cancel()
 		this.#transitionZoomPan.cancel()
 
 		this.#startZoom = this.#currentZoom
@@ -301,14 +275,13 @@ export class Zoomable {
 		if (!this.#enablePinch)
 			return
 
-		const currentDistance = this.#gesture.getZoomDistance()
-		const startDistance = this.#gesture.getStartZoomDistance()
+		const currentDistance = this.#gesture.zoomDistance
+		const startDistance = this.#gesture.startZoomDistance
 
 		if (startDistance > 0) {
 			const zoomFactor = currentDistance / startDistance
 			let newZoom = this.#startZoom * zoomFactor
 
-			// 限制縮放範圍，但允許輕微超出以提供反饋
 			const minZoomWithFriction = this.#min * 0.8
 			const maxZoomWithFriction = this.#max * 1.2
 
@@ -321,8 +294,7 @@ export class Zoomable {
 				newZoom = Math.min(newZoom, maxZoomWithFriction)
 			}
 
-			// 獲取縮放中心點（相對於容器中心）
-			const zoomCenter = this.#gesture.getZoomCenter()
+			const zoomCenter = this.#gesture.zoomCenter
 			const containerRect = this.#props.getContainerBoundingClientRect()
 			const centerX = containerRect.width / 2
 			const centerY = containerRect.height / 2
@@ -330,7 +302,6 @@ export class Zoomable {
 			const relativeCenterX = zoomCenter.x - centerX
 			const relativeCenterY = zoomCenter.y - centerY
 
-			// 計算新的平移位置以保持縮放中心點固定
 			const actualZoomFactor = newZoom / this.#startZoom
 			const newPan = {
 				x: relativeCenterX - (relativeCenterX - this.#startPan.x) * actualZoomFactor,
@@ -365,14 +336,11 @@ export class Zoomable {
 		if (this.#enableWheel === false)
 			return
 
-		// 檢查是否按下 Ctrl 鍵來決定是縮放還是拖曳
 		if (event.withCtrl) {
-			// Ctrl + 滾輪 = 縮放
 			const delta = event.delta.y > 0 ? -0.1 : 0.1
 			const newZoom = clamp(this.#currentZoom + delta, this.#min, this.#max)
 
 			if (newZoom !== this.#currentZoom) {
-				// 獲取滑鼠位置作為縮放中心（相對於容器中心）
 				const rect = this.#props.getContainerBoundingClientRect()
 				const centerX = rect.width / 2
 				const centerY = rect.height / 2
@@ -381,7 +349,6 @@ export class Zoomable {
 					event.client.x - centerX,
 					event.client.y - centerY,
 				)
-				// 計算新的平移位置
 				const zoomFactor = newZoom / this.#currentZoom
 				const newPan = createPoint(
 					zoomCenter.x - (zoomCenter.x - this.#pan.x) * zoomFactor,
@@ -393,11 +360,9 @@ export class Zoomable {
 				this.#panBounds.update(this.#currentZoom)
 				this.#applyChanges()
 
-				// 清除之前的計時器
 				if (this.#timeoutWheel)
 					clearTimeout(this.#timeoutWheel)
 
-				// 設置新的計時器，在滾輪事件結束後執行邊界檢查
 				this.#timeoutWheel = setTimeout(() => {
 					this.#correctZoomAndPan()
 					this.#timeoutWheel = null
@@ -405,20 +370,17 @@ export class Zoomable {
 			}
 		}
 		else {
-			// 滾輪的拖曳行為：垂直滾動對應垂直拖曳，水平滾動（如果支援）對應水平拖曳
-			const dragSpeed = 1.0 // 調整拖曳靈敏度
+			const dragSpeed = 1.0
 			const delta = createPoint(
 				event.delta.x * dragSpeed,
 				event.delta.y * dragSpeed,
 			)
 
-			// 更新平移位置
 			const newPan = createPoint(
-				this.#pan.x - delta.x, // 負號讓滾動方向符合直覺
+				this.#pan.x - delta.x,
 				this.#pan.y - delta.y,
 			)
 
-			// 滾輪拖曳時立即應用邊界限制，不使用動畫
 			this.#pan = this.#panBounds.getCorrectPan(newPan)
 			this.#applyChanges()
 		}
@@ -429,31 +391,14 @@ export class Zoomable {
 		this.#emitter.emit(ZoomableEventName.ChangePan, this.#pan)
 	}
 
-	#createProjectPoint(velocity: Point, decelerationRate: number): Point {
-		return createPoint(
-			velocity.x * decelerationRate / (1 - decelerationRate),
-			velocity.y * decelerationRate / (1 - decelerationRate),
-		)
-	}
+	#correctPanBounds(): void {
+		const correctedPan = this.#panBounds.getCorrectPan(this.#pan)
+		const needsCorrection
+			= Math.abs(correctedPan.x - this.#pan.x) > 0.1
+				|| Math.abs(correctedPan.y - this.#pan.y) > 0.1
 
-	#animatePan(targetPan: Point): void {
-		this.#transitionPan.cancel()
-
-		const startPan = clonePoint(this.#pan)
-
-		this.#transitionPan = runTransition({
-			start: 0,
-			end: 1,
-			duration: this.#animationDuration,
-			easing: easeOutCubic,
-			onUpdate: (progress) => {
-				this.#pan = createPoint(
-					startPan.x + (targetPan.x - startPan.x) * progress,
-					startPan.y + (targetPan.y - startPan.y) * progress,
-				)
-				this.#applyChanges()
-			},
-		})
+		if (needsCorrection)
+			this.#animateZoomAndPan(this.#currentZoom, correctedPan)
 	}
 
 	#animateZoomAndPan(targetZoom: number, targetPan: Point): void {
@@ -466,7 +411,7 @@ export class Zoomable {
 			start: 0,
 			end: 1,
 			duration: this.#animationDuration,
-			onUpdate: (progress) => {
+			onUpdate: (progress: number) => {
 				this.#pan = createPoint(
 					startPan.x + (targetPan.x - startPan.x) * progress,
 					startPan.y + (targetPan.y - startPan.y) * progress,
@@ -475,6 +420,8 @@ export class Zoomable {
 				this.#panBounds.update(this.#currentZoom)
 				this.#applyChanges()
 			},
+			raf: this.#props.rafFn,
+			caf: this.#props.cafFn,
 		})
 	}
 
@@ -483,7 +430,6 @@ export class Zoomable {
 		let targetZoom = this.#currentZoom
 		let targetPan = clonePoint(this.#pan)
 
-		// 檢查縮放範圍
 		if (this.#currentZoom < this.#min) {
 			targetZoom = this.#min
 			needsCorrection = true
@@ -493,16 +439,13 @@ export class Zoomable {
 			needsCorrection = true
 		}
 
-		// 如果縮放需要修正，重新計算邊界
 		if (targetZoom !== this.#currentZoom) {
-			// 暫時設置目標縮放來計算正確的邊界
 			const originalZoom = this.#currentZoom
 			this.#currentZoom = targetZoom
 			this.#panBounds.update(this.#currentZoom)
-			this.#currentZoom = originalZoom // 恢復原來的縮放
+			this.#currentZoom = originalZoom
 		}
 
-		// 檢查平移邊界
 		const correctedPan = this.#panBounds.getCorrectPan(targetPan)
 
 		if (!checkPointEqualWithTolerance(correctedPan, targetPan, 0.1)) {
@@ -658,29 +601,25 @@ class Gesture {
 		}
 	}
 
-	getVelocity(): Point {
-		return this.#velocity
-	}
-
-	getZoomDistance(): number {
+	get zoomDistance(): number {
 		if (this.#numActivePoints > 1)
 			return getPointDistance(this.#p1, this.#p2)
 		return 0
 	}
 
-	getStartZoomDistance(): number {
+	get startZoomDistance(): number {
 		if (this.#numActivePoints > 1)
 			return getPointDistance(this.#startP1, this.#startP2)
 		return 0
 	}
 
-	getZoomCenter(): Point {
+	get zoomCenter(): Point {
 		if (this.#numActivePoints > 1)
 			return getPointCenter(this.#p1, this.#p2)
 		return clonePoint(this.#p1)
 	}
 
-	getDragDelta(): Point {
+	get dragDelta(): Point {
 		return createPoint(
 			this.#p1.x - this.#prevP1.x,
 			this.#p1.y - this.#prevP1.y,
@@ -702,7 +641,6 @@ class Gesture {
 			)
 			const distance = getPointDistance(currentPosition, this.#lastTapPosition)
 
-			// 如果兩次點擊間隔小於 300ms 且位置相差不超過 30px，則視為雙擊
 			if (timeDiff < 300 && distance < 30) {
 				this.#props.onDoubleTap?.({
 					client: currentPosition,

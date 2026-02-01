@@ -3,7 +3,7 @@ import { createPoint, registerRaf } from '@bouzu/shared'
 
 export interface KineticProps {
 	getPoint: () => Point
-	scroll: (x: number, y: number) => void
+	onScroll: (x: number, y: number) => void
 	onComplete: () => void
 	getBounds: (point: Point) => Point
 	minVelocity?: number
@@ -13,22 +13,12 @@ export interface KineticProps {
 	cafFn?: RegisterRafMethods['caf']
 }
 
-/**
- * Kinetic scrolling implementation based on panzoom's kinetic.js
- * Uses exponential decay for natural physics-based inertia
- */
+const DEFAULT_TIME_CONSTANT = 342
+const DEFAULT_MIN_VELOCITY = 5
+const DEFAULT_AMPLITUDE = 0.25
+
 export class Kinetic {
-	#getPoint: () => Point
-	#scroll: (x: number, y: number) => void
-	#onComplete: () => void
-	#getBounds: (point: Point) => Point
-
-	#rafFn: RegisterRafMethods['raf']
-	#cafFn: RegisterRafMethods['caf']
-
-	#minVelocity: number
-	#amplitude: number
-	#timeConstant: number
+	#props: KineticProps
 
 	#lastPoint: Point = createPoint()
 	#timestamp: number = 0
@@ -44,31 +34,34 @@ export class Kinetic {
 	#targetY: number = 0
 
 	constructor(props: KineticProps) {
-		this.#getPoint = props.getPoint
-		this.#scroll = props.scroll
-		this.#onComplete = props.onComplete
-		this.#getBounds = props.getBounds
-		this.#rafFn = props.rafFn
-		this.#cafFn = props.cafFn
+		this.#props = props
+	}
 
-		this.#minVelocity = props.minVelocity ?? 5
-		this.#amplitude = props.amplitude ?? 0.25
-		this.#timeConstant = props.timeConstant ?? 342
+	get #minVelocity() {
+		return this.#props.minVelocity ?? DEFAULT_MIN_VELOCITY
+	}
+
+	get #amplitude() {
+		return this.#props.amplitude ?? DEFAULT_AMPLITUDE
+	}
+
+	get #timeConstant() {
+		return this.#props.timeConstant ?? DEFAULT_TIME_CONSTANT
 	}
 
 	start() {
-		this.#lastPoint = this.#getPoint()
+		this.#lastPoint = this.#props.getPoint()
 		this.#ax = this.#ay = this.#vx = this.#vy = 0
 		this.#timestamp = Date.now()
 
 		this.cancel()
-		this.#ticker = registerRaf(this.#track, { raf: this.#rafFn, caf: this.#cafFn })
+		this.#ticker = registerRaf(this.#track, { raf: this.#props.rafFn, caf: this.#props.cafFn })
 	}
 
 	stop() {
 		this.cancel()
 
-		const currentPoint = this.#getPoint()
+		const currentPoint = this.#props.getPoint()
 		this.#targetX = currentPoint.x
 		this.#targetY = currentPoint.y
 		this.#timestamp = Date.now()
@@ -83,21 +76,18 @@ export class Kinetic {
 			this.#targetY += this.#ay
 		}
 
-		// Apply bounds to target position
-		const boundedTarget = this.#getBounds(createPoint(this.#targetX, this.#targetY))
+		const boundedTarget = this.#props.getBounds(createPoint(this.#targetX, this.#targetY))
 		this.#targetX = boundedTarget.x
 		this.#targetY = boundedTarget.y
 
-		// Only start auto-scroll if there's actual velocity
 		if (this.#ax !== 0 || this.#ay !== 0) {
-			this.#scroller = registerRaf(this.#autoScroll, { raf: this.#rafFn, caf: this.#cafFn })
+			this.#scroller = registerRaf(this.#autoScroll, { raf: this.#props.rafFn, caf: this.#props.cafFn })
 		}
 		else {
-			// If no velocity, still check if we need boundary correction
-			const currentPos = this.#getPoint()
-			const bounded = this.#getBounds(currentPos)
+			const currentPos = this.#props.getPoint()
+			const bounded = this.#props.getBounds(currentPos)
 			if (Math.abs(bounded.x - currentPos.x) > 0.1 || Math.abs(bounded.y - currentPos.y) > 0.1) {
-				this.#onComplete()
+				this.#props.onComplete()
 			}
 		}
 	}
@@ -112,18 +102,17 @@ export class Kinetic {
 		const elapsed = now - this.#timestamp
 		this.#timestamp = now
 
-		const currentPoint = this.#getPoint()
+		const currentPoint = this.#props.getPoint()
 		const dx = currentPoint.x - this.#lastPoint.x
 		const dy = currentPoint.y - this.#lastPoint.y
 		this.#lastPoint = currentPoint
 
 		const dt = 1000 / (1 + elapsed)
 
-		// Moving average for smooth velocity calculation
 		this.#vx = 0.8 * dx * dt + 0.2 * this.#vx
 		this.#vy = 0.8 * dy * dt + 0.2 * this.#vy
 
-		this.#ticker = registerRaf(this.#track, { raf: this.#rafFn, caf: this.#cafFn })
+		this.#ticker = registerRaf(this.#track, { raf: this.#props.rafFn, caf: this.#props.cafFn })
 	}
 
 	#autoScroll = () => {
@@ -153,13 +142,12 @@ export class Kinetic {
 		}
 
 		if (moving) {
-			this.#scroll(this.#targetX + dx, this.#targetY + dy)
-			this.#scroller = registerRaf(this.#autoScroll, { raf: this.#rafFn, caf: this.#cafFn })
+			this.#props.onScroll(this.#targetX + dx, this.#targetY + dy)
+			this.#scroller = registerRaf(this.#autoScroll, { raf: this.#props.rafFn, caf: this.#props.cafFn })
 		}
 		else {
-			// Animation complete, ensure we're at the bounded position
-			this.#scroll(this.#targetX, this.#targetY)
-			this.#onComplete()
+			this.#props.onScroll(this.#targetX, this.#targetY)
+			this.#props.onComplete()
 		}
 	}
 }
