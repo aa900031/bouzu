@@ -24,7 +24,7 @@ Import:
 
 ```js
 // ESM
-import { createZoomable } from '@bouzu/vue-zoomable'
+import { useZoomable } from '@bouzu/vue-zoomable'
 ```
 
 ## Development
