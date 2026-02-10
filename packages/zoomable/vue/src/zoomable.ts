@@ -4,7 +4,7 @@ import type { ZoomableProps as ZoomableDomProps } from '@bouzu/zoomable-dom'
 import type { MaybeRef } from '@vueuse/core'
 import { eventRef, unrefs } from '@bouzu/vue-helper'
 import { ZoomableEventName } from '@bouzu/zoomable'
-import { createZoomable } from '@bouzu/zoomable-dom'
+import { Zoomable } from '@bouzu/zoomable-dom'
 import { unrefElement } from '@vueuse/core'
 import { markRaw, onScopeDispose, unref, watch } from 'vue-demi'
 
@@ -19,7 +19,7 @@ export function useZoomable(
 	content: MaybeRef<HTMLElement | null | undefined>,
 	props?: ZoomableProps,
 ) {
-	const zoomable = markRaw(createZoomable(
+	const zoomable = markRaw(new Zoomable(
 		unrefs(props ?? {}),
 	))
 
@@ -28,8 +28,8 @@ export function useZoomable(
 			zoomable.state.on(ZoomableEventName.ChangeZoom, handler)
 			return () => zoomable.state.off(ZoomableEventName.ChangeZoom, handler)
 		},
-		get: e => e ?? zoomable.state.getZoom(),
-		set: val => zoomable.state.updateTo(val),
+		get: e => e ?? zoomable.state.zoom,
+		set: val => zoomable.state.zoom = val,
 	})
 
 	const [pan] = eventRef<Point, (value: Point) => void>({
@@ -37,7 +37,7 @@ export function useZoomable(
 			zoomable.state.on(ZoomableEventName.ChangePan, handler)
 			return () => zoomable.state.off(ZoomableEventName.ChangePan, handler)
 		},
-		get: e => e ?? zoomable.state.getPan(),
+		get: e => e ?? zoomable.state.pan,
 	})
 
 	watch(() => [
@@ -71,13 +71,13 @@ export function useZoomable(
 			zoomable.start()
 	}, { immediate: true })
 
-	propRefSyncer(props?.min, zoomable.state.setMin)
-	propRefSyncer(props?.max, zoomable.state.setMax)
-	propRefSyncer(props?.initial, zoomable.state.setInitial)
-	propRefSyncer(props?.animationDuration, zoomable.state.setAnimationDuration)
-	propRefSyncer(props?.enablePan, zoomable.state.setEnablePan)
-	propRefSyncer(props?.enablePinch, zoomable.state.setEnablePinch)
-	propRefSyncer(props?.enableWheel, zoomable.state.setEnableWheel)
+	propRefSyncer(props?.min, val => zoomable.state.min = val)
+	propRefSyncer(props?.max, val => zoomable.state.max = val)
+	propRefSyncer(props?.initial, val => zoomable.state.initial = val)
+	propRefSyncer(props?.animationDuration, val => zoomable.state.animationDuration = val)
+	propRefSyncer(props?.enablePan, val => zoomable.state.enablePan = val)
+	propRefSyncer(props?.enablePinch, val => zoomable.state.enablePinch = val)
+	propRefSyncer(props?.enableWheel, val => zoomable.state.enableWheel = val)
 
 	onScopeDispose(() => {
 		zoomable.destroy()
