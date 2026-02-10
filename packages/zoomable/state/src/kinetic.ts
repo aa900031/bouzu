@@ -3,12 +3,15 @@ import { createPoint, registerRaf } from '@bouzu/shared'
 
 export interface KineticProps {
 	getPoint: () => Point
-	onScroll: (x: number, y: number) => void
-	onComplete: () => void
 	getBounds: (point: Point) => Point
+	onUpdate: (point: Point) => void
+	onFinished?: () => void
 	minVelocity?: number
 	amplitude?: number
 	timeConstant?: number
+	springStiffness?: number
+	springDamping?: number
+	springRestThreshold?: number
 	rafFn?: RegisterRafMethods['raf']
 	cafFn?: RegisterRafMethods['caf']
 }
@@ -16,6 +19,9 @@ export interface KineticProps {
 const DEFAULT_TIME_CONSTANT = 342
 const DEFAULT_MIN_VELOCITY = 5
 const DEFAULT_AMPLITUDE = 0.25
+const DEFAULT_SPRING_STIFFNESS = 400
+const DEFAULT_SPRING_DAMPING = 30
+const DEFAULT_SPRING_REST_THRESHOLD = 0.5
 
 export class Kinetic {
 	#props: KineticProps
@@ -24,14 +30,21 @@ export class Kinetic {
 	#timestamp: number = 0
 
 	#ticker: CancelRaf | null = null
-	#scroller: CancelRaf | null = null
+	#animation: CancelRaf | null = null
+	#lastFrameTime: number = 0
 
 	#vx: number = 0
 	#vy: number = 0
-	#ax: number = 0
-	#ay: number = 0
-	#targetX: number = 0
-	#targetY: number = 0
+
+	// current position during animation
+	#x: number = 0
+	#y: number = 0
+
+	// velocity during animation (px/s)
+	#animVx: number = 0
+	#animVy: number = 0
+
+	#releasedOutOfBounds: boolean = false
 
 	constructor(props: KineticProps) {
 		this.#props = props
@@ -49,9 +62,21 @@ export class Kinetic {
 		return this.#props.timeConstant ?? DEFAULT_TIME_CONSTANT
 	}
 
+	get #springStiffness() {
+		return this.#props.springStiffness ?? DEFAULT_SPRING_STIFFNESS
+	}
+
+	get #springDamping() {
+		return this.#props.springDamping ?? DEFAULT_SPRING_DAMPING
+	}
+
+	get #springRestThreshold() {
+		return this.#props.springRestThreshold ?? DEFAULT_SPRING_REST_THRESHOLD
+	}
+
 	start() {
 		this.#lastPoint = this.#props.getPoint()
-		this.#ax = this.#ay = this.#vx = this.#vy = 0
+		this.#vx = this.#vy = 0
 		this.#timestamp = Date.now()
 
 		this.cancel()
@@ -62,40 +87,28 @@ export class Kinetic {
 		this.cancel()
 
 		const currentPoint = this.#props.getPoint()
-		this.#targetX = currentPoint.x
-		this.#targetY = currentPoint.y
-		this.#timestamp = Date.now()
+		this.#x = currentPoint.x
+		this.#y = currentPoint.y
 
-		if (this.#vx < -this.#minVelocity || this.#vx > this.#minVelocity) {
-			this.#ax = this.#amplitude * this.#vx
-			this.#targetX += this.#ax
+		this.#animVx = Math.abs(this.#vx) > this.#minVelocity ? this.#vx * this.#amplitude * 1000 / this.#timeConstant : 0
+		this.#animVy = Math.abs(this.#vy) > this.#minVelocity ? this.#vy * this.#amplitude * 1000 / this.#timeConstant : 0
+
+		const bounded = this.#props.getBounds(currentPoint)
+		this.#releasedOutOfBounds = bounded.x !== currentPoint.x || bounded.y !== currentPoint.y
+		const hasVelocity = this.#animVx !== 0 || this.#animVy !== 0
+
+		if (hasVelocity || this.#releasedOutOfBounds) {
+			this.#lastFrameTime = Date.now()
+			this.#animation = registerRaf(this.#animate, { raf: this.#props.rafFn, caf: this.#props.cafFn })
 		}
-
-		if (this.#vy < -this.#minVelocity || this.#vy > this.#minVelocity) {
-			this.#ay = this.#amplitude * this.#vy
-			this.#targetY += this.#ay
+		else {
+			this.#props.onFinished?.()
 		}
-
-		this.#scroller = registerRaf(this.#autoScroll, { raf: this.#props.rafFn, caf: this.#props.cafFn })
-
-		// const boundedTarget = this.#props.getBounds(createPoint(this.#targetX, this.#targetY))
-		// this.#targetX = boundedTarget.x
-		// this.#targetY = boundedTarget.y
-		// if (this.#ax !== 0 || this.#ay !== 0) {
-		// 	this.#scroller = registerRaf(this.#autoScroll, { raf: this.#props.rafFn, caf: this.#props.cafFn })
-		// }
-		// else {
-		// 	const currentPos = this.#props.getPoint()
-		// 	const bounded = this.#props.getBounds(currentPos)
-		// 	if (Math.abs(bounded.x - currentPos.x) > 0.1 || Math.abs(bounded.y - currentPos.y) > 0.1) {
-		// 		this.#props.onComplete()
-		// 	}
-		// }
 	}
 
 	cancel() {
 		this.#ticker?.()
-		this.#scroller?.()
+		this.#animation?.()
 	}
 
 	#track = () => {
@@ -116,35 +129,70 @@ export class Kinetic {
 		this.#ticker = registerRaf(this.#track, { raf: this.#props.rafFn, caf: this.#props.cafFn })
 	}
 
-	#autoScroll = () => {
-		const elapsed = Date.now() - this.#timestamp
-		let moving = false
-		let dx = 0
-		let dy = 0
+	#animate = () => {
+		const now = Date.now()
+		const dt = Math.min((now - this.#lastFrameTime) / 1000, 0.064) // cap at ~16fps min
+		this.#lastFrameTime = now
 
-		if (this.#ax) {
-			dx = -this.#ax * Math.exp(-elapsed / this.#timeConstant)
-			if (dx > 0.5 || dx < -0.5) {
-				moving = true
-			}
-			else {
-				dx = this.#ax = 0
-			}
+		if (this.#releasedOutOfBounds) {
+			this.#animateSpring(dt)
 		}
-
-		if (this.#ay) {
-			dy = -this.#ay * Math.exp(-elapsed / this.#timeConstant)
-			if (dy > 0.5 || dy < -0.5) {
-				moving = true
-			}
-			else {
-				dy = this.#ay = 0
-			}
+		else {
+			this.#animateInertia(dt)
 		}
+	}
 
-		if (moving) {
-			this.#props.onScroll(this.#targetX + dx, this.#targetY + dy)
-			this.#scroller = registerRaf(this.#autoScroll, { raf: this.#props.rafFn, caf: this.#props.cafFn })
+	#animateInertia(dt: number) {
+		const friction = Math.exp(-dt * 1000 / this.#timeConstant)
+
+		this.#animVx *= friction
+		this.#animVy *= friction
+		this.#x += this.#animVx * dt
+		this.#y += this.#animVy * dt
+
+		const bounded = this.#props.getBounds(createPoint(this.#x, this.#y))
+		this.#x = bounded.x
+		this.#y = bounded.y
+
+		const speed = Math.sqrt(this.#animVx ** 2 + this.#animVy ** 2)
+
+		if (speed < this.#springRestThreshold) {
+			this.#props.onUpdate(bounded)
+			this.#props.onFinished?.()
+		}
+		else {
+			this.#props.onUpdate(createPoint(this.#x, this.#y))
+			this.#animation = registerRaf(this.#animate, { raf: this.#props.rafFn, caf: this.#props.cafFn })
+		}
+	}
+
+	#animateSpring(dt: number) {
+		const stiffness = this.#springStiffness
+		const damping = this.#springDamping
+		const bounded = this.#props.getBounds(createPoint(this.#x, this.#y))
+
+		const overshootX = this.#x - bounded.x
+		const springAx = -stiffness * overshootX - damping * this.#animVx
+		this.#animVx += springAx * dt
+		this.#x += this.#animVx * dt
+
+		const overshootY = this.#y - bounded.y
+		const springAy = -stiffness * overshootY - damping * this.#animVy
+		this.#animVy += springAy * dt
+		this.#y += this.#animVy * dt
+
+		const speed = Math.sqrt(this.#animVx ** 2 + this.#animVy ** 2)
+		const newBounded = this.#props.getBounds(createPoint(this.#x, this.#y))
+		const totalOvershoot = Math.abs(this.#x - newBounded.x) + Math.abs(this.#y - newBounded.y)
+		const atRest = speed < this.#springRestThreshold && totalOvershoot < this.#springRestThreshold
+
+		if (atRest) {
+			this.#props.onUpdate(newBounded)
+			this.#props.onFinished?.()
+		}
+		else {
+			this.#props.onUpdate(createPoint(this.#x, this.#y))
+			this.#animation = registerRaf(this.#animate, { raf: this.#props.rafFn, caf: this.#props.cafFn })
 		}
 	}
 }

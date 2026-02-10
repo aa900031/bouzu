@@ -1,9 +1,10 @@
 import type { Point, Rect, RegisterRafMethods, Size, TransitionRunner } from '@bouzu/shared'
 import type { Emitter } from 'mitt'
 import type { DoubleClickEventPayload, GestureHandlers } from './gesture'
-import { checkPointEqualWithTolerance, clamp, clonePoint, createPoint, easeOutCubic, runNoopTransition, runTransition } from '@bouzu/shared'
+import { checkPointEqualWithTolerance, clamp, clonePoint, createPoint, runNoopTransition, runTransition } from '@bouzu/shared'
 import mitt from 'mitt'
 import { Gesture } from './gesture'
+import { Kinetic } from './kinetic'
 import { PanBounds } from './pan-bounds'
 
 export interface ZoomableProps {
@@ -47,6 +48,7 @@ export class Zoomable {
 	#props: ZoomableProps
 	#panBounds: PanBounds
 	#gesture: Gesture
+	#kinetic: Kinetic
 
 	#min: number
 	#max: number
@@ -61,7 +63,6 @@ export class Zoomable {
 	#startZoom: number
 	#startPan: Point
 	#timeoutWheel: ReturnType<typeof setTimeout> | null
-	#transitionPan: TransitionRunner
 	#transitionZoomPan: TransitionRunner
 
 	on: Emitter<ZoomableEvents>['on'] = this.#emitter.on
@@ -84,6 +85,16 @@ export class Zoomable {
 			onZoomEnd: this.#handleZoomEnd,
 			onDoubleTap: this.#handleDoubleClick,
 		})
+		this.#kinetic = new Kinetic({
+			getPoint: () => clonePoint(this.#pan),
+			getBounds: point => this.#panBounds.getCorrectPan(point),
+			onUpdate: (point) => {
+				this.#pan = point
+				this.#applyChanges()
+			},
+			rafFn: this.#props.rafFn,
+			cafFn: this.#props.cafFn,
+		})
 
 		this.#min = props.min ?? 0.5
 		this.#max = props.max ?? 3
@@ -98,7 +109,6 @@ export class Zoomable {
 		this.#startZoom = this.#currentZoom
 		this.#startPan = createPoint()
 		this.#timeoutWheel = null
-		this.#transitionPan = runNoopTransition()
 		this.#transitionZoomPan = runNoopTransition()
 
 		this.handlers = {
@@ -152,6 +162,8 @@ export class Zoomable {
 	}
 
 	public destroy() {
+		this.#kinetic.cancel()
+		this.#transitionZoomPan.cancel()
 		this.#emitter.all.clear()
 	}
 
@@ -224,10 +236,11 @@ export class Zoomable {
 	}
 
 	#handleDragStart = () => {
-		this.#transitionPan.cancel()
+		this.#kinetic.cancel()
 		this.#transitionZoomPan.cancel()
 
 		this.#startPan = clonePoint(this.#pan)
+		this.#kinetic.start()
 	}
 
 	#handleDragChange = () => {
@@ -248,41 +261,11 @@ export class Zoomable {
 		if (!this.#enablePan)
 			return
 
-		const correctedPan = this.#panBounds.getCorrectPan(this.#pan)
-		const needsBoundaryCorrection
-			= Math.abs(correctedPan.x - this.#pan.x) > 0.1
-				|| Math.abs(correctedPan.y - this.#pan.y) > 0.1
-
-		const velocity = this.#gesture.velocity
-		const decelerationRate = 0.95
-
-		const projectPoint = this.#createProjectPoint(velocity, decelerationRate)
-		const projectedPan = createPoint(
-			correctedPan.x + projectPoint.x,
-			correctedPan.y + projectPoint.y,
-		)
-
-		const finalPan = this.#panBounds.getCorrectPan(projectedPan)
-
-		const needsInertiaAnimation
-			= Math.abs(finalPan.x - correctedPan.x) > 1
-				|| Math.abs(finalPan.y - correctedPan.y) > 1
-
-		if (needsBoundaryCorrection) {
-			if (needsInertiaAnimation) {
-				this.#animatePan(finalPan)
-			}
-			else {
-				this.#animatePan(correctedPan)
-			}
-		}
-		else if (needsInertiaAnimation) {
-			this.#animatePan(finalPan)
-		}
+		this.#kinetic.stop()
 	}
 
 	#handleZoomStart = () => {
-		this.#transitionPan.cancel()
+		this.#kinetic.cancel()
 		this.#transitionZoomPan.cancel()
 
 		this.#startZoom = this.#currentZoom
@@ -356,6 +339,8 @@ export class Zoomable {
 		if (this.#enableWheel === false)
 			return
 
+		this.#kinetic.cancel()
+
 		if (event.withCtrl) {
 			const delta = event.delta.y > 0 ? -0.1 : 0.1
 			const newZoom = clamp(this.#currentZoom + delta, this.#min, this.#max)
@@ -411,42 +396,11 @@ export class Zoomable {
 		this.#emitter.emit(ZoomableEventName.ChangePan, this.#pan)
 	}
 
-	#createProjectPoint(
-		velocity: Point,
-		decelerationRate: number,
-	): Point {
-		return createPoint(
-			velocity.x * decelerationRate / (1 - decelerationRate),
-			velocity.y * decelerationRate / (1 - decelerationRate),
-		)
-	}
-
-	#animatePan(targetPan: Point) {
-		this.#transitionPan.cancel()
-
-		const startPan = clonePoint(this.#pan)
-
-		this.#transitionPan = runTransition({
-			start: 0,
-			end: 1,
-			duration: this.#animationDuration,
-			easing: easeOutCubic,
-			onUpdate: (progress) => {
-				this.#pan = createPoint(
-					startPan.x + (targetPan.x - startPan.x) * progress,
-					startPan.y + (targetPan.y - startPan.y) * progress,
-				)
-				this.#applyChanges()
-			},
-			raf: this.#props.rafFn,
-			caf: this.#props.cafFn,
-		})
-	}
-
 	#animateZoomAndPan(
 		targetZoom: number,
 		targetPan: Point,
 	) {
+		this.#kinetic.cancel()
 		this.#transitionZoomPan.cancel()
 
 		const startZoom = this.#currentZoom
