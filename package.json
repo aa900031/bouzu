@@ -27,16 +27,16 @@
 		"@aa900031/eslint-config": "^5.0.0",
 		"@aa900031/release-it-config": "^0.1.0",
 		"@types/mockjs": "^1.0.10",
-		"@types/node": "^22.19.7",
-		"@vitest/coverage-istanbul": "^4.0.17",
+		"@types/node": "^22.19.8",
+		"@vitest/coverage-istanbul": "^4.0.18",
 		"eslint": "^9.39.2",
-		"happy-dom": "^20.3.4",
+		"happy-dom": "^20.5.0",
 		"mockjs": "^1.1.0",
 		"npm-run-all2": "^8.0.4",
-		"release-it": "^19.2.3",
-		"turbo": "^2.7.5",
-		"typescript": "^5.3.3",
+		"release-it": "^19.2.4",
+		"turbo": "^2.8.2",
+		"typescript": "^5.9.3",
 		"unbuild": "^3.6.1",
-		"vitest": "^4.0.17"
+		"vitest": "^4.0.18"
 	}
 }
