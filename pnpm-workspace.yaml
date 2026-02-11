@@ -1,4 +1,5 @@
 autoInstallPeers: false
+ignoreWorkspaceRootCheck: true
 shamefullyHoist: true
 shellEmulator: true
 strictPeerDependencies: false
