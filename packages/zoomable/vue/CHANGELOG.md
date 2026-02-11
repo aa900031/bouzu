@@ -3,6 +3,29 @@
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
 
+## v0.2.0
+
+[compare changes](https://github.com/aa900031/bouzu/compare/@bouzu/vue-zoomable@0.1.0...${npm.name}@0.2.0)
+
+### 🚀 Enhancements
+
+-  Zoomable with pan inertia (#35) ([6df4395](https://github.com/aa900031/bouzu/commit/6df4395c62bf30a01197ec4a435bcd5e1edac61e))
+
+### 🏡 Chore
+
+-  Add pkg.pr.new (#39) ([4d3c43c](https://github.com/aa900031/bouzu/commit/4d3c43ce0504d5dd6a703dfd9423907b0102e183))
+-  **ci:** Autofix (#36) ([dede28e](https://github.com/aa900031/bouzu/commit/dede28ec937ea0031251a340b061f1e6fa53cdeb))
+-  **deps:** Update npm non-major develop dependencies (#31) ([c6d5cdf](https://github.com/aa900031/bouzu/commit/c6d5cdf618a38b4ce7f991fab316e8bbf25b7356))
+-  Update release-it (#37) ([1574f35](https://github.com/aa900031/bouzu/commit/1574f3503dd0780dcdfd3d5451e48b214cd7d782))
+-  Use vitest projects ([0543b8b](https://github.com/aa900031/bouzu/commit/0543b8b75e7399d73eb52a30342044b43ea8c588))
+
+
+
+#### ❤️ Contributors
+
+- Renovate[bot] 
+- Zhong666 <aa900031@gmail.com>
+
 ## v0.1.0
 
 
