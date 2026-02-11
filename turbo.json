@@ -8,10 +8,20 @@
 			],
 			"outputs": [
 				"dist/**"
+			],
+			"inputs": [
+				".storybook/**",
+				"src/**",
+				"tsdown.config.ts",
+				"tsconfig.json",
+				"tsconfig.*.json",
+				"vite.config.ts",
+				"unocss.config.ts"
 			]
 		},
 		"dev": {
-			"cache": false
+			"cache": false,
+			"persistent": true
 		},
 		"lint": {
 			"outputs": []
@@ -22,6 +32,15 @@
 		"release": {
 			"dependsOn": ["^release"],
 			"cache": false
+		},
+		"@bouzu/storybook-vue#build": {
+			"dependsOn": [
+				"@bouzu/storybook#build",
+				"^build"
+			],
+			"outputs": [
+				"../root/dist/vue/**"
+			]
 		}
 	}
 }
