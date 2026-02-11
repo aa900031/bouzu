@@ -35,7 +35,7 @@
 		"npm-run-all2": "^8.0.4",
 		"release-it": "^19.2.4",
 		"tsdown": "^0.20.3",
-		"turbo": "^2.8.5",
+		"turbo": "^2.8.6",
 		"typescript": "^5.9.3",
 		"vitest": "^4.0.18"
 	}
