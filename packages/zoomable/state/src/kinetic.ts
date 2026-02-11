@@ -16,9 +16,9 @@ export interface KineticProps {
 	cafFn?: RegisterRafMethods['caf']
 }
 
-const DEFAULT_TIME_CONSTANT = 342
+const DEFAULT_TIME_CONSTANT = 300
 const DEFAULT_MIN_VELOCITY = 5
-const DEFAULT_AMPLITUDE = 0.25
+const DEFAULT_AMPLITUDE = 0.35
 const DEFAULT_SPRING_STIFFNESS = 400
 const DEFAULT_SPRING_DAMPING = 30
 const DEFAULT_SPRING_REST_THRESHOLD = 0.5
@@ -44,7 +44,9 @@ export class Kinetic {
 	#animVx: number = 0
 	#animVy: number = 0
 
-	#releasedOutOfBounds: boolean = false
+	// per-axis: whether the release position was already out of bounds
+	#springX: boolean = false
+	#springY: boolean = false
 
 	constructor(props: KineticProps) {
 		this.#props = props
@@ -94,10 +96,11 @@ export class Kinetic {
 		this.#animVy = Math.abs(this.#vy) > this.#minVelocity ? this.#vy * this.#amplitude * 1000 / this.#timeConstant : 0
 
 		const bounded = this.#props.getBounds(currentPoint)
-		this.#releasedOutOfBounds = bounded.x !== currentPoint.x || bounded.y !== currentPoint.y
+		this.#springX = bounded.x !== currentPoint.x
+		this.#springY = bounded.y !== currentPoint.y
 		const hasVelocity = this.#animVx !== 0 || this.#animVy !== 0
 
-		if (hasVelocity || this.#releasedOutOfBounds) {
+		if (hasVelocity || this.#springX || this.#springY) {
 			this.#lastFrameTime = Date.now()
 			this.#animation = registerRaf(this.#animate, { raf: this.#props.rafFn, caf: this.#props.cafFn })
 		}
@@ -131,63 +134,44 @@ export class Kinetic {
 
 	#animate = () => {
 		const now = Date.now()
-		const dt = Math.min((now - this.#lastFrameTime) / 1000, 0.064) // cap at ~16fps min
+		const dt = Math.min((now - this.#lastFrameTime) / 1000, 0.064)
 		this.#lastFrameTime = now
 
-		if (this.#releasedOutOfBounds) {
-			this.#animateSpring(dt)
-		}
-		else {
-			this.#animateInertia(dt)
-		}
-	}
-
-	#animateInertia(dt: number) {
 		const friction = Math.exp(-dt * 1000 / this.#timeConstant)
-
-		this.#animVx *= friction
-		this.#animVy *= friction
-		this.#x += this.#animVx * dt
-		this.#y += this.#animVy * dt
-
-		const bounded = this.#props.getBounds(createPoint(this.#x, this.#y))
-		this.#x = bounded.x
-		this.#y = bounded.y
-
-		const speed = Math.sqrt(this.#animVx ** 2 + this.#animVy ** 2)
-
-		if (speed < this.#springRestThreshold) {
-			this.#props.onUpdate(bounded)
-			this.#props.onFinished?.()
-		}
-		else {
-			this.#props.onUpdate(createPoint(this.#x, this.#y))
-			this.#animation = registerRaf(this.#animate, { raf: this.#props.rafFn, caf: this.#props.cafFn })
-		}
-	}
-
-	#animateSpring(dt: number) {
 		const stiffness = this.#springStiffness
 		const damping = this.#springDamping
 		const bounded = this.#props.getBounds(createPoint(this.#x, this.#y))
 
-		const overshootX = this.#x - bounded.x
-		const springAx = -stiffness * overshootX - damping * this.#animVx
-		this.#animVx += springAx * dt
+		if (this.#springX) {
+			const overshoot = this.#x - bounded.x
+			this.#animVx += (-stiffness * overshoot - damping * this.#animVx) * dt
+		}
+		else {
+			this.#animVx *= friction
+		}
 		this.#x += this.#animVx * dt
 
-		const overshootY = this.#y - bounded.y
-		const springAy = -stiffness * overshootY - damping * this.#animVy
-		this.#animVy += springAy * dt
+		if (this.#springY) {
+			const overshoot = this.#y - bounded.y
+			this.#animVy += (-stiffness * overshoot - damping * this.#animVy) * dt
+		}
+		else {
+			this.#animVy *= friction
+		}
 		this.#y += this.#animVy * dt
 
-		const speed = Math.sqrt(this.#animVx ** 2 + this.#animVy ** 2)
-		const newBounded = this.#props.getBounds(createPoint(this.#x, this.#y))
-		const totalOvershoot = Math.abs(this.#x - newBounded.x) + Math.abs(this.#y - newBounded.y)
-		const atRest = speed < this.#springRestThreshold && totalOvershoot < this.#springRestThreshold
+		const clamped = this.#props.getBounds(createPoint(this.#x, this.#y))
+		if (!this.#springX)
+			this.#x = clamped.x
+		if (!this.#springY)
+			this.#y = clamped.y
 
-		if (atRest) {
-			this.#props.onUpdate(newBounded)
+		const speed = Math.sqrt(this.#animVx ** 2 + this.#animVy ** 2)
+		const finalBounded = this.#props.getBounds(createPoint(this.#x, this.#y))
+		const overshootTotal = Math.abs(this.#x - finalBounded.x) + Math.abs(this.#y - finalBounded.y)
+
+		if (speed < this.#springRestThreshold && overshootTotal < this.#springRestThreshold) {
+			this.#props.onUpdate(finalBounded)
 			this.#props.onFinished?.()
 		}
 		else {
