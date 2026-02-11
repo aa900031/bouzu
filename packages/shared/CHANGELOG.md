@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
 
+## v0.3.0
+
+[compare changes](https://github.com/aa900031/bouzu/compare/@bouzu/shared@0.2.0...${npm.name}@0.3.0)
+
+### 🚀 Enhancements
+
+-  Zoomable with pan inertia (#35) ([6df4395](https://github.com/aa900031/bouzu/commit/6df4395c62bf30a01197ec4a435bcd5e1edac61e))
+
+### 🏡 Chore
+
+-  Use vitest projects ([0543b8b](https://github.com/aa900031/bouzu/commit/0543b8b75e7399d73eb52a30342044b43ea8c588))
+
+
+
+#### ❤️ Contributors
+
+- Zhong666 <aa900031@gmail.com>
+
 ## v0.2.0
 
 [compare changes](https://github.com/aa900031/bouzu/compare/@bouzu/shared@0.1.1...${npm.name}@0.2.0)
