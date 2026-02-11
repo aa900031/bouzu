@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
 
+## v0.3.0
+
+[compare changes](https://github.com/aa900031/bouzu/compare/@bouzu/zoomable-dom@0.2.0...${npm.name}@0.3.0)
+
+### 🏡 Chore
+
+-  Use tsdown ([afaab38](https://github.com/aa900031/bouzu/commit/afaab38057fcef4ebc8ec3baed1e5ba0d7de10de))
+
+
+
+#### ❤️ Contributors
+
+- Zhong666 <aa900031@gmail.com>
+
 ## v0.2.0
 
 [compare changes](https://github.com/aa900031/bouzu/compare/@bouzu/zoomable-dom@0.1.0...${npm.name}@0.2.0)
