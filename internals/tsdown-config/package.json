@@ -5,7 +5,7 @@
 	"private": true,
 	"author": "zhong666 <hi@zhong666.me>",
 	"exports": {
-		".": "./src/index.ts"
+		".": "./src/index.mjs"
 	},
 	"devDependencies": {
 		"@bouzu/tsconfig": "workspace:*",
