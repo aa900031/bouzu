@@ -434,10 +434,10 @@ importers:
         specifier: workspace:*
         version: link:../../internals/tsconfig
       '@storybook/addon-docs':
-        specifier: ^10.2.4
+        specifier: ^10.2.7
         version: 10.2.8(@types/react@19.2.14)(esbuild@0.27.2)(rollup@4.52.5)(storybook@10.2.8(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(vite@7.3.1(@types/node@22.19.11)(jiti@2.6.1)(yaml@2.8.2))
       '@storybook/react-vite':
-        specifier: ^10.2.4
+        specifier: ^10.2.7
         version: 10.2.8(esbuild@0.27.2)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(rollup@4.52.5)(storybook@10.2.8(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(typescript@5.9.3)(vite@7.3.1(@types/node@22.19.11)(jiti@2.6.1)(yaml@2.8.2))
       '@types/react':
         specifier: ^19.2.14
@@ -461,7 +461,7 @@ importers:
         specifier: ^3.0.1
         version: 3.0.1
       storybook:
-        specifier: ^10.2.4
+        specifier: ^10.2.7
         version: 10.2.8(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       vite:
         specifier: ^7.3.1
@@ -491,13 +491,13 @@ importers:
         specifier: workspace:*
         version: link:../../packages/zoomable/vue
       '@storybook/addon-docs':
-        specifier: ^10.2.4
+        specifier: ^10.2.7
         version: 10.2.8(@types/react@19.2.14)(esbuild@0.27.2)(rollup@4.52.5)(storybook@10.2.8(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(vite@7.3.1(@types/node@22.19.11)(jiti@2.6.1)(yaml@2.8.2))
       '@storybook/addon-links':
-        specifier: ^10.2.4
+        specifier: ^10.2.7
         version: 10.2.8(react@19.2.4)(storybook@10.2.8(react-dom@19.2.4(react@19.2.4))(react@19.2.4))
       '@storybook/vue3-vite':
-        specifier: ^10.2.4
+        specifier: ^10.2.7
         version: 10.2.8(esbuild@0.27.2)(rollup@4.52.5)(storybook@10.2.8(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(vite@7.3.1(@types/node@22.19.11)(jiti@2.6.1)(yaml@2.8.2))(vue@3.5.28(typescript@5.9.3))
       '@vitejs/plugin-vue':
         specifier: ^6.0.4
@@ -509,7 +509,7 @@ importers:
         specifier: ^8.0.4
         version: 8.0.4
       storybook:
-        specifier: ^10.2.4
+        specifier: ^10.2.7
         version: 10.2.8(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       unocss:
         specifier: ^66.6.0
