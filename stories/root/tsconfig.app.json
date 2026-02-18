@@ -1,7 +1,9 @@
 {
 	"extends": "@bouzu/tsconfig/dom.json",
 	"compilerOptions": {
-		"jsx": "preserve"
+		"composite": false,
+		"jsx": "preserve",
+		"declaration": false
 	},
 	"include": [
 		".storybook/preview.ts",

@@ -1,6 +1,11 @@
 {
 	"extends": "@bouzu/tsconfig/vue.json",
+	"compilerOptions": {
+		"composite": false,
+		"declaration": false
+	},
 	"references": [
+		{ "path": "../../packages/affix/vue/tsconfig.app.json" },
 		{ "path": "../../packages/scroller/vue/tsconfig.app.json" },
 		{ "path": "../../packages/virtualizer/vue/tsconfig.app.json" },
 		{ "path": "../../packages/zoomable/vue/tsconfig.app.json" }

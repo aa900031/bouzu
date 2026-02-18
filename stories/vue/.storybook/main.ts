@@ -1,6 +1,6 @@
-import type { StorybookConfig } from '@storybook/vue3-vite'
+import { defineMain } from '@storybook/vue3-vite/node'
 
-export default {
+export default defineMain({
 	stories: [
 		'../src/**/*.mdx',
 		'../src/**/*.stories.@(js|jsx|ts|tsx)',
@@ -11,6 +11,8 @@ export default {
 	],
 	framework: {
 		name: '@storybook/vue3-vite',
-		options: {},
+		options: {
+			docgen: false,
+		},
 	},
-} satisfies StorybookConfig
+})

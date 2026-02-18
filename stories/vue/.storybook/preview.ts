@@ -1,9 +1,10 @@
-import type { Preview } from '@storybook/vue3-vite'
+import { definePreview } from '@storybook/vue3-vite'
 
 import '@unocss/reset/tailwind-compat.css'
 import 'uno.css'
 
-export default {
+export default definePreview({
+	addons: [],
 	parameters: {
 		controls: {
 			matchers: {
@@ -12,4 +13,4 @@ export default {
 			},
 		},
 	},
-} satisfies Preview
+})

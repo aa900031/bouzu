@@ -1,5 +1,6 @@
-import type { Preview } from '@storybook/react-vite'
+import { definePreview } from '@storybook/react-vite'
 
-export default {
+export default definePreview({
+	addons: [],
 	parameters: {},
-} satisfies Preview
+})
