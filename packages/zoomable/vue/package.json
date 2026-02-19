@@ -67,6 +67,6 @@
 	"devDependencies": {
 		"@bouzu/tsconfig": "workspace:*",
 		"@bouzu/tsdown-config": "workspace:*",
-		"vue": "^3.5.27"
+		"vue": "^3.5.28"
 	}
 }

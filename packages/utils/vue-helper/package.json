@@ -65,6 +65,6 @@
 		"@bouzu/tsconfig": "workspace:*",
 		"@bouzu/tsdown-config": "workspace:*",
 		"@bouzu/vite-config": "workspace:*",
-		"vue": "^3.5.27"
+		"vue": "^3.5.28"
 	}
 }
