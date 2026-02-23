@@ -59,6 +59,9 @@ importers:
 
   internals/tsdown-config:
     devDependencies:
+      '@aa900031/tsdown-config':
+        specifier: ^0.1.0
+        version: 0.1.0(tsdown@0.20.3(synckit@0.11.12)(typescript@5.9.3))
       '@bouzu/tsconfig':
         specifier: workspace:*
         version: link:../tsconfig
@@ -533,6 +536,11 @@ packages:
 
   '@aa900031/release-it-config@0.1.0':
     resolution: {integrity: sha512-HS3cPETDGgzVBhr4GeXVO5pqh2MyiG9lkJXYhSqrnwjQl1zvzQXopskbcg6e/43wA6KjUZMaavrpjAhoK1EwUw==}
+
+  '@aa900031/tsdown-config@0.1.0':
+    resolution: {integrity: sha512-fMd+sTGn1a03xX6luQnw+lgbNaGfHQkFotNR+kd/HLAGOBwhwOi0b0Ro3kGn69hZ5zers+ztW6cLlRcDZmNdVw==}
+    peerDependencies:
+      tsdown: ^0.0.0
 
   '@adobe/css-tools@4.4.4':
     resolution: {integrity: sha512-Elp+iwUx5rN5+Y8xLt5/GRoG20WGoDCQ/1Fb+1LiGtvwbDavuSk0jhD/eZdckHAuzcDzccnkv+rEjyWfRx18gg==}
@@ -4655,8 +4663,8 @@ packages:
   vue-component-type-helpers@2.2.12:
     resolution: {integrity: sha512-YbGqHZ5/eW4SnkPNR44mKVc6ZKQoRs/Rux1sxC6rdwXb4qpbOSYfDr9DsTHolOTGmIKgM9j141mZbBeg05R1pw==}
 
-  vue-component-type-helpers@3.2.4:
-    resolution: {integrity: sha512-05lR16HeZDcDpB23ku5b5f1fBOoHqFnMiKRr2CiEvbG5Ux4Yi0McmQBOET0dR0nxDXosxyVqv67q6CzS3AK8rw==}
+  vue-component-type-helpers@3.2.5:
+    resolution: {integrity: sha512-tkvNr+bU8+xD/onAThIe7CHFvOJ/BO6XCOrxMzeytJq40nTfpGDJuVjyCM8ccGZKfAbGk2YfuZyDMXM56qheZQ==}
 
   vue-demi@0.14.10:
     resolution: {integrity: sha512-nMZBOwuzabUO0nLgIcc6rycZEebF6eeUfaiQx9+WSk8e29IbLvPU9feI6tqW4kTo3hvoYAJkMh8n8D0fuISphg==}
@@ -4844,6 +4852,10 @@ snapshots:
       - conventional-commits-filter
       - conventional-commits-parser
       - release-it
+
+  '@aa900031/tsdown-config@0.1.0(tsdown@0.20.3(synckit@0.11.12)(typescript@5.9.3))':
+    dependencies:
+      tsdown: 0.20.3(synckit@0.11.12)(typescript@5.9.3)
 
   '@adobe/css-tools@4.4.4': {}
 
@@ -5877,7 +5889,7 @@ snapshots:
       storybook: 10.2.9(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       type-fest: 2.19.0
       vue: 3.5.28(typescript@5.9.3)
-      vue-component-type-helpers: 3.2.4
+      vue-component-type-helpers: 3.2.5
 
   '@stylistic/eslint-plugin@5.8.0(eslint@9.39.2(jiti@2.6.1))':
     dependencies:
@@ -9241,7 +9253,7 @@ snapshots:
 
   vue-component-type-helpers@2.2.12: {}
 
-  vue-component-type-helpers@3.2.4: {}
+  vue-component-type-helpers@3.2.5: {}
 
   vue-demi@0.14.10(vue@3.5.28(typescript@5.9.3)):
     dependencies:
