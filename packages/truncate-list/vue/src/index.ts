@@ -32,8 +32,13 @@ export function useTruncateList<T>(
 	})
 	const overflowItems = computed(() => unref(props.items).slice(visibleItems.length))
 
+	watch(() => unref(props.containerRef), async () => {
+		await document.fonts.ready
+		execCalc()
+	}, { flush: 'post' })
+
 	watch(() => unref(props.items), () => {
-		onMeasure()
+		execCalc()
 	}, { flush: 'post' })
 
 	watch([width, height], ([_width, _height], [_oldWidth, _oldHeight]) => {
@@ -41,7 +46,7 @@ export function useTruncateList<T>(
 		const prev = getSizeByAxis(createSize(_oldWidth, _oldHeight), axis)
 		if (current === prev)
 			return
-		onMeasure()
+		execCalc()
 	})
 
 	return {
@@ -50,11 +55,11 @@ export function useTruncateList<T>(
 		isOverflowing,
 	}
 
-	function onMeasure() {
-		measuring = measuring.then(() => remeasure())
+	function execCalc() {
+		measuring = measuring.then(() => calc())
 	}
 
-	async function remeasure() {
+	async function calc() {
 		const items = unref(props.items)
 		const min = unref(props.minVisibleItemsNum) ?? 0
 		const collapseDirection = unref(props.collapseDirection) ?? TruncateCollapseDirection.End
