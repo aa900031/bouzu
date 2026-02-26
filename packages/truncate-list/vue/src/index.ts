@@ -2,7 +2,7 @@ import type { MaybeRef } from '@vueuse/core'
 import type { Ref } from 'vue-demi'
 import { Axis, createSize, getSizeByAxis } from '@bouzu/shared'
 import { useElementSize } from '@vueuse/core'
-import { nextTick, shallowReactive, shallowReadonly, unref, watch } from 'vue-demi'
+import { computed, nextTick, shallowReactive, shallowReadonly, unref, watch } from 'vue-demi'
 
 export const TruncateCollapseDirection = {
 	Start: 'start',
@@ -27,29 +27,27 @@ export function useTruncateList<T>(
 	const visibleItems = shallowReactive<T[]>(
 		unref(props.items).slice(),
 	)
+	const isOverflowing = computed(() => {
+		return visibleItems.length < unref(props.items).length
+	})
+	const overflowItems = computed(() => unref(props.items).slice(visibleItems.length))
 
 	watch(() => unref(props.items), () => {
-		showAll()
 		onMeasure()
 	}, { flush: 'post' })
 
 	watch([width, height], ([_width, _height], [_oldWidth, _oldHeight]) => {
 		const current = getSizeByAxis(createSize(_width, _height), axis)
 		const prev = getSizeByAxis(createSize(_oldWidth, _oldHeight), axis)
-		if (current > prev)
-			showAll()
+		if (current === prev)
+			return
 		onMeasure()
 	})
 
 	return {
 		visibleItems: shallowReadonly(visibleItems),
-	}
-
-	function showAll() {
-		if (visibleItems.length === unref(props.items).length)
-			return
-		visibleItems.length = 0
-		visibleItems.push(...unref(props.items).slice())
+		overflowItems,
+		isOverflowing,
 	}
 
 	function onMeasure() {
@@ -57,21 +55,44 @@ export function useTruncateList<T>(
 	}
 
 	async function remeasure() {
-		const measureSize = getMeasureSize()
-		const value = getSizeByAxis(measureSize, axis)
-		if (value > 0.8 || visibleItems.length <= (unref(props.minVisibleItemsNum) ?? 0))
-			return
+		const items = unref(props.items)
+		const min = unref(props.minVisibleItemsNum) ?? 0
+		const collapseDirection = unref(props.collapseDirection) ?? TruncateCollapseDirection.End
 
-		const collapseDirection = unref(props.collapseDirection)
+		let left = min
+		let right = items.length
 
-		if (collapseDirection === TruncateCollapseDirection.End) {
-			visibleItems.pop()
+		while (left < right) {
+			const mid = Math.ceil((left + right) / 2)
+
+			visibleItems.length = 0
+			if (collapseDirection === TruncateCollapseDirection.Start) {
+				visibleItems.push(...items.slice(items.length - mid))
+			}
+			else {
+				visibleItems.push(...items.slice(0, mid))
+			}
+
+			await nextTick()
+
+			const measureSize = getMeasureSize()
+			const value = getSizeByAxis(measureSize, axis)
+
+			if (value >= 0.8) {
+				left = mid
+			}
+			else {
+				right = mid - 1
+			}
 		}
-		else if (collapseDirection == null || collapseDirection === TruncateCollapseDirection.Start) {
-			visibleItems.shift()
+
+		visibleItems.length = 0
+		if (collapseDirection === TruncateCollapseDirection.Start) {
+			visibleItems.push(...items.slice(items.length - left))
 		}
-		await nextTick()
-		return remeasure()
+		else {
+			visibleItems.push(...items.slice(0, left))
+		}
 	}
 
 	function getMeasureSize() {
