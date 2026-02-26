@@ -235,6 +235,31 @@ importers:
         specifier: workspace:*
         version: link:../../internals/tsdown-config
 
+  packages/truncate-list/vue:
+    dependencies:
+      '@bouzu/shared':
+        specifier: workspace:^
+        version: link:../../shared
+      '@bouzu/vue-helper':
+        specifier: workspace:^
+        version: link:../../utils/vue-helper
+      '@vueuse/core':
+        specifier: ^10.8.0
+        version: 10.11.1(vue@3.5.28(typescript@5.9.3))
+      vue-demi:
+        specifier: latest
+        version: 0.14.10(vue@3.5.28(typescript@5.9.3))
+    devDependencies:
+      '@bouzu/tsconfig':
+        specifier: workspace:*
+        version: link:../../../internals/tsconfig
+      '@bouzu/tsdown-config':
+        specifier: workspace:*
+        version: link:../../../internals/tsdown-config
+      vue:
+        specifier: ^3.5.27
+        version: 3.5.28(typescript@5.9.3)
+
   packages/utils/vue-helper:
     dependencies:
       '@bouzu/shared':
@@ -487,6 +512,9 @@ importers:
       '@bouzu/vue-scroller':
         specifier: workspace:*
         version: link:../../packages/scroller/vue
+      '@bouzu/vue-truncate-list':
+        specifier: workspace:*
+        version: link:../../packages/truncate-list/vue
       '@bouzu/vue-virtualizer':
         specifier: workspace:*
         version: link:../../packages/virtualizer/vue
