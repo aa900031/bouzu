@@ -21,4 +21,5 @@ export default {
 	'@bouzu/vue-affix': fileURLToPath(new URL('../../packages/affix/vue/src', import.meta.url)),
 
 	'@bouzu/truncate-list': fileURLToPath(new URL('../../packages/truncate-list/state/src', import.meta.url)),
+	'@bouzu/vue-truncate-list': fileURLToPath(new URL('../../packages/truncate-list/vue/src', import.meta.url)),
 }

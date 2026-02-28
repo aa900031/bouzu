@@ -1,8 +1,11 @@
+import type { TruncateCollapseDirectionValues } from '@bouzu/truncate-list'
 import type { MaybeRef } from '@vueuse/core'
 import type { Ref } from 'vue-demi'
-import { Axis, createSize, getSizeByAxis } from '@bouzu/shared'
+import { createSize } from '@bouzu/shared'
+import { TruncateList } from '@bouzu/truncate-list'
+import { eventRef } from '@bouzu/vue-helper'
 import { useElementSize } from '@vueuse/core'
-import { computed, nextTick, shallowReactive, shallowReadonly, unref, watch } from 'vue-demi'
+import { computed, shallowReadonly, unref, watch } from 'vue-demi'
 
 export const TruncateCollapseDirection = {
 	Start: 'start',
@@ -14,99 +17,72 @@ export interface UseTruncateListProps<T> {
 	measureRef: Ref<HTMLElement | null>
 	items: MaybeRef<T[]>
 	minVisibleCount?: MaybeRef<number | undefined>
-	collapseDirection?: MaybeRef<typeof TruncateCollapseDirection[keyof typeof TruncateCollapseDirection] | undefined>
+	collapseDirection?: MaybeRef<TruncateCollapseDirectionValues>
 }
 
 export function useTruncateList<T>(
 	props: UseTruncateListProps<T>,
 ) {
-	let measuring: Promise<void> = Promise.resolve()
-	const axis = Axis.X
-	const { width, height } = useElementSize(props.containerRef)
+	const containerSize = useElementSize(props.containerRef)
+	const measureSize = useElementSize(props.measureRef)
 
-	const visibleItems = shallowReactive<T[]>(
-		unref(props.items).slice(),
-	)
-	const isOverflowing = computed(() => {
-		return visibleItems.length < unref(props.items).length
+	const state = new TruncateList({
+		minVisibleCount: unref(props.minVisibleCount),
+		collapseDirection: unref(props.collapseDirection),
 	})
-	const overflowItems = computed(() => unref(props.items).slice(visibleItems.length))
+
+	const [visibleItems] = eventRef({
+		register: (handler) => {
+			state.on('change-visible-items', handler)
+			return () => state.off('change-visible-items', handler)
+		},
+		get: () => state.visibleItems,
+	})
+
+	const [overflowItems] = eventRef({
+		register: (handler) => {
+			state.on('change-overflow-items', handler)
+			return () => state.off('change-overflow-items', handler)
+		},
+		get: () => state.overflowItems,
+	})
+
+	const isOverflowing = computed(() => {
+		return unref(visibleItems).length < unref(props.items).length
+	})
 
 	watch(() => unref(props.containerRef), async () => {
 		await document.fonts.ready
-		execCalc()
+		state.trigger()
 	}, { flush: 'post' })
 
-	watch(() => unref(props.items), () => {
-		execCalc()
-	}, { flush: 'post' })
+	watch(() => unref(props.items), (val) => {
+		state.items = val
+	}, { immediate: true })
 
-	watch([width, height], ([_width, _height], [_oldWidth, _oldHeight]) => {
-		const current = getSizeByAxis(createSize(_width, _height), axis)
-		const prev = getSizeByAxis(createSize(_oldWidth, _oldHeight), axis)
-		if (current === prev)
-			return
-		execCalc()
-	})
+	watch(
+		() => createSize(
+			unref(containerSize.width),
+			unref(containerSize.height),
+		),
+		(val) => {
+			state.containerSize = val
+		},
+	)
+
+	watch(
+		() => createSize(
+			unref(measureSize.width),
+			unref(measureSize.height),
+		),
+		(val) => {
+			state.measureSize = val
+		},
+	)
 
 	return {
 		visibleItems: shallowReadonly(visibleItems),
 		overflowItems,
 		isOverflowing,
-	}
-
-	function execCalc() {
-		measuring = measuring.then(() => calc())
-	}
-
-	async function calc() {
-		const items = unref(props.items)
-		const minItemCount = unref(props.minVisibleCount) ?? 0
-		const collapseDirection = unref(props.collapseDirection) ?? TruncateCollapseDirection.End
-
-		let left = minItemCount
-		let right = items.length
-
-		while (left < right) {
-			const mid = Math.ceil((left + right) / 2)
-
-			visibleItems.length = 0
-			if (collapseDirection === TruncateCollapseDirection.Start) {
-				visibleItems.push(...items.slice(items.length - mid))
-			}
-			else {
-				visibleItems.push(...items.slice(0, mid))
-			}
-
-			await nextTick()
-
-			const measureSize = getMeasureSize()
-			const value = getSizeByAxis(measureSize, axis)
-
-			if (value >= 0.8) {
-				left = mid
-			}
-			else {
-				right = mid - 1
-			}
-		}
-
-		visibleItems.length = 0
-		if (collapseDirection === TruncateCollapseDirection.Start) {
-			visibleItems.push(...items.slice(items.length - left))
-		}
-		else {
-			visibleItems.push(...items.slice(0, left))
-		}
-	}
-
-	function getMeasureSize() {
-		const el = unref(props.measureRef)
-		const clientRect = el?.getBoundingClientRect?.()
-
-		return createSize(
-			clientRect?.width ?? 0,
-			clientRect?.height ?? 0,
-		)
 	}
 }

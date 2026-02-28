@@ -235,6 +235,25 @@ importers:
         specifier: workspace:*
         version: link:../../internals/tsdown-config
 
+  packages/truncate-list/state:
+    dependencies:
+      '@bouzu/shared':
+        specifier: workspace:*
+        version: link:../../shared
+      mitt:
+        specifier: ^3.0.1
+        version: 3.0.1
+      type-fest:
+        specifier: ^3.13.1
+        version: 3.13.1
+    devDependencies:
+      '@bouzu/tsconfig':
+        specifier: workspace:*
+        version: link:../../../internals/tsconfig
+      '@bouzu/tsdown-config':
+        specifier: workspace:*
+        version: link:../../../internals/tsdown-config
+
   packages/truncate-list/vue:
     dependencies:
       '@bouzu/shared':
