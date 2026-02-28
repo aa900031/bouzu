@@ -24,7 +24,7 @@
 		"@bouzu/vite-config": "workspace:*",
 		"@bouzu/vue-affix": "workspace:*",
 		"@bouzu/vue-scroller": "workspace:*",
-		"@bouzu/vue-truncate-list": "workspace:*",
+		"@bouzu/vue-truncate": "workspace:*",
 		"@bouzu/vue-virtualizer": "workspace:*",
 		"@bouzu/vue-zoomable": "workspace:*",
 		"@storybook/addon-docs": "^10.2.9",

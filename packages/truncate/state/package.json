@@ -1,5 +1,5 @@
 {
-	"name": "@bouzu/truncate-list",
+	"name": "@bouzu/truncate",
 	"version": "0.0.0",
 	"private": false,
 	"author": "zhong666 <hi@zhong666.me>",
@@ -8,7 +8,7 @@
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/aa900031/bouzu",
-		"directory": "packages/truncate-list/state"
+		"directory": "packages/truncate/state"
 	},
 	"bugs": {
 		"url": "https://github.com/aa900031/bouzu/issues"

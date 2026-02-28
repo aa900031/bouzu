@@ -1,5 +1,5 @@
 {
-	"name": "@bouzu/vue-truncate-list",
+	"name": "@bouzu/truncate-dom",
 	"version": "0.0.0",
 	"private": false,
 	"author": "zhong666 <hi@zhong666.me>",
@@ -8,7 +8,7 @@
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/aa900031/bouzu",
-		"directory": "packages/truncate-list/vue"
+		"directory": "packages/truncate/dom"
 	},
 	"bugs": {
 		"url": "https://github.com/aa900031/bouzu/issues"
@@ -44,29 +44,12 @@
 		"build": "tsdown",
 		"release": "release-it"
 	},
-	"peerDependencies": {
-		"@vue/composition-api": "^1.0.0",
-		"vue": "^2.6.12 || ^3.2.0"
-	},
-	"peerDependenciesMeta": {
-		"@vue/composition-api": {
-			"optional": true
-		},
-		"vue": {
-			"optional": true
-		}
-	},
 	"dependencies": {
 		"@bouzu/shared": "workspace:^",
-		"@bouzu/truncate-list": "workspace:^",
-		"@bouzu/truncate-list-dom": "workspace:^",
-		"@bouzu/vue-helper": "workspace:^",
-		"@vueuse/core": "^10.8.0",
-		"vue-demi": "latest"
+		"@bouzu/truncate": "workspace:^"
 	},
 	"devDependencies": {
 		"@bouzu/tsconfig": "workspace:*",
-		"@bouzu/tsdown-config": "workspace:*",
-		"vue": "^3.5.27"
+		"@bouzu/tsdown-config": "workspace:*"
 	}
 }

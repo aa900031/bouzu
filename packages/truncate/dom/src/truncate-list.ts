@@ -1,6 +1,6 @@
-import type { TruncateListOptions as TruncateListStateOptions } from '@bouzu/truncate-list'
+import type { TruncateListOptions as TruncateListStateOptions } from '@bouzu/truncate'
 import { createSize } from '@bouzu/shared'
-import { TruncateList as TruncateListState } from '@bouzu/truncate-list'
+import { TruncateList as TruncateListState } from '@bouzu/truncate'
 
 export interface TruncateListOptions extends TruncateListStateOptions {}
 

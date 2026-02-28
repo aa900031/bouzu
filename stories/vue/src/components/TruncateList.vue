@@ -1,5 +1,5 @@
 <script setup lang="ts" generic="T">
-import { useTruncateList } from '@bouzu/vue-truncate-list'
+import { useTruncateList } from '@bouzu/vue-truncate'
 import { toRef, useTemplateRef } from 'vue'
 
 const props = defineProps<{

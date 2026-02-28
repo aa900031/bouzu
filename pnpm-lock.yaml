@@ -235,12 +235,12 @@ importers:
         specifier: workspace:*
         version: link:../../internals/tsdown-config
 
-  packages/truncate-list/dom:
+  packages/truncate/dom:
     dependencies:
       '@bouzu/shared':
         specifier: workspace:^
         version: link:../../shared
-      '@bouzu/truncate-list':
+      '@bouzu/truncate':
         specifier: workspace:^
         version: link:../state
     devDependencies:
@@ -251,7 +251,7 @@ importers:
         specifier: workspace:*
         version: link:../../../internals/tsdown-config
 
-  packages/truncate-list/state:
+  packages/truncate/state:
     dependencies:
       '@bouzu/shared':
         specifier: workspace:*
@@ -270,15 +270,15 @@ importers:
         specifier: workspace:*
         version: link:../../../internals/tsdown-config
 
-  packages/truncate-list/vue:
+  packages/truncate/vue:
     dependencies:
       '@bouzu/shared':
         specifier: workspace:^
         version: link:../../shared
-      '@bouzu/truncate-list':
+      '@bouzu/truncate':
         specifier: workspace:^
         version: link:../state
-      '@bouzu/truncate-list-dom':
+      '@bouzu/truncate-dom':
         specifier: workspace:^
         version: link:../dom
       '@bouzu/vue-helper':
@@ -553,9 +553,9 @@ importers:
       '@bouzu/vue-scroller':
         specifier: workspace:*
         version: link:../../packages/scroller/vue
-      '@bouzu/vue-truncate-list':
+      '@bouzu/vue-truncate':
         specifier: workspace:*
-        version: link:../../packages/truncate-list/vue
+        version: link:../../packages/truncate/vue
       '@bouzu/vue-virtualizer':
         specifier: workspace:*
         version: link:../../packages/virtualizer/vue

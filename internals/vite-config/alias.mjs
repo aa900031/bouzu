@@ -20,6 +20,7 @@ export default {
 	'@bouzu/affix-dom': fileURLToPath(new URL('../../packages/affix/dom/src', import.meta.url)),
 	'@bouzu/vue-affix': fileURLToPath(new URL('../../packages/affix/vue/src', import.meta.url)),
 
-	'@bouzu/truncate-list': fileURLToPath(new URL('../../packages/truncate-list/state/src', import.meta.url)),
-	'@bouzu/vue-truncate-list': fileURLToPath(new URL('../../packages/truncate-list/vue/src', import.meta.url)),
+	'@bouzu/truncate': fileURLToPath(new URL('../../packages/truncate/state/src', import.meta.url)),
+	'@bouzu/truncate-dom': fileURLToPath(new URL('../../packages/truncate/dom/src', import.meta.url)),
+	'@bouzu/vue-truncate': fileURLToPath(new URL('../../packages/truncate/vue/src', import.meta.url)),
 }
