@@ -13,7 +13,7 @@ export interface UseTruncateListProps<T> {
 	containerRef: Ref<HTMLElement | null>
 	measureRef: Ref<HTMLElement | null>
 	items: MaybeRef<T[]>
-	minVisibleItemsNum?: MaybeRef<number | undefined>
+	minVisibleCount?: MaybeRef<number | undefined>
 	collapseDirection?: MaybeRef<typeof TruncateCollapseDirection[keyof typeof TruncateCollapseDirection] | undefined>
 }
 
@@ -61,10 +61,10 @@ export function useTruncateList<T>(
 
 	async function calc() {
 		const items = unref(props.items)
-		const min = unref(props.minVisibleItemsNum) ?? 0
+		const minItemCount = unref(props.minVisibleCount) ?? 0
 		const collapseDirection = unref(props.collapseDirection) ?? TruncateCollapseDirection.End
 
-		let left = min
+		let left = minItemCount
 		let right = items.length
 
 		while (left < right) {
