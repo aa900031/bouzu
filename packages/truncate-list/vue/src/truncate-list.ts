@@ -1,4 +1,5 @@
-import type { TruncateCollapseDirectionValues } from '@bouzu/truncate-list'
+import type { TruncateListOptions } from '@bouzu/truncate-list-dom'
+import type { ToMaybeRefs } from '@bouzu/vue-helper'
 import type { MaybeRef } from '@vueuse/core'
 import type { Ref } from 'vue-demi'
 import { createSize } from '@bouzu/shared'
@@ -12,11 +13,11 @@ export const TruncateCollapseDirection = {
 	End: 'end',
 } as const
 
-export interface UseTruncateListProps<T> {
-	items: MaybeRef<T[]>
-	minVisibleCount?: MaybeRef<number | undefined>
-	collapseDirection?: MaybeRef<TruncateCollapseDirectionValues>
-}
+export type UseTruncateListProps<T>
+	= & ToMaybeRefs<TruncateListOptions>
+		& {
+			items: MaybeRef<T[]>
+		}
 
 export function useTruncateList<T>(
 	containerRef: Ref<HTMLElement | null>,
@@ -24,6 +25,7 @@ export function useTruncateList<T>(
 	props: UseTruncateListProps<T>,
 ) {
 	const truncateList = markRaw(new TruncateList<T>({
+		axis: unref(props.axis),
 		minVisibleCount: unref(props.minVisibleCount),
 		collapseDirection: unref(props.collapseDirection),
 	}))
@@ -51,6 +53,22 @@ export function useTruncateList<T>(
 	watch(() => unref(props.items), (val) => {
 		truncateList.state.items = val
 	}, { immediate: true })
+
+	watch(() => unref(props.axis), (value) => {
+		if (value == null)
+			return
+		truncateList.state.axis = value
+	})
+	watch(() => unref(props.minVisibleCount), (value) => {
+		if (value == null)
+			return
+		truncateList.state.minVisibleCount = value
+	})
+	watch(() => unref(props.collapseDirection), (value) => {
+		if (value == null)
+			return
+		truncateList.state.collapseDirection = value
+	})
 
 	watch(visibleItems, async () => {
 		await nextTick()

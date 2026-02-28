@@ -8,11 +8,13 @@ const props = defineProps<{
 
 const containerRef = useTemplateRef('container')
 const measureRef = useTemplateRef('measure')
-const { visibleItems, overflowItems, isOverflowing } = useTruncateList<T>({
+const { visibleItems, isOverflowing } = useTruncateList(
 	containerRef,
 	measureRef,
-	items: toRef(() => props.data),
-})
+	{
+		items: toRef(props, 'data'),
+	},
+)
 </script>
 
 <template>
@@ -20,26 +22,29 @@ const { visibleItems, overflowItems, isOverflowing } = useTruncateList<T>({
 		ref="container"
 		style="
 			display: flex;
-			align-items: center;
 			overflow: hidden;
 			list-style: none;
+			column-gap: 15px;
 		"
 	>
 		<li
 			v-for="item in visibleItems"
-			:key="(item as any)"
+			:key="item"
 		>
-			<slot :item="item" />
+			<button style="padding: 4px 12px;">
+				{{ item }}
+			</button>
 		</li>
-		<slot
+		<button
 			v-if="isOverflowing"
-			name="others"
-			:visible-items="visibleItems"
-			:overflow-items="overflowItems"
-		/>
+			style="padding: 4px 12px;"
+		>
+			...
+		</button>
 		<i
 			ref="measure"
 			style="
+				margin-left: -15px;
 				flex: 0 1 auto;
 				width: 1px;
 			"

@@ -1,8 +1,8 @@
-import type { TruncateListOptions } from '@bouzu/truncate-list'
+import type { TruncateListOptions as TruncateListStateOptions } from '@bouzu/truncate-list'
 import { createSize } from '@bouzu/shared'
 import { TruncateList as TruncateListState } from '@bouzu/truncate-list'
 
-export interface TruncateListProps extends TruncateListOptions {}
+export interface TruncateListOptions extends TruncateListStateOptions {}
 
 export class TruncateList<T> {
 	#state: TruncateListState<T>
@@ -14,7 +14,7 @@ export class TruncateList<T> {
 	#unbindMeasureSize: (() => void) | undefined
 
 	constructor(
-		props?: TruncateListProps,
+		props?: TruncateListOptions,
 	) {
 		this.#state = new TruncateListState<T>(props)
 	}

@@ -46,7 +46,7 @@ export class TruncateList<T> {
 	constructor(
 		props?: TruncateListOptions,
 	) {
-		this.#axis = Axis.X
+		this.#axis = props?.axis ?? Axis.X
 		this.minVisibleCount = props?.minVisibleCount ?? 0
 		this.collapseDirection = props?.collapseDirection ?? TruncateCollapseDirection.End
 	}
