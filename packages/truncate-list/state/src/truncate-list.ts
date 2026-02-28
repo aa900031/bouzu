@@ -106,7 +106,11 @@ export class TruncateList<T> {
 		return this.#overflowItems
 	}
 
-	public trigger() {
+	destroy() {
+		this.#emitter.all.clear()
+	}
+
+	trigger() {
 		if (this.containerSize == null)
 			return
 

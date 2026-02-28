@@ -7,11 +7,13 @@ const width = ref(100)
 const data = Array.from({ length: 100 }).map((_, i) => i + 1)
 const containerRef = useTemplateRef('container')
 const measureRef = useTemplateRef('measure')
-const { visibleItems, isOverflowing } = useTruncateList<number>({
+const { visibleItems, isOverflowing } = useTruncateList(
 	containerRef,
 	measureRef,
-	items: data,
-})
+	{
+		items: data,
+	},
+)
 </script>
 
 <template>

@@ -235,6 +235,22 @@ importers:
         specifier: workspace:*
         version: link:../../internals/tsdown-config
 
+  packages/truncate-list/dom:
+    dependencies:
+      '@bouzu/shared':
+        specifier: workspace:^
+        version: link:../../shared
+      '@bouzu/truncate-list':
+        specifier: workspace:^
+        version: link:../state
+    devDependencies:
+      '@bouzu/tsconfig':
+        specifier: workspace:*
+        version: link:../../../internals/tsconfig
+      '@bouzu/tsdown-config':
+        specifier: workspace:*
+        version: link:../../../internals/tsdown-config
+
   packages/truncate-list/state:
     dependencies:
       '@bouzu/shared':
@@ -262,6 +278,9 @@ importers:
       '@bouzu/truncate-list':
         specifier: workspace:^
         version: link:../state
+      '@bouzu/truncate-list-dom':
+        specifier: workspace:^
+        version: link:../dom
       '@bouzu/vue-helper':
         specifier: workspace:^
         version: link:../../utils/vue-helper
