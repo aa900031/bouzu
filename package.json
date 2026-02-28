@@ -25,17 +25,17 @@
 	},
 	"devDependencies": {
 		"@aa900031/eslint-config": "^6.0.0",
-		"@aa900031/release-it-config": "^0.1.0",
+		"@aa900031/release-it-config": "^0.1.1",
 		"@types/mockjs": "^1.0.10",
-		"@types/node": "^22.19.10",
+		"@types/node": "^22.19.11",
 		"@vitest/coverage-istanbul": "^4.0.18",
-		"eslint": "^9.39.2",
-		"happy-dom": "^20.6.1",
+		"eslint": "^9.39.3",
+		"happy-dom": "^20.7.0",
 		"mockjs": "^1.1.0",
 		"npm-run-all2": "^8.0.4",
 		"release-it": "^19.2.4",
 		"tsdown": "^0.20.3",
-		"turbo": "^2.8.9",
+		"turbo": "^2.8.10",
 		"typescript": "^5.9.3",
 		"vitest": "^4.0.18"
 	}
