@@ -25,6 +25,8 @@ type Events<T> = {
 	}
 }
 
+const MEASURE_SIZE = 0.8
+
 export class TruncateList<T> {
 	#emitter = mitt<Events<T>>()
 	on = this.#emitter.on
@@ -39,9 +41,7 @@ export class TruncateList<T> {
 	#overflowItems: T[] = []
 	#containerSize: Size | undefined = undefined
 	#measureSize: Size | undefined = undefined
-	#prevContainerValue: number | undefined
-	#prevMeasureValue: number | undefined
-	#currentRight: number | undefined
+	#calc: { left: number, right: number, mid: number } | undefined
 
 	constructor(
 		props?: TruncateListOptions,
@@ -57,6 +57,7 @@ export class TruncateList<T> {
 
 	set items(value: T[]) {
 		this.#items = value
+		this.#calc = undefined
 		this.trigger()
 	}
 
@@ -69,6 +70,7 @@ export class TruncateList<T> {
 			return
 
 		this.#containerSize = value
+		this.#calc = undefined
 		this.trigger()
 	}
 
@@ -77,11 +79,10 @@ export class TruncateList<T> {
 	}
 
 	set measureSize(value) {
-		if (this.#measureSize && value && checkSizeEqual(this.#measureSize, value))
-			return
-
 		this.#measureSize = value
-		this.trigger()
+		if (this.#calc) {
+			this.trigger()
+		}
 	}
 
 	get axis() {
@@ -89,12 +90,11 @@ export class TruncateList<T> {
 	}
 
 	set axis(value) {
-		if (this.#axis !== value)
+		if (this.#axis === value)
 			return
 
-		this.#prevContainerValue = undefined
-		this.#prevMeasureValue = undefined
 		this.#axis = value
+		this.#calc = undefined
 		this.trigger()
 	}
 
@@ -107,47 +107,49 @@ export class TruncateList<T> {
 	}
 
 	public trigger() {
-		if (this.containerSize == null || this.measureSize == null)
+		if (this.containerSize == null)
 			return
 
-		const containerValue = getSizeByAxis(this.containerSize, this.axis)
-		const isChangedContainerValue = this.#prevContainerValue !== containerValue
-		const measureValue = getSizeByAxis(this.measureSize, this.axis)
-		const isChangedMeasureValue = this.#prevMeasureValue !== measureValue
-		if (!isChangedContainerValue && !isChangedMeasureValue) {
-			this.#currentRight = undefined
-			return
+		if (this.#calc == null) {
+			this.#calc = {
+				left: this.minVisibleCount,
+				right: this.items.length,
+				mid: 0,
+			}
+		}
+		else if (this.measureSize) {
+			const measureValue = getSizeByAxis(this.measureSize, this.axis)
+			if (measureValue >= MEASURE_SIZE) {
+				this.#calc.left = this.#calc.mid
+			}
+			else {
+				this.#calc.right = this.#calc.mid - 1
+			}
 		}
 
-		let left = this.minVisibleCount
-		let right = this.#currentRight ?? this.items.length
-		const mid = Math.ceil((left + right) / 2)
-		if (measureValue >= 0.8) {
-			left = mid
+		if (this.#calc.left < this.#calc.right) {
+			this.#calc.mid = Math.ceil((this.#calc.left + this.#calc.right) / 2)
+			this.#updateItems(this.#calc.mid)
 		}
 		else {
-			right = mid - 1
+			this.#updateItems(this.#calc.left)
+			this.#calc = undefined
 		}
-		this.#currentRight = right
+	}
 
+	#updateItems(count: number) {
 		switch (this.collapseDirection) {
 			case TruncateCollapseDirection.Start:
-				this.#visibleItems = this.items.slice(this.items.length - left)
-				this.#emitter.emit(TruncateListEvent.ChangeVisibleItems, { value: this.#visibleItems })
-				this.#overflowItems = this.items.slice(this.#visibleItems.length)
-				this.#emitter.emit(TruncateListEvent.ChangeOverflowItems, { value: this.#overflowItems })
+				this.#visibleItems = this.items.slice(this.items.length - count + 1)
+				this.#overflowItems = this.items.slice(0, this.items.length - count + 1)
 				break
 			case TruncateCollapseDirection.End:
-				this.#visibleItems = this.items.slice(0, left)
-				this.#emitter.emit(TruncateListEvent.ChangeVisibleItems, { value: this.#visibleItems })
-				this.#overflowItems = this.items.slice(this.#visibleItems.length)
-				this.#emitter.emit(TruncateListEvent.ChangeOverflowItems, { value: this.#overflowItems })
+				this.#visibleItems = this.items.slice(0, count)
+				this.#overflowItems = this.items.slice(count)
 				break
 		}
 
-		if (isChangedContainerValue)
-			this.#prevContainerValue = containerValue
-		if (isChangedMeasureValue)
-			this.#prevMeasureValue = measureValue
+		this.#emitter.emit(TruncateListEvent.ChangeVisibleItems, { value: this.#visibleItems })
+		this.#emitter.emit(TruncateListEvent.ChangeOverflowItems, { value: this.#overflowItems })
 	}
 }

@@ -259,6 +259,9 @@ importers:
       '@bouzu/shared':
         specifier: workspace:^
         version: link:../../shared
+      '@bouzu/truncate-list':
+        specifier: workspace:^
+        version: link:../state
       '@bouzu/vue-helper':
         specifier: workspace:^
         version: link:../../utils/vue-helper

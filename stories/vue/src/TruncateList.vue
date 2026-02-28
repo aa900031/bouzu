@@ -51,6 +51,7 @@ const { visibleItems, isOverflowing } = useTruncateList<number>({
 		<i
 			ref="measure"
 			style="
+				margin-left: -15px;
 				flex: 0 1 auto;
 				width: 1px;
 			"

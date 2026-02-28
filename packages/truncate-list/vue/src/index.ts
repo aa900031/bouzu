@@ -4,8 +4,8 @@ import type { Ref } from 'vue-demi'
 import { createSize } from '@bouzu/shared'
 import { TruncateList } from '@bouzu/truncate-list'
 import { eventRef } from '@bouzu/vue-helper'
-import { useElementSize } from '@vueuse/core'
-import { computed, shallowReadonly, unref, watch } from 'vue-demi'
+import { unrefElement, useElementSize } from '@vueuse/core'
+import { computed, nextTick, shallowReadonly, unref, watch } from 'vue-demi'
 
 export const TruncateCollapseDirection = {
 	Start: 'start',
@@ -79,6 +79,15 @@ export function useTruncateList<T>(
 			state.measureSize = val
 		},
 	)
+
+	watch(visibleItems, async () => {
+		await nextTick()
+		const measureEl = unrefElement(props.measureRef)
+		if (!measureEl)
+			return
+		const clientRect = measureEl.getBoundingClientRect()
+		state.measureSize = createSize(clientRect.width, clientRect.height)
+	})
 
 	return {
 		visibleItems: shallowReadonly(visibleItems),
