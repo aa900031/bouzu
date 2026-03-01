@@ -8,11 +8,6 @@ import { eventRef } from '@bouzu/vue-helper'
 import { unrefElement } from '@vueuse/core'
 import { computed, markRaw, nextTick, unref, watch } from 'vue-demi'
 
-export const TruncateCollapseDirection = {
-	Start: 'start',
-	End: 'end',
-} as const
-
 export type UseTruncateListProps<T>
 	= & ToMaybeRefs<TruncateListOptions>
 		& {
