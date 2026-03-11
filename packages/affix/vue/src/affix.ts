@@ -1,6 +1,7 @@
 import type { AffixAlignValues } from '@bouzu/affix'
 import type { AxisValue } from '@bouzu/shared'
 import type { MaybeRef } from '@vueuse/core'
+import type { Ref } from 'vue-demi'
 import { AffixEvent as AffixStateEvent } from '@bouzu/affix'
 import { Affix, AffixEvent } from '@bouzu/affix-dom'
 import { eventRef } from '@bouzu/vue-helper'
@@ -14,9 +15,16 @@ export interface UseAffixProps {
 	align?: MaybeRef<AffixAlignValues>
 }
 
+export interface UseAffixResult {
+	state: Affix['state']
+	fixed: Readonly<Ref<Affix['state']['fixed']>>
+	targetStyle: Readonly<Ref<Affix['targetStyle']>>
+	contentStyle: Readonly<Ref<Affix['contentStyle']>>
+}
+
 export function useAffix(
 	props: UseAffixProps,
-) {
+): UseAffixResult {
 	const affix = markRaw(new Affix({
 		axis: unref(props.axis),
 		align: unref(props.align),
@@ -76,6 +84,9 @@ export function useAffix(
 	})
 
 	return {
+		get state() {
+			return affix.state
+		},
 		fixed,
 		targetStyle,
 		contentStyle,
