@@ -2,6 +2,7 @@ import type { Point } from '@bouzu/shared'
 import type { ToMaybeRefs } from '@bouzu/vue-helper'
 import type { ZoomableProps as ZoomableDomProps } from '@bouzu/zoomable-dom'
 import type { MaybeRef } from '@vueuse/core'
+import type { Ref } from 'vue-demi'
 import { eventRef, unrefs } from '@bouzu/vue-helper'
 import { ZoomableEventName } from '@bouzu/zoomable'
 import { Zoomable } from '@bouzu/zoomable-dom'
@@ -14,11 +15,17 @@ export type ZoomableProps
 			disabled?: MaybeRef<boolean | undefined>
 		}
 
+export interface UseZoomableResult {
+	state: Zoomable['state']
+	zoom: Ref<Zoomable['state']['zoom']>
+	pan: Readonly<Ref<Zoomable['state']['pan']>>
+}
+
 export function useZoomable(
 	container: MaybeRef<HTMLElement | null | undefined>,
 	content: MaybeRef<HTMLElement | null | undefined>,
 	props?: ZoomableProps,
-) {
+): UseZoomableResult {
 	const zoomable = markRaw(new Zoomable(
 		unrefs(props ?? {}),
 	))
