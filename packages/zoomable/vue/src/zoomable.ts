@@ -91,9 +91,11 @@ export function useZoomable(
 	})
 
 	return {
-		state: zoomable.state,
 		zoom,
 		pan,
+		get state() {
+			return zoomable.state
+		},
 	}
 }
 
