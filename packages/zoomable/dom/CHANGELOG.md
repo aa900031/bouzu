@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
 
+## v0.3.1
+
+[compare changes](https://github.com/aa900031/bouzu/compare/@bouzu/zoomable-dom@0.3.0...${npm.name}@0.3.1)
+
+### pref
+
+-  **zoomable:** Use passive in touch event ([c952098](https://github.com/aa900031/bouzu/commit/c95209803d90c70f6db923dffcff9cdd10485a50))
+
+### 🩹 Fixes
+
+-  **zoomable:** Prevent touch too early ([9aa2858](https://github.com/aa900031/bouzu/commit/9aa2858bc73147f625dc9731e3797b5fc1fa2b6b))
+-  **zoomable:** Some mobile device will tirgger dbclick event with touch in same time ([b45f494](https://github.com/aa900031/bouzu/commit/b45f49496615e0fab6451bbd441931da688566ea))
+
+
+
+#### ❤️ Contributors
+
+- Zhong666 <aa900031@gmail.com>
+
 ## v0.3.0
 
 [compare changes](https://github.com/aa900031/bouzu/compare/@bouzu/zoomable-dom@0.2.0...${npm.name}@0.3.0)
