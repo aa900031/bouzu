@@ -104,7 +104,6 @@ export class Zoomable {
 	}
 
 	#handleTouchStart = (event: TouchEvent) => {
-		event.preventDefault()
 		this.#state.handlers.TouchStart({
 			touches: [...event.touches].map(item => ({
 				client: createPoint(
