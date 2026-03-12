@@ -9,10 +9,13 @@ export type ZoomableProps = Omit<
 	| 'getElementStyleSize'
 >
 
+const TOUCH_DB_CLICK_GUARD = 300
+
 export class Zoomable {
 	#container: HTMLElement | undefined
 	#content: HTMLElement | undefined
 	#state: ZoomableState
+	#lastTouchStartTime = 0
 
 	constructor(props?: ZoomableProps) {
 		this.#state = new ZoomableState({
@@ -104,6 +107,8 @@ export class Zoomable {
 	}
 
 	#handleTouchStart = (event: TouchEvent) => {
+		this.#lastTouchStartTime = Date.now()
+
 		this.#state.handlers.TouchStart({
 			touches: [...event.touches].map(item => ({
 				client: createPoint(
@@ -219,6 +224,17 @@ export class Zoomable {
 	}
 
 	#handleDoubleClick = (event: MouseEvent) => {
+		const isTouchGenerated = (event as MouseEvent & {
+			sourceCapabilities?: {
+				firesTouchEvents?: boolean
+			}
+		}).sourceCapabilities?.firesTouchEvents === true
+		if (isTouchGenerated)
+			return
+
+		if (Date.now() - this.#lastTouchStartTime < TOUCH_DB_CLICK_GUARD)
+			return
+
 		this.#state.handlers.DoubleClick({
 			client: createPoint(
 				event.clientX,
