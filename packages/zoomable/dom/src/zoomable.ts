@@ -60,10 +60,10 @@ export class Zoomable {
 		this.stop()
 
 		if (this.#container) {
-			this.#container.addEventListener('touchstart', this.#handleTouchStart)
-			this.#container.addEventListener('touchmove', this.#handleTouchMove)
-			this.#container.addEventListener('touchend', this.#handleTouchEnd)
-			this.#container.addEventListener('touchcancel', this.#handleTouchEnd)
+			this.#container.addEventListener('touchstart', this.#handleTouchStart, { passive: true })
+			this.#container.addEventListener('touchmove', this.#handleTouchMove, { passive: true })
+			this.#container.addEventListener('touchend', this.#handleTouchEnd, { passive: true })
+			this.#container.addEventListener('touchcancel', this.#handleTouchEnd, { passive: true })
 			this.#container.addEventListener('mousedown', this.#handleMouseDown)
 			this.#container.addEventListener('mousemove', this.#handleMouseMove)
 			this.#container.addEventListener('mouseup', this.#handleMouseUp)
