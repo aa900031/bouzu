@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
 
+## v0.3.1
+
+[compare changes](https://github.com/aa900031/bouzu/compare/@bouzu/vue-zoomable@0.3.0...${npm.name}@0.3.1)
+
+### 🚀 Enhancements
+
+-  **zoomable:** Return state getter ([9895d73](https://github.com/aa900031/bouzu/commit/9895d73eb272884d192b9f0fe6669c68e2d6a519))
+
+### 🩹 Fixes
+
+-  **zoomable:** Types for result ([077dcb1](https://github.com/aa900031/bouzu/commit/077dcb1d597b2e0b3d909a7fce02bc4dbe04e920))
+
+
+
+#### ❤️ Contributors
+
+- Zhong666 <aa900031@gmail.com>
+
 ## v0.3.0
 
 [compare changes](https://github.com/aa900031/bouzu/compare/@bouzu/vue-zoomable@0.2.0...${npm.name}@0.3.0)
