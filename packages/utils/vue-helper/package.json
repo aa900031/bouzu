@@ -58,7 +58,7 @@
 	},
 	"dependencies": {
 		"@bouzu/shared": "workspace:^",
-		"@vueuse/shared": "^10.8.0",
+		"@vueuse/shared": "^10.11.1",
 		"vue-demi": "latest"
 	},
 	"devDependencies": {

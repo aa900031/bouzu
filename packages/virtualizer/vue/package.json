@@ -61,7 +61,7 @@
 		"@bouzu/virtualizer": "workspace:^",
 		"@bouzu/virtualizer-dom": "workspace:^",
 		"@bouzu/vue-helper": "workspace:^",
-		"@vueuse/core": "^10.8.0",
+		"@vueuse/core": "^10.11.1",
 		"dequal": "^2.0.3",
 		"klona": "^2.0.6",
 		"vue-demi": "latest"
