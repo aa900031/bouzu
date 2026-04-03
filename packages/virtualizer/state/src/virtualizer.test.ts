@@ -71,7 +71,7 @@ describe('virtualizer', () => {
 		}).mockImplementationOnce(({ value }) => {
 			const views = Array.from(value)
 			expect(views[0].data.index).toBe(90)
-			expect(views[views.length - 1].data.index).toBe(100)
+			expect(views.at(-1).data.index).toBe(100)
 			resolve()
 		})
 
