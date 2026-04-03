@@ -110,7 +110,7 @@ export class Zoomable {
 		this.#lastTouchStartTime = Date.now()
 
 		this.#state.handlers.TouchStart({
-			touches: [...event.touches].map(item => ({
+			touches: Array.from(event.touches, item => ({
 				client: createPoint(
 					item.clientX,
 					item.clientY,
@@ -121,7 +121,7 @@ export class Zoomable {
 
 	#handleTouchMove = (event: TouchEvent) => {
 		this.#state.handlers.TouchMove({
-			touches: [...event.touches].map(item => ({
+			touches: Array.from(event.touches, item => ({
 				client: createPoint(
 					item.clientX,
 					item.clientY,
@@ -132,7 +132,7 @@ export class Zoomable {
 
 	#handleTouchEnd = (event: TouchEvent) => {
 		this.#state.handlers.TouchEnd({
-			touches: [...event.touches].map(item => ({
+			touches: Array.from(event.touches, item => ({
 				client: createPoint(
 					item.clientX,
 					item.clientY,
