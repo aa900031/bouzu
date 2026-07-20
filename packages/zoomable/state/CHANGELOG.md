@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
 
+## v0.3.1
+
+[compare changes](https://github.com/aa900031/bouzu/compare/@bouzu/zoomable@0.3.0...${npm.name}@0.3.1)
+
+### 🩹 Fixes
+
+-  **zoomable:** Zoom with correct center ([178847a](https://github.com/aa900031/bouzu/commit/178847aca0bc3d70513c7c747847dde63ab2d172))
+
+
+
+#### ❤️ Contributors
+
+- Zhong666 <aa900031@gmail.com>
+
 ## v0.3.0
 
 [compare changes](https://github.com/aa900031/bouzu/compare/@bouzu/zoomable@0.2.0...${npm.name}@0.3.0)
