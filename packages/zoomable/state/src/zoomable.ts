@@ -62,7 +62,7 @@ export class Zoomable {
 	#pan: Point
 	#startZoom: number
 	#startPan: Point
-	#timeoutWheel: ReturnType<typeof setTimeout> | null
+	#timeoutWheel: number | null
 	#transitionZoomPan: TransitionRunner
 
 	on: Emitter<ZoomableEvents>['on'] = this.#emitter.on
@@ -296,17 +296,20 @@ export class Zoomable {
 			}
 
 			const zoomCenter = this.#gesture.zoomCenter
+			const startZoomCenter = this.#gesture.startZoomCenter
 			const containerRect = this.#props.getContainerBoundingClientRect()
 			const centerX = containerRect.width / 2
 			const centerY = containerRect.height / 2
 
 			const relativeCenterX = zoomCenter.x - centerX
 			const relativeCenterY = zoomCenter.y - centerY
+			const relativeStartCenterX = startZoomCenter.x - centerX
+			const relativeStartCenterY = startZoomCenter.y - centerY
 
 			const actualZoomFactor = newZoom / this.#startZoom
 			const newPan = {
-				x: relativeCenterX - (relativeCenterX - this.#startPan.x) * actualZoomFactor,
-				y: relativeCenterY - (relativeCenterY - this.#startPan.y) * actualZoomFactor,
+				x: relativeCenterX - (relativeStartCenterX - this.#startPan.x) * actualZoomFactor,
+				y: relativeCenterY - (relativeStartCenterY - this.#startPan.y) * actualZoomFactor,
 			}
 
 			this.#currentZoom = newZoom
@@ -328,8 +331,8 @@ export class Zoomable {
 		const centerX = rect.width / 2
 		const centerY = rect.height / 2
 		const rel = createPoint(
-			event.client.x - centerX,
-			event.client.y - centerY,
+			event.client.x - rect.x - centerX,
+			event.client.y - rect.y - centerY,
 		)
 		const targetZoom = this.#currentZoom > this.#initial ? this.#initial : this.#max
 		this.updateTo(targetZoom, rel)
@@ -351,8 +354,8 @@ export class Zoomable {
 				const centerY = rect.height / 2
 
 				const zoomCenter = createPoint(
-					event.client.x - centerX,
-					event.client.y - centerY,
+					event.client.x - rect.x - centerX,
+					event.client.y - rect.y - centerY,
 				)
 				const zoomFactor = newZoom / this.#currentZoom
 				const newPan = createPoint(
@@ -366,7 +369,7 @@ export class Zoomable {
 				this.#applyChanges()
 
 				if (this.#timeoutWheel)
-					clearTimeout(this.#timeoutWheel)
+					globalThis.clearTimeout(this.#timeoutWheel)
 
 				this.#timeoutWheel = globalThis.setTimeout(() => {
 					this.#correctZoomAndPan()

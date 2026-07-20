@@ -100,6 +100,12 @@ export class Gesture {
 		return 0
 	}
 
+	public get startZoomCenter(): Point {
+		if (this.#numActivePoints > 1)
+			return getPointCenter(this.#startP1, this.#startP2)
+		return clonePoint(this.#startP1)
+	}
+
 	public get zoomCenter(): Point {
 		if (this.#numActivePoints > 1)
 			return getPointCenter(this.#p1, this.#p2)

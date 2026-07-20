@@ -12,6 +12,7 @@ export default defineConfig({
 		projects: [
 			'packages/virtualizer/state',
 			'packages/utils/vue-helper',
+			'packages/zoomable/state',
 		],
 		outputFile: {
 			junit: './reports/junit.xml',
