@@ -30,8 +30,5 @@ jobs:
       - name: Build dist
         run: pnpm run build:pkgs
 
-      - name: Update npm
-        run: npm install -g npm@latest
-
       - name: Publish to npm
         run: pnpm run publish:pkgs
