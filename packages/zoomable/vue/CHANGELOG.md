@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
 
+## v0.4.0
+
+[compare changes](https://github.com/aa900031/bouzu/compare/@bouzu/vue-zoomable@0.3.1...${npm.name}@0.4.0)
+
+### 🚀 Enhancements
+
+-  **zoomable:** Add state: paning, zooming ([f864d58](https://github.com/aa900031/bouzu/commit/f864d58f68fb8651a57b259e8fb894d781cbadcf))
+
+
+
+#### ❤️ Contributors
+
+- Zhong666 <aa900031@gmail.com>
+
 ## v0.3.1
 
 [compare changes](https://github.com/aa900031/bouzu/compare/@bouzu/vue-zoomable@0.3.0...${npm.name}@0.3.1)
