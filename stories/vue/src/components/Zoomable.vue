@@ -34,8 +34,8 @@ defineExpose({
 			<slot
 				:zoom
 				:pan
-				:isPaning
-				:isZooming
+				:is-paning
+				:is-zooming
 			/>
 		</div>
 	</div>
