@@ -61,7 +61,7 @@
 		"@bouzu/vue-helper": "workspace:^",
 		"@bouzu/zoomable": "workspace:^",
 		"@bouzu/zoomable-dom": "workspace:^",
-		"@vueuse/core": "^10.8.0",
+		"@vueuse/core": "^10.11.1",
 		"vue-demi": "latest"
 	},
 	"devDependencies": {
