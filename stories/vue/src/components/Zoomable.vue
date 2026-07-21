@@ -8,7 +8,7 @@ const props = defineProps<{
 
 const container = ref<HTMLElement | null>(null)
 const content = ref<HTMLElement | null>(null)
-const { zoom, pan, state } = useZoomable(container, content, {
+const { zoom, pan, state, isPaning, isZooming } = useZoomable(container, content, {
 	min: 1,
 	disabled: toRef(() => props.disabled),
 })
@@ -31,7 +31,12 @@ defineExpose({
 				'transition-delay': '0',
 			}"
 		>
-			<slot />
+			<slot
+				:zoom
+				:pan
+				:isPaning
+				:isZooming
+			/>
 		</div>
 	</div>
 </template>

@@ -19,6 +19,8 @@ export interface UseZoomableResult {
 	state: Zoomable['state']
 	zoom: Ref<Zoomable['state']['zoom']>
 	pan: Readonly<Ref<Zoomable['state']['pan']>>
+	isPaning: Readonly<Ref<boolean>>
+	isZooming: Readonly<Ref<boolean>>
 }
 
 export function useZoomable(
@@ -45,6 +47,20 @@ export function useZoomable(
 			return () => zoomable.state.off(ZoomableEventName.ChangePan, handler)
 		},
 		get: e => e ?? zoomable.state.pan,
+	})
+	const [isPaning] = eventRef<boolean, (value: boolean) => void>({
+		register: (handler) => {
+			zoomable.state.on(ZoomableEventName.ChangeIsPaning, handler)
+			return () => zoomable.state.off(ZoomableEventName.ChangeIsPaning, handler)
+		},
+		get: e => e ?? zoomable.state.isPaning,
+	})
+	const [isZooming] = eventRef<boolean, (value: boolean) => void>({
+		register: (handler) => {
+			zoomable.state.on(ZoomableEventName.ChangeIsZooming, handler)
+			return () => zoomable.state.off(ZoomableEventName.ChangeIsZooming, handler)
+		},
+		get: e => e ?? zoomable.state.isZooming,
 	})
 
 	watch(() => [
@@ -93,6 +109,8 @@ export function useZoomable(
 	return {
 		zoom,
 		pan,
+		isPaning,
+		isZooming,
 		get state() {
 			return zoomable.state
 		},

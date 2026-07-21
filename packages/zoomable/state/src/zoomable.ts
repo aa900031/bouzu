@@ -24,12 +24,24 @@ export interface ZoomableProps {
 export const ZoomableEventName = {
 	ChangeZoom: 'change-zoom',
 	ChangePan: 'change-pan',
+	ChangeIsPaning: 'change-is-paning',
+	ChangeIsZooming: 'change-is-zooming',
+	PanStart: 'pan-start',
+	PanEnd: 'pan-end',
+	ZoomStart: 'zoom-start',
+	ZoomEnd: 'zoom-end',
 } as const
 
 // eslint-disable-next-line ts/consistent-type-definitions
 export type ZoomableEvents = {
 	[ZoomableEventName.ChangePan]: Point
 	[ZoomableEventName.ChangeZoom]: number
+	[ZoomableEventName.ChangeIsPaning]: boolean
+	[ZoomableEventName.ChangeIsZooming]: boolean
+	[ZoomableEventName.PanStart]: void
+	[ZoomableEventName.PanEnd]: void
+	[ZoomableEventName.ZoomStart]: void
+	[ZoomableEventName.ZoomEnd]: void
 }
 
 export interface WheelEventPayload {
@@ -57,12 +69,15 @@ export class Zoomable {
 	#enablePan: boolean
 	#enablePinch: boolean
 	#enableWheel: boolean
+	#isPaning: boolean
+	#isZooming: boolean
 
 	#currentZoom: number
 	#pan: Point
 	#startZoom: number
 	#startPan: Point
-	#timeoutWheel: number | null
+	#timeoutPanWheel: number | null
+	#timeoutZoomWheel: number | null
 	#transitionZoomPan: TransitionRunner
 
 	on: Emitter<ZoomableEvents>['on'] = this.#emitter.on
@@ -103,12 +118,15 @@ export class Zoomable {
 		this.#enablePan = props.enablePan ?? true
 		this.#enablePinch = props.enablePinch ?? true
 		this.#enableWheel = props.enableWheel ?? true
+		this.#isPaning = false
+		this.#isZooming = false
 
 		this.#currentZoom = this.#initial
 		this.#pan = createPoint()
 		this.#startZoom = this.#currentZoom
 		this.#startPan = createPoint()
-		this.#timeoutWheel = null
+		this.#timeoutPanWheel = null
+		this.#timeoutZoomWheel = null
 		this.#transitionZoomPan = runNoopTransition()
 
 		this.handlers = {
@@ -164,6 +182,8 @@ export class Zoomable {
 	public destroy() {
 		this.#kinetic.cancel()
 		this.#transitionZoomPan.cancel()
+		globalThis.clearTimeout(this.#timeoutPanWheel ?? undefined)
+		globalThis.clearTimeout(this.#timeoutZoomWheel ?? undefined)
 		this.#emitter.all.clear()
 	}
 
@@ -177,6 +197,14 @@ export class Zoomable {
 
 	get pan() {
 		return this.#pan
+	}
+
+	get isPaning() {
+		return this.#isPaning
+	}
+
+	get isZooming() {
+		return this.#isZooming
 	}
 
 	get min() {
@@ -217,6 +245,13 @@ export class Zoomable {
 
 	set enablePan(val: boolean) {
 		this.#enablePan = val
+
+		if (!val) {
+			this.#kinetic.cancel()
+			globalThis.clearTimeout(this.#timeoutPanWheel ?? undefined)
+			this.#timeoutPanWheel = null
+			this.#updateIsPaning(false)
+		}
 	}
 
 	get enablePinch() {
@@ -225,6 +260,12 @@ export class Zoomable {
 
 	set enablePinch(val: boolean) {
 		this.#enablePinch = val
+
+		if (!val) {
+			globalThis.clearTimeout(this.#timeoutZoomWheel ?? undefined)
+			this.#timeoutZoomWheel = null
+			this.#updateIsZooming(false)
+		}
 	}
 
 	get enableWheel() {
@@ -233,6 +274,20 @@ export class Zoomable {
 
 	set enableWheel(val: boolean) {
 		this.#enableWheel = val
+
+		if (!val) {
+			if (this.#timeoutPanWheel) {
+				globalThis.clearTimeout(this.#timeoutPanWheel)
+				this.#timeoutPanWheel = null
+				this.#updateIsPaning(false)
+			}
+
+			if (this.#timeoutZoomWheel) {
+				globalThis.clearTimeout(this.#timeoutZoomWheel)
+				this.#timeoutZoomWheel = null
+				this.#updateIsZooming(false)
+			}
+		}
 	}
 
 	#handleDragStart = () => {
@@ -241,6 +296,9 @@ export class Zoomable {
 
 		this.#startPan = clonePoint(this.#pan)
 		this.#kinetic.start()
+
+		if (this.#enablePan)
+			this.#updateIsPaning(true)
 	}
 
 	#handleDragChange = () => {
@@ -258,10 +316,15 @@ export class Zoomable {
 	}
 
 	#handleDragEnd = () => {
-		if (!this.#enablePan)
+		if (!this.#isPaning)
 			return
 
-		this.#kinetic.stop()
+		if (this.#enablePan)
+			this.#kinetic.stop()
+		else
+			this.#kinetic.cancel()
+
+		this.#updateIsPaning(false)
 	}
 
 	#handleZoomStart = () => {
@@ -270,6 +333,9 @@ export class Zoomable {
 
 		this.#startZoom = this.#currentZoom
 		this.#startPan = clonePoint(this.#pan)
+
+		if (this.#enablePinch)
+			this.#updateIsZooming(true)
 	}
 
 	#handleZoomChange = () => {
@@ -321,7 +387,11 @@ export class Zoomable {
 	}
 
 	#handleZoomEnd = () => {
+		if (!this.#isZooming)
+			return
+
 		this.#correctZoomAndPan()
+		this.#updateIsZooming(false)
 	}
 
 	#handleDoubleClick = (
@@ -345,6 +415,7 @@ export class Zoomable {
 		this.#kinetic.cancel()
 
 		if (event.withCtrl) {
+			this.#updateIsZooming(true)
 			const delta = event.delta.y > 0 ? -0.1 : 0.1
 			const newZoom = clamp(this.#currentZoom + delta, this.#min, this.#max)
 
@@ -367,15 +438,14 @@ export class Zoomable {
 				this.#pan = newPan
 				this.#panBounds.update(this.#currentZoom)
 				this.#applyChanges()
-
-				if (this.#timeoutWheel)
-					globalThis.clearTimeout(this.#timeoutWheel)
-
-				this.#timeoutWheel = globalThis.setTimeout(() => {
-					this.#correctZoomAndPan()
-					this.#timeoutWheel = null
-				}, 150)
 			}
+
+			globalThis.clearTimeout(this.#timeoutZoomWheel ?? undefined)
+			this.#timeoutZoomWheel = globalThis.setTimeout(() => {
+				this.#correctZoomAndPan()
+				this.#updateIsZooming(false)
+				this.#timeoutZoomWheel = null
+			}, 150)
 		}
 		else {
 			const dragSpeed = 1.0
@@ -388,10 +458,43 @@ export class Zoomable {
 				this.#pan.x - delta.x,
 				this.#pan.y - delta.y,
 			)
+			const correctedPan = this.#panBounds.getCorrectPan(newPan)
 
-			this.#pan = this.#panBounds.getCorrectPan(newPan)
+			if (checkPointEqualWithTolerance(correctedPan, this.#pan)) {
+				globalThis.clearTimeout(this.#timeoutPanWheel ?? undefined)
+				this.#timeoutPanWheel = null
+				this.#updateIsPaning(false)
+				return
+			}
+
+			this.#updateIsPaning(true)
+			this.#pan = correctedPan
 			this.#applyChanges()
+
+			globalThis.clearTimeout(this.#timeoutPanWheel ?? undefined)
+			this.#timeoutPanWheel = globalThis.setTimeout(() => {
+				this.#updateIsPaning(false)
+				this.#timeoutPanWheel = null
+			}, 150)
 		}
+	}
+
+	#updateIsPaning(value: boolean) {
+		if (this.#isPaning === value)
+			return
+
+		this.#isPaning = value
+		this.#emitter.emit(ZoomableEventName.ChangeIsPaning, value)
+		this.#emitter.emit(value ? ZoomableEventName.PanStart : ZoomableEventName.PanEnd)
+	}
+
+	#updateIsZooming(value: boolean) {
+		if (this.#isZooming === value)
+			return
+
+		this.#isZooming = value
+		this.#emitter.emit(ZoomableEventName.ChangeIsZooming, value)
+		this.#emitter.emit(value ? ZoomableEventName.ZoomStart : ZoomableEventName.ZoomEnd)
 	}
 
 	#applyChanges() {
