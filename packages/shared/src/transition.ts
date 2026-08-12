@@ -12,6 +12,7 @@ export interface RunTransitionOptions {
 	duration?: number
 	onStarted?: () => void
 	onFinished?: () => void
+	onCancelled?: () => void
 	getTime?: GetTimeFn
 	raf?: RegisterRafMethods['raf']
 	caf?: RegisterRafMethods['caf']
@@ -30,6 +31,7 @@ export function runTransition(
 		onUpdate,
 		onStarted,
 		onFinished,
+		onCancelled,
 		raf = window.requestAnimationFrame,
 		caf = window.cancelAnimationFrame,
 		duration = 1000,
@@ -41,7 +43,7 @@ export function runTransition(
 
 	let _cancelRaf = noop
 	let _resolve = noop
-	let _canceled = false
+	let _done = false
 
 	const promise = new Promise<void>((resolve) => {
 		_resolve = resolve
@@ -49,7 +51,7 @@ export function runTransition(
 		onStarted?.()
 
 		const tick = (currentTime: number) => {
-			if (_canceled) {
+			if (_done) {
 				resolve()
 				return
 			}
@@ -64,6 +66,7 @@ export function runTransition(
 				_cancelRaf = registerRaf(tick, rafMethos)
 			}
 			else {
+				_done = true
 				onFinished?.()
 				resolve()
 			}
@@ -73,8 +76,12 @@ export function runTransition(
 	}) as TransitionRunner
 
 	promise.cancel = () => {
-		_canceled = true
+		if (_done)
+			return
+
+		_done = true
 		_cancelRaf()
+		onCancelled?.()
 		_resolve()
 	}
 

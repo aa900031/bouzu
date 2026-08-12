@@ -6,6 +6,7 @@ export interface KineticProps {
 	getBounds: (point: Point) => Point
 	onUpdate: (point: Point) => void
 	onFinished?: () => void
+	onCancelled?: () => void
 	minVelocity?: number
 	amplitude?: number
 	timeConstant?: number
@@ -76,6 +77,10 @@ export class Kinetic {
 		return this.#props.springRestThreshold ?? DEFAULT_SPRING_REST_THRESHOLD
 	}
 
+	get isRunning() {
+		return this.#animation !== null
+	}
+
 	start() {
 		this.#lastPoint = this.#props.getPoint()
 		this.#vx = this.#vy = 0
@@ -111,7 +116,14 @@ export class Kinetic {
 
 	cancel() {
 		this.#ticker?.()
-		this.#animation?.()
+		this.#ticker = null
+
+		if (!this.#animation)
+			return
+
+		this.#animation()
+		this.#animation = null
+		this.#props.onCancelled?.()
 	}
 
 	#track = () => {
@@ -171,6 +183,7 @@ export class Kinetic {
 		const overshootTotal = Math.abs(this.#x - finalBounded.x) + Math.abs(this.#y - finalBounded.y)
 
 		if (speed < this.#springRestThreshold && overshootTotal < this.#springRestThreshold) {
+			this.#animation = null
 			this.#props.onUpdate(finalBounded)
 			this.#props.onFinished?.()
 		}

@@ -1,13 +1,13 @@
 import { describe, expect, it, vi } from 'vitest'
 import { Zoomable, ZoomableEventName } from './zoomable'
 
-function createZoomable() {
+function createZoomable(animationDuration = 0) {
 	return new Zoomable({
 		getContainerBoundingClientRect: () => ({ x: 100, y: 50, width: 600, height: 400 }),
 		getElementStyleSize: () => ({ width: 400, height: 300 }),
 		min: 1,
 		max: 3,
-		animationDuration: 0,
+		animationDuration,
 	})
 }
 
@@ -66,6 +66,75 @@ describe('zoomable focal point', () => {
 })
 
 describe('zoomable interaction events', () => {
+	it('tracks programmatic transformations', () => {
+		vi.useFakeTimers()
+		const zoomable = createZoomable(100)
+		const animatingStates: boolean[] = []
+		const transformingStates: boolean[] = []
+		zoomable.on(ZoomableEventName.ChangeIsAnimating, value => animatingStates.push(value))
+		zoomable.on(ZoomableEventName.ChangeIsTransforming, value => transformingStates.push(value))
+
+		zoomable.updateTo(2)
+		expect(zoomable.isAnimating).toBe(true)
+		expect(zoomable.isTransforming).toBe(true)
+		vi.runAllTimers()
+
+		expect(zoomable.isAnimating).toBe(false)
+		expect(zoomable.isTransforming).toBe(false)
+		expect(animatingStates).toEqual([true, false])
+		expect(transformingStates).toEqual([true, false])
+		vi.useRealTimers()
+	})
+
+	it('keeps animating true when a transition is replaced', () => {
+		vi.useFakeTimers()
+		const zoomable = createZoomable(100)
+		const states: boolean[] = []
+		zoomable.on(ZoomableEventName.ChangeIsAnimating, value => states.push(value))
+
+		zoomable.updateTo(2)
+		zoomable.updateTo(3)
+		vi.runAllTimers()
+
+		expect(states).toEqual([true, false])
+		vi.useRealTimers()
+	})
+
+	it('tracks transforming while pan or zoom is active', () => {
+		vi.useFakeTimers()
+		const zoomable = createZoomable()
+		const states: boolean[] = []
+		const interactingStates: boolean[] = []
+		zoomable.on(ZoomableEventName.ChangeIsTransforming, value => states.push(value))
+		zoomable.on(ZoomableEventName.ChangeIsInteracting, value => interactingStates.push(value))
+
+		expect(zoomable.isTransforming).toBe(false)
+		expect(zoomable.isInteracting).toBe(false)
+		for (let i = 0; i < 10; i++) {
+			zoomable.handlers.Wheel({
+				client: { x: 400, y: 250 },
+				delta: { x: 0, y: -1 },
+				withCtrl: true,
+			})
+		}
+		expect(zoomable.isTransforming).toBe(true)
+		zoomable.handlers.Wheel({
+			client: { x: 400, y: 250 },
+			delta: { x: 0, y: 1000 },
+			withCtrl: false,
+		})
+		expect(zoomable.isPaning).toBe(true)
+		expect(zoomable.isZooming).toBe(true)
+		expect(zoomable.isInteracting).toBe(true)
+		vi.advanceTimersByTime(150)
+
+		expect(zoomable.isTransforming).toBe(false)
+		expect(zoomable.isInteracting).toBe(false)
+		expect(states).toEqual([true, false])
+		expect(interactingStates).toEqual([true, false])
+		vi.useRealTimers()
+	})
+
 	it('emits pan start and end for a drag', () => {
 		const zoomable = createZoomable()
 		const events: string[] = []

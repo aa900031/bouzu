@@ -26,6 +26,9 @@ export const ZoomableEventName = {
 	ChangePan: 'change-pan',
 	ChangeIsPaning: 'change-is-paning',
 	ChangeIsZooming: 'change-is-zooming',
+	ChangeIsAnimating: 'change-is-animating',
+	ChangeIsInteracting: 'change-is-interacting',
+	ChangeIsTransforming: 'change-is-transforming',
 	PanStart: 'pan-start',
 	PanEnd: 'pan-end',
 	ZoomStart: 'zoom-start',
@@ -38,6 +41,9 @@ export type ZoomableEvents = {
 	[ZoomableEventName.ChangeZoom]: number
 	[ZoomableEventName.ChangeIsPaning]: boolean
 	[ZoomableEventName.ChangeIsZooming]: boolean
+	[ZoomableEventName.ChangeIsAnimating]: boolean
+	[ZoomableEventName.ChangeIsInteracting]: boolean
+	[ZoomableEventName.ChangeIsTransforming]: boolean
 	[ZoomableEventName.PanStart]: void
 	[ZoomableEventName.PanEnd]: void
 	[ZoomableEventName.ZoomStart]: void
@@ -71,6 +77,11 @@ export class Zoomable {
 	#enableWheel: boolean
 	#isPaning: boolean
 	#isZooming: boolean
+	#isInteracting: boolean
+	#isTransforming: boolean
+	#isAnimating: boolean
+	#isTransitionRunning: boolean
+	#isKineticRunning: boolean
 
 	#currentZoom: number
 	#pan: Point
@@ -79,6 +90,8 @@ export class Zoomable {
 	#timeoutPanWheel: number | null
 	#timeoutZoomWheel: number | null
 	#transitionZoomPan: TransitionRunner
+	// bumped on every #animateZoomAndPan so a replaced transition's onCancelled becomes a no-op
+	#transitionId = 0
 
 	on: Emitter<ZoomableEvents>['on'] = this.#emitter.on
 	off: Emitter<ZoomableEvents>['off'] = this.#emitter.off
@@ -107,6 +120,8 @@ export class Zoomable {
 				this.#pan = point
 				this.#applyChanges()
 			},
+			onFinished: () => this.#updateIsKineticRunning(false),
+			onCancelled: () => this.#updateIsKineticRunning(false),
 			rafFn: this.#props.rafFn,
 			cafFn: this.#props.cafFn,
 		})
@@ -120,6 +135,11 @@ export class Zoomable {
 		this.#enableWheel = props.enableWheel ?? true
 		this.#isPaning = false
 		this.#isZooming = false
+		this.#isInteracting = false
+		this.#isTransforming = false
+		this.#isAnimating = false
+		this.#isTransitionRunning = false
+		this.#isKineticRunning = false
 
 		this.#currentZoom = this.#initial
 		this.#pan = createPoint()
@@ -205,6 +225,18 @@ export class Zoomable {
 
 	get isZooming() {
 		return this.#isZooming
+	}
+
+	get isInteracting() {
+		return this.#isInteracting
+	}
+
+	get isTransforming() {
+		return this.#isTransforming
+	}
+
+	get isAnimating() {
+		return this.#isAnimating
 	}
 
 	get min() {
@@ -319,10 +351,14 @@ export class Zoomable {
 		if (!this.#isPaning)
 			return
 
-		if (this.#enablePan)
+		if (this.#enablePan) {
 			this.#kinetic.stop()
-		else
+			// set before clearing isPaning, so isTransforming never dips false between the two
+			this.#updateIsKineticRunning(this.#kinetic.isRunning)
+		}
+		else {
 			this.#kinetic.cancel()
+		}
 
 		this.#updateIsPaning(false)
 	}
@@ -479,6 +515,37 @@ export class Zoomable {
 		}
 	}
 
+	// isInteracting / isAnimating / isTransforming are ORs of the four flags below; each setter
+	// pushes into its dependents so the derived flags emit at most one change per edge.
+	#updateIsInteracting() {
+		const value = this.#isPaning || this.#isZooming
+		if (this.#isInteracting === value)
+			return
+
+		this.#isInteracting = value
+		this.#emitter.emit(ZoomableEventName.ChangeIsInteracting, value)
+		this.#updateIsTransforming()
+	}
+
+	#updateIsAnimating() {
+		const value = this.#isTransitionRunning || this.#isKineticRunning
+		if (this.#isAnimating === value)
+			return
+
+		this.#isAnimating = value
+		this.#emitter.emit(ZoomableEventName.ChangeIsAnimating, value)
+		this.#updateIsTransforming()
+	}
+
+	#updateIsTransforming() {
+		const value = this.#isInteracting || this.#isAnimating
+		if (this.#isTransforming === value)
+			return
+
+		this.#isTransforming = value
+		this.#emitter.emit(ZoomableEventName.ChangeIsTransforming, value)
+	}
+
 	#updateIsPaning(value: boolean) {
 		if (this.#isPaning === value)
 			return
@@ -486,6 +553,7 @@ export class Zoomable {
 		this.#isPaning = value
 		this.#emitter.emit(ZoomableEventName.ChangeIsPaning, value)
 		this.#emitter.emit(value ? ZoomableEventName.PanStart : ZoomableEventName.PanEnd)
+		this.#updateIsInteracting()
 	}
 
 	#updateIsZooming(value: boolean) {
@@ -495,6 +563,23 @@ export class Zoomable {
 		this.#isZooming = value
 		this.#emitter.emit(ZoomableEventName.ChangeIsZooming, value)
 		this.#emitter.emit(value ? ZoomableEventName.ZoomStart : ZoomableEventName.ZoomEnd)
+		this.#updateIsInteracting()
+	}
+
+	#updateIsTransitionRunning(value: boolean) {
+		if (this.#isTransitionRunning === value)
+			return
+
+		this.#isTransitionRunning = value
+		this.#updateIsAnimating()
+	}
+
+	#updateIsKineticRunning(value: boolean) {
+		if (this.#isKineticRunning === value)
+			return
+
+		this.#isKineticRunning = value
+		this.#updateIsAnimating()
 	}
 
 	#applyChanges() {
@@ -506,6 +591,20 @@ export class Zoomable {
 		targetZoom: number,
 		targetPan: Point,
 	) {
+		const transitionId = ++this.#transitionId
+		if (this.#animationDuration <= 0) {
+			this.#kinetic.cancel()
+			this.#transitionZoomPan.cancel()
+			this.#updateIsTransitionRunning(false)
+			this.#currentZoom = targetZoom
+			this.#pan = targetPan
+			this.#panBounds.update(this.#currentZoom)
+			this.#applyChanges()
+			return
+		}
+
+		// set before cancelling, so a kinetic-to-transition handoff never dips isAnimating false
+		this.#updateIsTransitionRunning(true)
 		this.#kinetic.cancel()
 		this.#transitionZoomPan.cancel()
 
@@ -524,6 +623,11 @@ export class Zoomable {
 				this.#currentZoom = startZoom + (targetZoom - startZoom) * progress
 				this.#panBounds.update(this.#currentZoom)
 				this.#applyChanges()
+			},
+			onFinished: () => this.#updateIsTransitionRunning(false),
+			onCancelled: () => {
+				if (transitionId === this.#transitionId)
+					this.#updateIsTransitionRunning(false)
 			},
 			raf: this.#props.rafFn,
 			caf: this.#props.cafFn,
