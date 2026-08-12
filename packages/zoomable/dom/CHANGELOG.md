@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
 
+## v0.4.0
+
+[compare changes](https://github.com/aa900031/bouzu/compare/@bouzu/zoomable-dom@0.3.1...${npm.name}@0.4.0)
+
+### 🏡 Chore
+
+-  **deps:** Update npm non-major develop dependencies (#46) ([cfd559e](https://github.com/aa900031/bouzu/commit/cfd559e2f967ee04fab40153508b6b60d9982f25))
+-  Use @aa900031/tsdown-config instead internal ([e094fb8](https://github.com/aa900031/bouzu/commit/e094fb877be4b386971a9fad229f397f532d8ecd))
+
+
+
+#### ❤️ Contributors
+
+- Zhong666 <aa900031@gmail.com>
+- Renovate[bot]
+
 ## v0.3.1
 
 [compare changes](https://github.com/aa900031/bouzu/compare/@bouzu/zoomable-dom@0.3.0...${npm.name}@0.3.1)
