@@ -3,6 +3,30 @@
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
 
+## v0.2.0
+
+[compare changes](https://github.com/aa900031/bouzu/compare/@bouzu/virtualizer@0.1.0...${npm.name}@0.2.0)
+
+### 🏡 Chore
+
+-  Add pkg.pr.new (#39) ([4d3c43c](https://github.com/aa900031/bouzu/commit/4d3c43ce0504d5dd6a703dfd9423907b0102e183))
+-  **ci:** Autofix (#36) ([dede28e](https://github.com/aa900031/bouzu/commit/dede28ec937ea0031251a340b061f1e6fa53cdeb))
+-  **deps:** Update npm non-major develop dependencies (#46) ([cfd559e](https://github.com/aa900031/bouzu/commit/cfd559e2f967ee04fab40153508b6b60d9982f25))
+-  Remove latest syntax ([c376a0b](https://github.com/aa900031/bouzu/commit/c376a0b6f43206f46990d6be7943f793dfcd7c18))
+-  Specific coverage paths ([b5c6b3e](https://github.com/aa900031/bouzu/commit/b5c6b3e7fadd6ad454fa8c4c89cb09b9331cc8ba))
+-  Update release-it (#37) ([1574f35](https://github.com/aa900031/bouzu/commit/1574f3503dd0780dcdfd3d5451e48b214cd7d782))
+-  Update unbuild (#38) ([d48ece4](https://github.com/aa900031/bouzu/commit/d48ece49158269cd22459ae774fd06ad46e6a86f))
+-  Use @aa900031/tsdown-config instead internal ([e094fb8](https://github.com/aa900031/bouzu/commit/e094fb877be4b386971a9fad229f397f532d8ecd))
+-  Use tsdown ([afaab38](https://github.com/aa900031/bouzu/commit/afaab38057fcef4ebc8ec3baed1e5ba0d7de10de))
+-  Use vitest projects ([0543b8b](https://github.com/aa900031/bouzu/commit/0543b8b75e7399d73eb52a30342044b43ea8c588))
+
+
+
+#### ❤️ Contributors
+
+- Zhong666 <aa900031@gmail.com>
+- Renovate[bot]
+
 ## v0.1.0
 
 [compare changes](https://github.com/aa900031/bouzu/compare/@bouzu/virtualizer@0.0.3...@bouzu/virtualizer@0.1.0)
