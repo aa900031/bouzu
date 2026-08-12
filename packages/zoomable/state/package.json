@@ -45,7 +45,7 @@
 		"release": "release-it"
 	},
 	"dependencies": {
-		"@bouzu/shared": "workspace:*",
+		"@bouzu/shared": "workspace:^",
 		"mitt": "^3.0.1"
 	},
 	"devDependencies": {

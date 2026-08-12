@@ -103,7 +103,7 @@ importers:
   packages/affix/state:
     dependencies:
       '@bouzu/shared':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../../shared
       mitt:
         specifier: ^3.0.1
@@ -387,7 +387,7 @@ importers:
   packages/zoomable/state:
     dependencies:
       '@bouzu/shared':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../../shared
       mitt:
         specifier: ^3.0.1
@@ -5019,8 +5019,8 @@ packages:
       typescript:
         optional: true
 
-  vue-component-type-helpers@3.3.7:
-    resolution: {integrity: sha512-Skkhw9agYSgsWqv7bxSOGJZa9SaiJbZVGdXuFWnrzKaQYHnw9qbjD630rw6RyMqDbp54nfLCLw5SZA55if7JLg==}
+  vue-component-type-helpers@3.3.9:
+    resolution: {integrity: sha512-3c/UfMe0SqyEfcGTyH7mfshHagJ9QTCbppCb0/uGpHZpFug7+If3GeGZN7I0YheKEExemx3xldQPoO7PQSOLQg==}
 
   vue-demi@0.14.10:
     resolution: {integrity: sha512-nMZBOwuzabUO0nLgIcc6rycZEebF6eeUfaiQx9+WSk8e29IbLvPU9feI6tqW4kTo3hvoYAJkMh8n8D0fuISphg==}
@@ -6410,7 +6410,7 @@ snapshots:
       storybook: 10.5.7(@types/react@19.2.18)(react@19.2.8)
       type-fest: 5.8.0
       vue: 3.5.41(typescript@5.9.3)
-      vue-component-type-helpers: 3.3.7
+      vue-component-type-helpers: 3.3.9
 
   '@stylistic/eslint-plugin@5.10.0(eslint@9.39.5(jiti@2.6.1))':
     dependencies:
@@ -9842,7 +9842,7 @@ snapshots:
     optionalDependencies:
       typescript: 5.9.3
 
-  vue-component-type-helpers@3.3.7: {}
+  vue-component-type-helpers@3.3.9: {}
 
   vue-demi@0.14.10(vue@3.5.41(typescript@5.9.3)):
     dependencies:
