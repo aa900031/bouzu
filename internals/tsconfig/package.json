@@ -5,5 +5,8 @@
 	"author": "zhong666 <hi@zhong666.me>",
 	"dependencies": {
 		"@tsconfig/node22": "^22.0.5"
+	},
+	"devDependencies": {
+		"@types/node": "^24.13.3"
 	}
 }
