@@ -3,6 +3,27 @@
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
 
+## v0.5.0
+
+[compare changes](https://github.com/aa900031/bouzu/compare/@bouzu/vue-zoomable@0.4.0...${npm.name}@0.5.0)
+
+### 🚀 Enhancements
+
+-  **zoomable:** Add status: isInteracting, isTransforming, isAnimating ([6581ec3](https://github.com/aa900031/bouzu/commit/6581ec382a6dab010bc761fd9259a70946fd9c5f))
+
+### 🏡 Chore
+
+-  **deps:** Update npm non-major dependencies (#30) ([5f36022](https://github.com/aa900031/bouzu/commit/5f360222f973ab1ff4033b7a71b2a76601b15c4e))
+-  **deps:** Update npm non-major develop dependencies (#46) ([cfd559e](https://github.com/aa900031/bouzu/commit/cfd559e2f967ee04fab40153508b6b60d9982f25))
+-  Use @aa900031/tsdown-config instead internal ([e094fb8](https://github.com/aa900031/bouzu/commit/e094fb877be4b386971a9fad229f397f532d8ecd))
+
+
+
+#### ❤️ Contributors
+
+- Zhong666 <aa900031@gmail.com>
+- Renovate[bot]
+
 ## v0.4.0
 
 [compare changes](https://github.com/aa900031/bouzu/compare/@bouzu/vue-zoomable@0.3.1...${npm.name}@0.4.0)
