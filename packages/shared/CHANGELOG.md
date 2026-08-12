@@ -3,6 +3,27 @@
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
 
+## v0.4.0
+
+[compare changes](https://github.com/aa900031/bouzu/compare/@bouzu/shared@0.3.0...${npm.name}@0.4.0)
+
+### 🚀 Enhancements
+
+-  **zoomable:** Add status: isInteracting, isTransforming, isAnimating ([6581ec3](https://github.com/aa900031/bouzu/commit/6581ec382a6dab010bc761fd9259a70946fd9c5f))
+
+### 🏡 Chore
+
+-  **deps:** Update npm non-major develop dependencies (#46) ([cfd559e](https://github.com/aa900031/bouzu/commit/cfd559e2f967ee04fab40153508b6b60d9982f25))
+-  Use @aa900031/tsdown-config instead internal ([e094fb8](https://github.com/aa900031/bouzu/commit/e094fb877be4b386971a9fad229f397f532d8ecd))
+-  Use tsdown ([afaab38](https://github.com/aa900031/bouzu/commit/afaab38057fcef4ebc8ec3baed1e5ba0d7de10de))
+
+
+
+#### ❤️ Contributors
+
+- Zhong666 <aa900031@gmail.com>
+- Renovate[bot]
+
 ## v0.3.0
 
 [compare changes](https://github.com/aa900031/bouzu/compare/@bouzu/shared@0.2.0...${npm.name}@0.3.0)
