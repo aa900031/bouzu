@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
 
+## v0.2.0
+
+[compare changes](https://github.com/aa900031/bouzu/compare/@bouzu/affix-dom@0.1.0...${npm.name}@0.2.0)
+
+### 🏡 Chore
+
+-  **deps:** Update npm non-major dependencies (#30) ([5f36022](https://github.com/aa900031/bouzu/commit/5f360222f973ab1ff4033b7a71b2a76601b15c4e))
+-  Use @aa900031/tsdown-config instead internal ([e094fb8](https://github.com/aa900031/bouzu/commit/e094fb877be4b386971a9fad229f397f532d8ecd))
+-  Use tsdown ([afaab38](https://github.com/aa900031/bouzu/commit/afaab38057fcef4ebc8ec3baed1e5ba0d7de10de))
+-  Use vitest projects ([0543b8b](https://github.com/aa900031/bouzu/commit/0543b8b75e7399d73eb52a30342044b43ea8c588))
+
+
+
+#### ❤️ Contributors
+
+- Zhong666 <aa900031@gmail.com>
+- Renovate[bot]
+
 ## v0.1.0
 
 
