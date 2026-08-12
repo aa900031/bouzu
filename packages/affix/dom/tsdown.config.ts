@@ -1,10 +1,3 @@
-import { DEFAULT_CONFIG } from '@bouzu/tsdown-config'
-import { defineConfig } from 'tsdown'
+import { base } from '@aa900031/tsdown-config'
 
-export default defineConfig({
-	...DEFAULT_CONFIG,
-	platform: 'browser',
-	entry: [
-		'src/index.ts',
-	],
-})
+export default base({}, { format: ['esm', 'cjs'], platform: 'browser' })

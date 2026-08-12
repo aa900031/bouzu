@@ -1,12 +1,8 @@
-import { DEFAULT_CONFIG } from '@bouzu/tsdown-config'
-import { defineConfig } from 'tsdown'
+import { vue } from '@aa900031/tsdown-config'
 
-export default defineConfig({
-	...DEFAULT_CONFIG,
+export default vue({}, {
+	format: ['esm', 'cjs'],
 	platform: 'browser',
-	entry: [
-		'src/index.ts',
-	],
 	external: [
 		'type-fest',
 	],

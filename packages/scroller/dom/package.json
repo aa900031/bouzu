@@ -29,12 +29,12 @@
 		"exports": {
 			".": {
 				"import": {
-					"default": "./dist/index.mjs",
-					"types": "./dist/index.d.mts"
+					"types": "./dist/index.d.mts",
+					"default": "./dist/index.mjs"
 				},
 				"require": {
-					"default": "./dist/index.js",
-					"types": "./dist/index.d.ts"
+					"types": "./dist/index.d.ts",
+					"default": "./dist/index.js"
 				}
 			},
 			"./package.json": "./package.json"
@@ -52,7 +52,7 @@
 		"type-fest": "^3.13.1"
 	},
 	"devDependencies": {
-		"@bouzu/tsconfig": "workspace:*",
-		"@bouzu/tsdown-config": "workspace:*"
+		"@aa900031/tsdown-config": "^0.2.2",
+		"@bouzu/tsconfig": "workspace:*"
 	}
 }
