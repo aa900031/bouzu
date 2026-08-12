@@ -3,6 +3,29 @@
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
 
+## v0.5.0
+
+[compare changes](https://github.com/aa900031/bouzu/compare/@bouzu/vue-scroller@0.4.0...${npm.name}@0.5.0)
+
+### 🏡 Chore
+
+-  Add pkg.pr.new (#39) ([4d3c43c](https://github.com/aa900031/bouzu/commit/4d3c43ce0504d5dd6a703dfd9423907b0102e183))
+-  **ci:** Autofix (#36) ([dede28e](https://github.com/aa900031/bouzu/commit/dede28ec937ea0031251a340b061f1e6fa53cdeb))
+-  **deps:** Update npm non-major dependencies (#30) ([5f36022](https://github.com/aa900031/bouzu/commit/5f360222f973ab1ff4033b7a71b2a76601b15c4e))
+-  **deps:** Update npm non-major develop dependencies (#31) ([c6d5cdf](https://github.com/aa900031/bouzu/commit/c6d5cdf618a38b4ce7f991fab316e8bbf25b7356))
+-  **deps:** Update npm non-major develop dependencies (#46) ([cfd559e](https://github.com/aa900031/bouzu/commit/cfd559e2f967ee04fab40153508b6b60d9982f25))
+-  Update release-it (#37) ([1574f35](https://github.com/aa900031/bouzu/commit/1574f3503dd0780dcdfd3d5451e48b214cd7d782))
+-  Use @aa900031/tsdown-config instead internal ([e094fb8](https://github.com/aa900031/bouzu/commit/e094fb877be4b386971a9fad229f397f532d8ecd))
+-  Use tsdown ([afaab38](https://github.com/aa900031/bouzu/commit/afaab38057fcef4ebc8ec3baed1e5ba0d7de10de))
+-  Use vitest projects ([0543b8b](https://github.com/aa900031/bouzu/commit/0543b8b75e7399d73eb52a30342044b43ea8c588))
+
+
+
+#### ❤️ Contributors
+
+- Zhong666 <aa900031@gmail.com>
+- Renovate[bot]
+
 ## v0.4.0
 
 [compare changes](https://github.com/aa900031/bouzu/compare/@bouzu/vue-scroller@0.3.1...@bouzu/vue-scroller@0.4.0)
