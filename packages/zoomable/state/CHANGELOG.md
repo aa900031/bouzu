@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
 
+## v0.5.0
+
+[compare changes](https://github.com/aa900031/bouzu/compare/@bouzu/zoomable@0.4.0...${npm.name}@0.5.0)
+
+### 🚀 Enhancements
+
+-  **zoomable:** Add status: isInteracting, isTransforming, isAnimating ([6581ec3](https://github.com/aa900031/bouzu/commit/6581ec382a6dab010bc761fd9259a70946fd9c5f))
+
+### 🏡 Chore
+
+-  Adjust workspace syntax ([1b80257](https://github.com/aa900031/bouzu/commit/1b802579f44e34c26cb3f33b2087fe5983a2b585))
+-  Use @aa900031/tsdown-config instead internal ([e094fb8](https://github.com/aa900031/bouzu/commit/e094fb877be4b386971a9fad229f397f532d8ecd))
+
+
+
+#### ❤️ Contributors
+
+- Zhong666 <aa900031@gmail.com>
+
 ## v0.4.0
 
 [compare changes](https://github.com/aa900031/bouzu/compare/@bouzu/zoomable@0.3.1...${npm.name}@0.4.0)
