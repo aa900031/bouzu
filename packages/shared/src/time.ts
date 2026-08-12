@@ -9,4 +9,4 @@ export type GetTimeFn = () => number
 
 export const getTime: GetTimeFn = perfNowFn
 	? perfNowFn.bind(perf)
-	: Date.now ?? (() => new Date().getTime())
+	: Date.now ?? (() => Date.now())
