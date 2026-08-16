@@ -1,0 +1,6 @@
+{
+	"extends": "@bouzu/tsconfig/node.json",
+	"include": [
+		"tsdown.config.ts"
+	]
+}

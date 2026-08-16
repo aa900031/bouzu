@@ -43,6 +43,14 @@ Visit our [Storybook](https://bouzu.pages.dev)
 | [@bouzu/zoomable-dom](./packages/zoomable/dom) | [![npm version](https://img.shields.io/npm/v/@bouzu/zoomable-dom?style=flat&colorA=18181B&colorB=F0DB4F)](https://npmjs.com/package/@bouzu/zoomable-dom)        | [![npm downloads](https://img.shields.io/npm/dm/@bouzu/zoomable-dom?style=flat&colorA=18181B&colorB=F0DB4F)](https://www.npmcharts.com/compare/@bouzu/zoomable-dom?minimal=true) |
 | [@bouzu/vue-zoomable](./packages/zoomable/vue) | [![npm version](https://img.shields.io/npm/v/@bouzu/vue-zoomable?style=flat&colorA=18181B&colorB=F0DB4F)](https://npmjs.com/package/@bouzu/vue-zoomable) | [![npm downloads](https://img.shields.io/npm/dm/@bouzu/vue-zoomable?style=flat&colorA=18181B&colorB=F0DB4F)](https://www.npmcharts.com/compare/@bouzu/vue-zoomable?minimal=true) |
 
+### Truncate
+
+| Package | Version | Downloads |
+|---|---|---|
+| [@bouzu/truncate](./packages/truncate/state)   | [![npm version](https://img.shields.io/npm/v/@bouzu/truncate?style=flat&colorA=18181B&colorB=F0DB4F)](https://npmjs.com/package/@bouzu/truncate)                | [![npm downloads](https://img.shields.io/npm/dm/@bouzu/truncate?style=flat&colorA=18181B&colorB=F0DB4F)](https://www.npmcharts.com/compare/@bouzu/truncate?minimal=true) |
+| [@bouzu/truncate-dom](./packages/truncate/dom) | [![npm version](https://img.shields.io/npm/v/@bouzu/truncate-dom?style=flat&colorA=18181B&colorB=F0DB4F)](https://npmjs.com/package/@bouzu/truncate-dom)        | [![npm downloads](https://img.shields.io/npm/dm/@bouzu/truncate-dom?style=flat&colorA=18181B&colorB=F0DB4F)](https://www.npmcharts.com/compare/@bouzu/truncate-dom?minimal=true) |
+| [@bouzu/vue-truncate](./packages/truncate/vue) | [![npm version](https://img.shields.io/npm/v/@bouzu/vue-truncate?style=flat&colorA=18181B&colorB=F0DB4F)](https://npmjs.com/package/@bouzu/vue-truncate) | [![npm downloads](https://img.shields.io/npm/dm/@bouzu/vue-truncate?style=flat&colorA=18181B&colorB=F0DB4F)](https://www.npmcharts.com/compare/@bouzu/vue-truncate?minimal=true) |
+
 ## License
 
 Made with ❤️
