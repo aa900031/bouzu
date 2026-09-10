@@ -47,7 +47,7 @@
 	"dependencies": {
 		"@bouzu/affix": "workspace:^",
 		"@bouzu/shared": "workspace:^",
-		"fast-equals": "^6.0.2",
+		"fast-equals": "^6.0.3",
 		"mitt": "^3.0.1"
 	},
 	"devDependencies": {
