@@ -7,6 +7,6 @@
 		"@tsconfig/node22": "^22.0.5"
 	},
 	"devDependencies": {
-		"@types/node": "^24.13.3"
+		"@types/node": "^24.13.4"
 	}
 }
