@@ -1,19 +1,20 @@
-autoInstallPeers: false
 ignoreWorkspaceRootCheck: true
-shamefullyHoist: true
-shellEmulator: true
-strictPeerDependencies: false
+minimumReleaseAgeExcludePrune: true
 trustPolicy: no-downgrade
 trustPolicyIgnoreAfter: 432000
+autoInstallPeers: false
+strictPeerDependencies: false
+shamefullyHoist: true
+shellEmulator: true
 
 packages:
   - packages/**/*
   - stories/**/*
   - internals/**/*
 
-ignoredBuiltDependencies:
-  - '@aa900031/eslint-config'
-
 allowBuilds:
   esbuild: true
   vue-demi: true
+
+ignoredBuiltDependencies:
+  - '@aa900031/eslint-config'
